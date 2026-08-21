@@ -1,0 +1,43 @@
+# Strategic Assumptions Register
+
+- **Owned by:** `01-vision` · **Status:** 🟢 First four gate items resolved by the owner
+  2026-08-21 (see rows OQ-01, OQ-01b, OQ-02, OQ-09 below). OQ-04 through OQ-08 and OQ-10 remain
+  open, deferred to their named downstream stage exactly as originally scoped — they were never
+  blocking this gate, only OQ-01/01b/02/09 needed an answer before `03-architecture-design-
+  synthesis` could safely start.
+
+Each row: the assumption as currently carried, its basis, and the trigger — the point at which it
+must be revisited. Rows OQ-01 through OQ-10 map 1:1 to the seed SOR's own numbering so nothing is
+lost in translation.
+
+| ID | Assumption made | Where it matters | Status | Confirm/revise before... |
+|---|---|---|---|---|
+| **OQ-01** | OW Chess is a standalone game — not a merge with the single-player `ORBITAL COMMAND` campaign concept (confirmed distinct on inspection, §4 of MSTR-001), and not a mode of `ZabSpaceExercise`. | MSTR-001 §1, §5, §6 | ✅ **Confirmed** (owner, 2026-08-21) | Resolved — standalone, zero shared runtime code, no unified asset vocabulary for v1. |
+| **OQ-01b** | Turn structure is **strict alternating** (I-go-you-go, chess-style) rather than simultaneous "WeGo" order-writing where both players commit moves and the server resolves them together. | MSTR-001 §1, §3 C2; GDS-00 turn loop | ✅ **Confirmed** (owner, 2026-08-21) | Resolved — `03-architecture-design-synthesis` designs the server's turn-resolution model around reject-out-of-turn enforcement, not simultaneous-commit-and-resolve. |
+| **OQ-02** | Tech stack. | MSTR-001 (implicit via SOR §8.1) | ✅ **Resolved as: owner delegates the choice** (2026-08-21) | The owner explicitly declined to dictate a language/framework: *"I will not dictate the tech stack or language. Use the best language to solve the requirements."* The SOR's React+TypeScript/Node.js+TypeScript/WebSocket/in-memory-session suggestion is now a **candidate to evaluate on its merits, not a default** — `03-architecture-design-synthesis` must record a real ADR comparing it against the actual requirements (WebSocket-push turn notifications, server-authoritative fog-of-war, the `Propagator` boundary, schema-validated content) and at least one genuine alternative, before adopting anything. No skill should treat the candidate stack as already chosen. |
+| **OQ-04** | v1 mission-set roster size (3: SATCOM, ISR, PNT-lite) and content. | SOR §7.4 | 🟡 Open | `04-requirements-engineering` |
+| **OQ-05** | v1 asset roster (6 sensors/effectors) and relative cost/time tiers — qualitative only, no numbers set yet. | SOR §7.5 | 🟡 Open | `04-requirements-engineering` / `06-feature-specification` |
+| **OQ-06** | Mission-denial win condition uses a duration threshold (exact turn count unset) rather than a point/damage total. | SOR §7.9 | 🟡 Open | `04-requirements-engineering` |
+| **OQ-07** | A maximum session length exists at all, with a tiebreak rule. | SOR §7.9 | 🟡 Open | `04-requirements-engineering` |
+| **OQ-08** | Deployment/hosting target unspecified beyond "a single process, run locally or on any host matching whatever stack OQ-02 lands on." | SOR §8.1 | 🟡 Open | `03-architecture-design-synthesis` |
+| **OQ-09** | v1 scope is MVP-first, with the full end-state vision captured only as a non-authorized roadmap (SOR §5.3), not attempted in one release. | SOR §5, §5.3 | ✅ **Confirmed** (owner, 2026-08-21) | Resolved — v1 scope is exactly SOR §5.1; §5.3's R1-R7 stay unauthorized backlog. |
+| **OQ-10** | AP cadence, action costs, and all other numeric balance values are unset placeholders, not tuned by design intent. | SOR §7.2, §10, §14 | 🟡 Open | `06-feature-specification` |
+| **OQ-03** | Visual direction: dark "ops console" aesthetic, pending review of the `ZabOW` reference. | SOR §9.1 | ✅ **Resolved** | Resolved this run — see MSTR-001 §4. The `claude/orbital-warfare-campaign-FWLKi` branch was merged into `ZabOW`'s `main` (PR #1) and deleted post-merge; its content (`ORBITAL COMMAND`) was read directly from `main`. The placeholder direction is substantially confirmed by the real reference, with concrete layout precedent now available (radial LEO/MEO/GEO bands, corner HUD panels, cyan/red palette). No further owner action needed on this item unless the owner disagrees with adopting that reference. |
+
+## Additional risk items carried from SOR Appendix B (not OQ-numbered, tracked here for visibility)
+
+| Risk | Trigger to revisit | Owner |
+|---|---|---|
+| A hard turn lock (now confirmed via OQ-01b) stalls the game if one player disconnects and never returns. | Before `04-requirements-engineering`/`06-feature-specification` finalize FR-6003 (disconnect/reconnect) — a per-turn time limit, auto-pass, or forfeit-on-timeout rule must be deliberately chosen, not defaulted to "wait forever" by omission. | `04-requirements-engineering` |
+| Untuned numeric balance (OQ-05/06/10) ships as if final. | Any package touching AP costs, asset costs, or the mission-denial threshold — tag first-guess values explicitly in code/config (mirroring `ZabGBCprocgenMusic`'s placeholder-tagging convention) so they're never mistaken for tuned. | `08-code-implementation` / `08-content-authoring` |
+| Fog-of-war leak via client inspection. | Treat as a single, centrally-tested server boundary (FR-3002), not re-implemented per feature. | `03-architecture-design-synthesis` (design), `09-package-verification` (ongoing gate) |
+| Scope creep from the deliberately non-exhaustive action list (SOR §7.2). | Any new action-type idea — route through `00-intake` into the backlog like any other feature request, not added ad hoc mid-implementation. | `00-intake` |
+| Tech-stack decision now genuinely open (OQ-02), not a rubber-stamp. | `03-architecture-design-synthesis` must produce a real comparative ADR, not restate the SOR's candidate as settled — a shallow "confirmed as proposed" ADR would misrepresent what the owner actually asked for. | `03-architecture-design-synthesis` |
+
+## How this register is used
+
+- **Not itself authoritative** — MSTR-001 §1–§5 remain the source of truth once confirmed; this
+  table exists so "is X still open?" has one place to check.
+- **Reviewed at every `01-vision` consistency check** and whenever a trigger condition above fires.
+- **A fired trigger doesn't automatically change anything** — it's a finding, routed to whichever
+  skill owns the actual response, per this register's own routing column above.
