@@ -140,14 +140,13 @@ rules below are the binding governance text. Skills cite them as **G1–G5**.
 `BL-####` (pipeline backlog rows) are internal to the stages that own them and not part of the
 project's fixed artifact-ID list above, but follow the same numbering discipline.
 
-## Tech stack — owner has delegated this choice, not pre-selected it
+## Tech stack — confirmed via ADR-0001
 
-**Decided at the `01-vision` gate (2026-08-21): the owner will not dictate a language or
-framework.** The instruction is to use whatever stack best fits the requirements — WebSocket-push
-turn notifications, server-authoritative fog-of-war, a hybrid Kepler+J2 `Propagator` boundary, a
-schema-validated data-driven asset-template model, no accounts/no database for v1. The SOR's own
-React+TypeScript/Node.js+TypeScript/WebSocket/in-memory-session suggestion is a **candidate to
-evaluate on its merits, not a default to rubber-stamp** — `03-architecture-design-synthesis` must
-record a real ADR comparing it against the requirements (and against at least one genuine
-alternative) before adopting it, exactly as it would any other architecture decision. No skill
-should treat that candidate as already chosen.
+The owner delegated this choice at the `01-vision` gate (2026-08-21) rather than pre-selecting a
+stack: *"I will not dictate the tech stack or language. Use the best language to solve the
+requirements."* `03-architecture-design-synthesis` produced a real comparative decision —
+[`docs/architecture/adr/ADR-0001-tech-stack.md`](../../docs/architecture/adr/ADR-0001-tech-stack.md)
+— evaluating TypeScript full-stack against Python, Go, and Rust alternatives before confirming:
+**TypeScript full-stack (Node.js server, React client), WebSocket transport, in-memory
+per-session state, no database.** This is now a confirmed architecture decision, not a tentative
+candidate — every skill may cite it as settled.
