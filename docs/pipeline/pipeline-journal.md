@@ -2,15 +2,16 @@
 
 ## Position
 
-- **Updated:** 2026-08-22 (run #30)
-- **Increment:** Iterating toward MVP release readiness. **G3 go-ahead granted** by the owner
-  ("Continue," in direct response to the run #29 gate question) — covers the whole 11-package MVP
-  tranche, no per-package re-confirmation required.
-- **Pipeline state:** `00` — manager iterating. `01`–`07` — complete. `08` — **starting now**,
-  IP-0010 first (critical-path start). `09`–`11` — not started.
+- **Updated:** 2026-08-22 (run #31)
+- **Increment:** Iterating toward MVP release readiness. G3 go-ahead covers the whole 11-package
+  tranche. Real code now exists (first time in this project).
+- **Pipeline state:** `00` — manager iterating. `01`–`07` — complete. `08` — IP-0010 `COMPLETE`
+  (npm-workspaces scaffold + `shared/` types/interfaces/messages; build/test/dev all verified
+  green). `09` — not yet run on IP-0010. `10`–`11` — not started.
 - **Backlog:** 8 open — BL-0005 (`DEFERRED`), BL-0006/0007 (`DEFERRED`, Low), BL-0017
-  (`SCHEDULED` — `02-research-domain` before `09-content-review`, not blocking `08`).
-- **Next step:** `08-code-implementation` on IP-0010.
+  (`SCHEDULED`, non-blocking).
+- **Next step:** `09-package-verification` on IP-0010 (only skill authorized to write `VERIFIED`
+  — required before IP-1010 can leave `BLOCKED`).
 - **Open gates:** none — G3 cleared for this tranche.
 
 ## Run log
@@ -47,3 +48,4 @@
 | 28 | 2026-08-22 | iterate (`00-pipeline-manager`, user requested "iterate to MVP") | `06-feature-specification` | `docs/features/FS-104-orbital-mechanics-propagator.md` (Maneuver Cost Table added), `docs/features/INDEX.md`, `docs/requirements/01-functional-requirements.md` (CR-03 struck), `docs/requirements/04-requirements-traceability-matrix.md`, `docs/feature-planning/03-feature-catalog.md` (FEAT-5000) | Revised FS-104 with a concrete altitude/plane/combined-maneuver cost-and-turns formula derived from R-201, closing CR-03/BL-0011. Propagated to the FR baseline, RTM, and feature catalog. **All 8 Feature Specifications now fully closed — no numeric placeholders remain in `06`.** | `07-implementation-planning` — Technical Work Breakdown + IP-#### packages from all 8 FS-### specs, folding in BL-0012/13/14/15's low-stakes defaults. |
 | 29 | 2026-08-22 | iterate (`00-pipeline-manager`, user requested "iterate to MVP") | `07-implementation-planning` | `docs/implementation/01-technical-work-breakdown.md`, `docs/implementation/00-master-build-plan.md`, `docs/implementation/packages/INDEX.md`, `docs/implementation/packages/IP-0010` through `IP-8010` (11 packages), FS-101–108 metadata (`Implemented by` cross-refs) | Authored the full MVP Technical Work Breakdown and 11 IP-#### packages covering all 8 FS specs (code/content split for FS-102/105). Folded in BL-0012/13/14/15's defaults (all DONE); surfaced and closed a new gap mid-pass (BL-0016, `applyDeception`'s missing owner, assigned to IP-6010); filed BL-0017 (content packages need `02-research-domain` grounding before `09-content-review`, non-blocking). All 11 packages are release-plan-authorized (G3) per `07`'s own rule. | **GATE: G3** — the owner's kickoff instruction requires an explicit go-ahead before any `08-*` code-writing stage runs, regardless of release-plan coverage. Iteration stops; next invocation needs that go-ahead to proceed to `08-code-implementation` on IP-0010. |
 | 30 | 2026-08-22 | manual (owner answered the G3 gate: "Continue") | — (gate recorded, no skill invoked yet this row) | `docs/pipeline/pipeline-journal.md` | Owner's go-ahead recorded, covering the full 11-package MVP tranche with no per-package re-confirmation needed. | `08-code-implementation` on IP-0010, then continue through the Master Build Plan. |
+| 31 | 2026-08-22 | iterate (`00-pipeline-manager`) | `08-code-implementation` | IP-0010 — `package.json`/`tsconfig.base.json` (root), `shared/` (types.ts/interfaces.ts/messages.ts/index.ts, transcribed from GDS-07/09), `server/src/index.ts`, `client/src/main.tsx`, plus each workspace's own package.json/tsconfig/vitest config | Implemented the npm-workspaces monorepo scaffold. G5 gates verified: `npm run build` clean (3 workspaces), `npm test` passes (1 smoke test in `shared`; `server`/`client` pass with no tests yet), `npm run dev` starts cleanly (client HTTP 200, server entry runs under `tsx`). Package set `COMPLETE`. | `09-package-verification` on IP-0010. |
