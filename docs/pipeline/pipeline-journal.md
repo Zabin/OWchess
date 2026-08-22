@@ -2,26 +2,25 @@
 
 ## Position
 
-- **Updated:** 2026-08-22 (run #16)
-- **Increment:** Bootstrap increment continues — vision, architecture, requirements, and feature
-  decomposition all authored (see run #15); this run is a **deliberate vision amendment**
-  (MSTR-001 C4 → v0.3: two-body-only v1 propagation, owner-directed) cascaded through every
-  downstream artifact it touches. Nothing has shipped yet.
-- **Pipeline state:** `00` — manager. `01` — **re-visited, amended.** MSTR-001 v0.3, GDS-00, and
-  the assumptions register (new row A8) updated in lock-step; gate stays closed (this is a
-  recorded amendment, not a reopening). `03` — GDS-04 amended (new OQ-14). `02` — R-203 amended
-  (its own J2-dependent argument flagged as no longer holding for v1). `04` — FR-5100 reworded.
-  `05` — FEAT-5000's Complexity/Risk revised down (High→Medium); Release Plan's Highest-Risk
-  callout reassigned to FEAT-6000. `06`–`11` — not started; this amendment did not touch them.
-- **Backlog:** 6 open — BL-0005 (`DEFERRED`, now explicitly moot for v1, retriggered only if
-  OQ-14 resolves toward adding J2), BL-0006/0007 (`DEFERRED`, Low), BL-0008 (`SCHEDULED` for
-  `06`/`07`), BL-0009/0010 (`SCHEDULED` for `06`), BL-0011 (`SCHEDULED` for `02` then `06`, now
-  scoped to two-body delta-v figures, not J2-perturbed ones). No new backlog items.
-- **Next step:** `06-feature-specification` — unaffected in sequence by this amendment (it was a
-  scope/risk correction to an already-decomposed Feature, not new decomposition work). Write the
-  first `FS-###` spec, starting with FEAT-1000 (Session & Turn Lifecycle), per the release plan's
-  recommended build sequence.
-- **Open gates:** none currently blocking.
+- **Updated:** 2026-08-22 (run #17)
+- **Increment:** Bootstrap increment continues — vision amendment (run #16) cascaded; **first
+  Feature Specification (FS-101, FEAT-1000) authored** this run. Nothing has shipped yet.
+- **Pipeline state:** `00` — manager, iteration halted at a gate this run (see below). `01`–`05` —
+  complete (05 last touched by run #16's amendment cascade, not new decomposition). `06` — **in
+  progress.** FS-101 (Session & Turn Lifecycle) authored, all 15 FR/4 NFR fields populated. 7
+  Features remain unspecified. `07`–`11` — not started.
+- **Backlog:** 7 open — BL-0005 (`DEFERRED`), BL-0006/0007 (`DEFERRED`, Low), BL-0008
+  (`SCHEDULED`), BL-0009 (`SCHEDULED` for `06`), **BL-0010 (`NEEDS-USER`, ripened this run — see
+  Open gates)**, BL-0011 (`SCHEDULED`), BL-0012 (`SCHEDULED` for `07`, new this run — win-condition
+  check ordering, low-stakes default already assigned in FS-101).
+- **Next step:** put BL-0010 (disconnect/reconnect policy) to the owner — the only ripe
+  `NEEDS-USER` entry this run, and per tier precedence the sole reason iteration stopped. Once
+  answered, resume `06-feature-specification` for the next unspecified Feature (FEAT-3000, Asset
+  Roster & Mission Sets, per the release plan's build sequence) — BL-0010's answer does not block
+  that Feature's own spec, so either order is fine once the owner responds.
+- **Open gates:** **BL-0010** — disconnect/reconnect grace-period and forfeit policy. FS-101
+  could not complete its Error Handling field without a real answer; this is the reason iterate
+  mode stopped rather than continuing to spec further Features.
 - **Next step:** `03-architecture-design-synthesis` again — GDS-07 (Data Model), now grounded by
   R-203's 9-regime recommendation.
 - **Open gates:** none currently blocking.
@@ -46,3 +45,4 @@
 | 14 | 2026-08-22 | iterate (`00-pipeline-manager`) | `04-requirements-engineering` | `docs/requirements/01-04*.md`, `docs/requirements/INDEX.md` | Formalized 43 FRs/17 NFRs from GDS-05/06, resolved OQ-05/06/07/10 with cited first-guess numeric values, ran the Review (4 findings, 1 closed inline), built the RTM. Harvested BL-0006–0011. | `05-feature-decomposition` — Release Plan, Epic/Feature Catalog, Feature Dependency Graph. |
 | 15 | 2026-08-22 | iterate (`00-pipeline-manager`, user requested "iterate until release plan ready") | `05-feature-decomposition` | `docs/feature-planning/01-05*.md`, `docs/feature-planning/INDEX.md` | Decomposed the FR/NFR baseline into 8 Features/3 Epics, built the dependency graph (acyclic, 6-node critical path), wrote the Release Plan (all 8 Features → MVP, justified), ran the Feature Review (3 Low findings, all self-resolved). No new backlog items. | `06-feature-specification` — first FS-### for FEAT-1000 (Session & Turn Lifecycle). |
 | 16 | 2026-08-22 | manual (owner-directed vision amendment, not manager iteration) | `01-vision` | `docs/master/MSTR-001-program-vision.md` (v0.3), `docs/architecture/00-vision.md`, `docs/architecture/strategic-assumptions-register.md` (A8), plus cascade edits to `docs/architecture/04-domain-model.md` (OQ-14), `docs/research/R-203-*.md`, `docs/requirements/01-functional-requirements.md` (FR-5100), `docs/feature-planning/03-feature-catalog.md` (FEAT-5000), `docs/feature-planning/01-release-plan.md` (Highest Risk reassigned) | Owner decided, after a design discussion on `Propagator` risk, to make the v1 baseline two-body-only (not Kepler+J2), with J2/SGP4 as an explicit later call behind the existing `Propagator` seam, gated on playtesting impact (specifically the polar/sun-synchronous plane class's legibility). Amended MSTR-001 C4 and cascaded the change through every downstream artifact it invalidated. BL-0005 marked moot for v1; BL-0011 rescoped to two-body delta-v figures. | `06-feature-specification` — resume at FEAT-1000, unaffected in sequence by this amendment. |
+| 17 | 2026-08-22 | iterate (`00-pipeline-manager`, user requested "iterate pipeline") | `06-feature-specification` | `docs/features/FS-101-session-turn-lifecycle.md`, `docs/features/INDEX.md` | Authored FS-101 for FEAT-1000, all 20 fields. Surfaced BL-0010 (CR-02, disconnect policy) as genuinely ripe — the spec's own Error Handling field couldn't be completed without it — and BL-0012 (win-condition ordering, low-stakes, self-resolved with a stated default). **Iteration halted at BL-0010, the run's one ripe `NEEDS-USER` gate.** | Put BL-0010 to the owner (gate). Once answered: `06-feature-specification` again for FEAT-3000. |
