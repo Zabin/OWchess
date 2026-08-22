@@ -2,14 +2,18 @@
 
 ## Position
 
-- **Updated:** 2026-08-21 (run #12)
-- **Increment:** Bootstrap increment continues — GDS-01 through GDS-09 authored and gate-closed.
-- **Pipeline state:** `00` — manager iterating. `03` — GDS-09 (Interface Specification) authored:
-  concrete contracts for Propagator/BeliefState/EffectResolver/TurnManager/GameEngine and the
-  WebSocket schema. Only GDS-10 (RTM level, the final ladder level) remains.
-- **Backlog:** 1 open — BL-0005 (`DEFERRED`, trigger: `Propagator`'s numerical implementation).
-- **Next step:** `03-architecture-design-synthesis` again — GDS-10 (Requirements Traceability
-  Matrix level), then advance to `04-requirements-engineering`.
+- **Updated:** 2026-08-21 (run #13)
+- **Increment:** Bootstrap increment continues — **the full GDS-00–10 architecture ladder is now
+  authored, every gate closed.** ADR-0001 (tech stack) accepted; R-203 (regime taxonomy) authored.
+  Nothing has shipped yet.
+- **Pipeline state:** `00` — manager iterating. `01` — complete, gate closed. `02` — R-203
+  authored; R-201/202/204-207 remain `PLANNED`, authored on demand. `03` — **complete**, all 11
+  levels (GDS-00–10) gate-closed, ADR-0001 accepted. `04`–`11` — not started.
+- **Backlog:** 1 open — BL-0005 (`DEFERRED`, trigger: `Propagator`'s numerical implementation at
+  `07`/`08`).
+- **Next step:** `04-requirements-engineering` — formalize `FR-####`/`NFR-####` from GDS-05/06,
+  and resolve the numeric tuning questions this stage explicitly owns (OQ-05 asset costs, OQ-06
+  mission-denial threshold, OQ-07 session length/tiebreak, OQ-10 AP cadence).
 - **Open gates:** none currently blocking.
 - **Next step:** `03-architecture-design-synthesis` again — GDS-07 (Data Model), now grounded by
   R-203's 9-regime recommendation.
@@ -31,3 +35,4 @@
 | 10 | 2026-08-21 | iterate (`00-pipeline-manager`) | `03-architecture-design-synthesis` | `docs/architecture/07-data-model.md` (GDS-07) | Defined SessionState/PlayerState/Asset/BeliefStateEntry/EffectStateEntry/EventRecord shapes, adopted R-203's regime taxonomy, made the fog-of-war boundary a structural type distinction (OpponentView vs. PlayerState). No new findings. | `03-architecture-design-synthesis` again — GDS-08 (Presentation Architecture), resolving BL-0004. |
 | 11 | 2026-08-21 | iterate (`00-pipeline-manager`) | `03-architecture-design-synthesis` | `docs/architecture/08-presentation-architecture.md` (GDS-08) | Mapped SOR panel inventory onto the ZabOW reference, designed turn-change UX, resolved BL-0004 (bounded client-side legality-rule copy). Flipped `DONE`. | `03-architecture-design-synthesis` again — GDS-09 (Interface Specification). |
 | 12 | 2026-08-21 | iterate (`00-pipeline-manager`) | `03-architecture-design-synthesis` | `docs/architecture/09-interface-specification.md` (GDS-09) | Wrote concrete contracts for all five GDS-03 modules and the WebSocket message schema. No new findings. | `03-architecture-design-synthesis` again — GDS-10 (RTM level, final ladder level). |
+| 13 | 2026-08-21 | iterate (`00-pipeline-manager`) | `03-architecture-design-synthesis` | `docs/architecture/10-requirements-traceability-matrix.md` (GDS-10) | Confirmed the traceability chain end-to-end with a spot-check table; no orphaned SOR requirements found. **Full GDS-00-10 ladder now complete, every gate closed.** No new findings. | `04-requirements-engineering` — formalize FR-####/NFR-#### and resolve OQ-05/06/07/10. |
