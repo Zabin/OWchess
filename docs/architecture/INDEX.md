@@ -10,7 +10,7 @@ owned by `01-vision`).
 | GDS-01 | Concept of Operations — [`01-concept-of-operations.md`](01-concept-of-operations.md) | `03-architecture-design-synthesis` | ✅ Authored 2026-08-21 — gate closed; raised OQ-11, OQ-12 (entry stage `03`, non-blocking for GDS-02) |
 | GDS-02 | System Context — [`02-system-context.md`](02-system-context.md) | `03-architecture-design-synthesis` | ✅ Authored 2026-08-21 — gate closed |
 | GDS-03 | Architecture (incl. `Propagator` boundary) — [`03-architecture.md`](03-architecture.md) | `03-architecture-design-synthesis` | ✅ Authored 2026-08-21 — gate closed; resolved BL-0001/BL-0002 |
-| GDS-04 | Domain Model | `03-architecture-design-synthesis` | ⛔ Planned |
+| GDS-04 | Domain Model — [`04-domain-model.md`](04-domain-model.md) | `03-architecture-design-synthesis` | ✅ Authored 2026-08-21 — gate closed; raised OQ-13 (non-blocking for GDS-05/06) |
 | GDS-05 / GDS-06 | Functional / Non-Functional Requirements levels | `03-architecture-design-synthesis` | ⛔ Planned |
 | GDS-07 | Data Model | `03-architecture-design-synthesis` | ⛔ Planned |
 | GDS-08 | Presentation Architecture | `03-architecture-design-synthesis` | ⛔ Planned — grounded in the ZabOW `ORBITAL COMMAND` reference, see MSTR-001 §4 |
