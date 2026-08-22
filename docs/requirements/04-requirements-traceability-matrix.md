@@ -25,7 +25,7 @@ candidate module the requirement will land in once `05`/`06`/`07` assign real wo
 | FR-1420 | Timeout/tiebreak | — | GDS-01 | — | GameEngine | UNASSIGNED | UNASSIGNED | UNASSIGNED |
 | FR-2100 | Task a sensor | — | GDS-09 | — | BeliefState | UNASSIGNED | UNASSIGNED | UNASSIGNED |
 | FR-2200 | Precision gated by asset capability | — | GDS-04, GDS-09 | — | BeliefState | UNASSIGNED | UNASSIGNED | UNASSIGNED |
-| FR-2300 | Belief-state staleness/decay | — | GDS-07 | — | BeliefState | UNASSIGNED | UNASSIGNED | UNASSIGNED |
+| FR-2300 | Belief-state staleness/decay | — | GDS-07, FS-103 §W3 | — | BeliefState | FS-103 | UNASSIGNED | UNASSIGNED |
 | FR-2400 | Reflect precision/staleness to UI | — | GDS-08 | — | client UI | UNASSIGNED | UNASSIGNED | UNASSIGNED |
 | FR-3100 | Data-driven asset templates | — | GDS-04 | — | content templates | UNASSIGNED | UNASSIGNED | UNASSIGNED |
 | FR-3200 | v1 roster support | R-203 | GDS-04 | — | content templates | UNASSIGNED | UNASSIGNED | UNASSIGNED |
@@ -51,7 +51,7 @@ candidate module the requirement will land in once `05`/`06`/`07` assign real wo
 | FR-8300 | Cost/time-to-online shown before commit | — | GDS-08 | — | client UI | UNASSIGNED | UNASSIGNED | UNASSIGNED |
 | FR-8400 | Current AP always visible | — | GDS-08 | — | client UI | UNASSIGNED | UNASSIGNED | UNASSIGNED |
 | FR-8500 | Visible event log | — | GDS-07, GDS-08 | — | client UI | UNASSIGNED | UNASSIGNED | UNASSIGNED |
-| CR-01 | Belief-state decay rate | — | GDS-07 (mechanism only) | — | — | CANDIDATE — NOT BASELINED | — | — |
+| ~~CR-01~~ | ~~Belief-state decay rate~~ | — | — | — | — | **Resolved into FR-2300, 2026-08-22 — no longer a candidate.** | — | — |
 | ~~CR-02~~ | ~~Disconnect/reconnect grace period~~ | — | — | — | — | **Resolved into FR-7300, 2026-08-22 — no longer a candidate.** | — | — |
 | CR-03 | Maneuver fuel-budget/transfer-time table | — | GDS-03/09 (mechanism only) | — | — | CANDIDATE — NOT BASELINED, pending R-201/202 | — | — |
 | NFR-1100 | Turn-notification latency budget | — | GDS-06 | ADR-0001 | WS transport | UNASSIGNED | UNASSIGNED | UNASSIGNED |

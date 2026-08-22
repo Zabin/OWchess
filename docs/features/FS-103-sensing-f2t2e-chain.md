@@ -37,10 +37,14 @@ FR-2100, FR-2200, FR-2300, FR-2400.
    new precision (never higher than the sensor's own capability ceiling), `lastUpdatedTurn`,
    `sourceAssetId`.
 
-**W3 — Staleness decay**
+**W3 — Staleness decay** *(numeric values resolved 2026-08-22 by owner decision)*
 1. Once per turn-advance, `BeliefState.decayStaleEntries` runs for the belief-holding player.
-2. Any entry not refreshed within the (currently undecided — see Open Questions) staleness window
-   has its precision reduced one level, or is flagged stale, per FR-2300's mechanism.
+2. Any entry not refreshed within **5 turns** of its `lastUpdatedTurn` has its precision reduced
+   one level.
+3. **Exception:** an entry already at `'find'` (the floor) that goes stale is **removed entirely**
+   — the contact reverts to fully unknown, not left floored at `'find'` indefinitely. This is a
+   genuine cost to detecting something and never following up: the initial detection effort is
+   not preserved past the decay window.
 
 **W4 — View current intel**
 1. The player's intel panel (FEAT-8000, out of this Feature's scope to render) reads this
@@ -53,7 +57,7 @@ FR-2100, FR-2200, FR-2300, FR-2400.
 |---|---|---|
 | W1 | AP deducted, tasking recorded. | Insufficient AP: rejected before mutation (same discipline as FS-102's deploy action — this Feature's tasking action is gated the same way). Tasking an offline sensor (FS-102's pre-online block): rejected, per FR-3500 (cross-Feature dependency, not re-specified here). |
 | W2 | Precision advances up to the sensor's capability ceiling. | Tasking a Find-only sensor repeatedly: precision never exceeds `'find'`, regardless of how many turns are spent — this is the doctrinal core of the F2T2E gating (SOR §7.3), not a bug to fix later. Tasking against a target already at the sensor's ceiling: no-op (the reading is refreshed — `lastUpdatedTurn` updates — but precision doesn't change), which matters because a player might re-task purely to reset staleness (W3), a legitimate strategy this spec doesn't forbid. |
-| W3 | Stale entries degrade by one precision level. | An entry already at `'find'` (the floor) that goes stale: this spec does not specify whether it degrades further to "no entry at all" (the contact reverts to fully unknown) or floors at `'find'` indefinitely — flagged as an Open Question, since it changes what the intel panel shows for a long-neglected contact. |
+| W3 | Stale entries (>5 turns since `lastUpdatedTurn`) degrade by one precision level. | An entry already at `'find'` that goes stale is removed entirely (reverts to fully unknown), not floored — resolved 2026-08-22 by owner decision. |
 | W4 | Precision/staleness rendered accurately. | N/A for this Feature (FEAT-8000's own rendering correctness is that Feature's contract, not this one's — this Feature's contract ends at producing a correct `BeliefStateEntry`). |
 
 ## Module Responsibilities
@@ -85,7 +89,9 @@ dependency, not a modification of FS-102's own data ownership.
 `BeliefStateEntry.precision`: advances (W2) or degrades (W3) by exactly one level per event; never
 jumps more than one level in either direction in a single operation (a design implication of the
 gated-by-capability/gated-by-decay-rate model, not stated as a separate requirement but necessary
-for FR-2200/2300 to compose correctly — flagged in Risks as an assumption worth confirming at `07`).
+for FR-2200/2300 to compose correctly — flagged in Risks as an assumption worth confirming at `07`),
+**except** the `'find'`-level removal case (W3), which is a deletion, not a level-decrement.
+`BeliefStateEntry` (whole record): removed when a `'find'`-level entry goes stale (>5 turns).
 `BeliefStateEntry.lastUpdatedTurn`: set on every successful tasking (W1/W2), read by W3.
 
 ## Error Handling
@@ -117,8 +123,8 @@ distinct from FEAT-6000's transport-security invariant, and tested separately fr
 1. Tasking a sensor deducts 1 AP and records/updates the correct `BeliefStateEntry`.
 2. Precision never exceeds the tasking sensor's `chainRoles` ceiling, regardless of repeated
    tasking.
-3. An entry not refreshed for the (TBD) staleness window degrades by one precision level per
-   decay cycle.
+3. An entry not refreshed within 5 turns of its `lastUpdatedTurn` degrades by one precision level;
+   an entry already at `'find'` that goes stale is removed entirely rather than degrading further.
 4. Tasking an offline sensor, or one with no relevant `chainRoles`, is rejected with a
    distinguishable reason from a legitimate ceiling-reached no-op.
 
@@ -141,20 +147,9 @@ primary read dependency on that spec).
 - Otherwise low — this Feature's logic is well-bounded and the catalog already rates it Medium
   complexity for exactly the reason named in Open Questions (the decay rate, not the mechanism).
 
-## Open Questions
-
-- **CR-01** (carried from `04-requirements-engineering`): the exact staleness/decay window (how
-  many turns before a downgrade). Matters because W3 cannot be fully specified numerically without
-  it. Resolved by: `06-feature-specification` per its own numeric-tuning-refinement scope — since
-  this spec is itself `06`'s output, recommend the owner supply this number now (same posture as
-  CR-02 was resolved) rather than leaving it open past this stage, given it's the last blocking
-  gap in this Feature's own completeness.
-- **Floor behavior at `'find'`** (new, this spec): whether a stale `'find'`-level entry degrades
-  to no-entry-at-all or floors indefinitely at `'find'`. Matters for what the intel panel shows for
-  a long-neglected contact. Resolved by: `06-feature-specification` (a small addendum once CR-01's
-  numeric window is set) or `07-implementation-planning` if genuinely low-stakes enough not to need
-  another owner round-trip — recommend bundling this with CR-01's resolution rather than a
-  separate question.
+- ~~**CR-01** — staleness/decay window~~ **Resolved 2026-08-22 by owner decision: 5 turns.**
+- ~~**Floor behavior at `'find'`**~~ **Resolved 2026-08-22 by owner decision: reverts to fully
+  unknown (removed), not floored.**
 
 ## Related ADRs
 

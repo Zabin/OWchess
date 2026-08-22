@@ -75,12 +75,12 @@ follow it directly rather than re-deriving new ones. Every FR/NFR is owned by ex
 - **Related ADRs:** none.
 - **User Value:** High — this is the core "detective work" loop the game's entire pitch rests on.
 - **Technical Value:** High.
-- **Complexity:** Medium — the precision-gating logic is straightforward; the decay mechanism's
-  exact numeric rate is still an open Candidate Requirement (CR-01).
-- **Risk:** Low — well-bounded mechanic, no numeric value baked in yet that could silently mislead
-  (CR-01 is explicitly still open, not guessed).
+- **Complexity:** Low *(revised down from Medium, 2026-08-22)* — the precision-gating logic is
+  straightforward and the decay mechanism's numeric rate is now resolved (FS-103 §W3: 5 turns,
+  `'find'`-level removal).
+- **Risk:** Low.
 - **Suggested Verification Strategy:** Test.
-- **Open Questions:** CR-01 (belief-state decay rate) — genuinely open, owned by `06`.
+- **Open Questions:** none — CR-01 resolved 2026-08-22, see FS-103 §W3.
 
 ### FEAT-3000 — Asset Roster & Mission Sets
 
