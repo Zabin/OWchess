@@ -17,6 +17,5 @@ reason) → `IN PIPELINE` → `DONE`. "We'll get to it" with no trigger is not a
 
 | ID | Filed | Type | Summary | Sev/Pri | Entry stage | Disposition | Status |
 |---|---|---|---|---|---|---|---|
-
-*(empty — this is the pipeline's initial state; the first entries will be filed once `01-vision`
-or a later stage surfaces a finding, or `00-intake` files a request)*
+| BL-0001 | 2026-08-21, GDS-01 (`docs/architecture/01-concept-of-operations.md`, OQ-11) | design-question | Whether maneuver/deploy transfer-time counts in the mover's own turns or in elapsed game-turns including the opponent's — ambiguous in GDS-01, needs a load-bearing decision before the data model can be built. | Medium | `03` | SCHEDULED — rides with the next `03-architecture-design-synthesis` pass (GDS-03 Architecture, before its own gate closes) | NEW |
+| BL-0002 | 2026-08-21, GDS-01 (`docs/architecture/01-concept-of-operations.md`, OQ-12) | design-question | Whether passive detection (a player noticing they're being searched for, per SOR Appendix B's worked example) is a server-computed "detectability" signal or pure human inference from earned belief-state — affects whether `BeliefState`/`EffectResolver` need a detectability computation. | Medium | `03` | SCHEDULED — rides with the next `03-architecture-design-synthesis` pass (GDS-03 Architecture, before its own gate closes) | NEW |
