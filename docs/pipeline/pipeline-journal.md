@@ -2,14 +2,13 @@
 
 ## Position
 
-- **Updated:** 2026-08-21 (run #10)
-- **Increment:** Bootstrap increment continues — GDS-01 through GDS-07 authored and gate-closed.
-- **Pipeline state:** `00` — manager iterating. `03` — GDS-07 (Data Model) authored, adopting
-  R-203's regime taxonomy and making the fog-of-war boundary a structural type distinction. GDS-08
-  onward not yet authored, including the flagged BL-0004 tension for GDS-08/09.
-- **Backlog:** 2 open — BL-0004 (`SCHEDULED` for GDS-08/09, due now), BL-0005 (`DEFERRED`).
-- **Next step:** `03-architecture-design-synthesis` again — GDS-08 (Presentation Architecture),
-  resolving BL-0004 as part of that pass.
+- **Updated:** 2026-08-21 (run #11)
+- **Increment:** Bootstrap increment continues — GDS-01 through GDS-08 authored and gate-closed.
+- **Pipeline state:** `00` — manager iterating. `03` — GDS-08 (Presentation Architecture) authored,
+  mapping the SOR panel inventory onto the confirmed ZabOW reference and resolving BL-0004. GDS-09
+  and GDS-10 remain.
+- **Backlog:** 1 open — BL-0005 (`DEFERRED`, trigger: `Propagator`'s numerical implementation).
+- **Next step:** `03-architecture-design-synthesis` again — GDS-09 (Interface Specification).
 - **Open gates:** none currently blocking.
 - **Next step:** `03-architecture-design-synthesis` again — GDS-07 (Data Model), now grounded by
   R-203's 9-regime recommendation.
@@ -29,3 +28,4 @@
 | 8 | 2026-08-21 | iterate (`00-pipeline-manager`) | `03-architecture-design-synthesis` | `docs/architecture/06-non-functional-requirements.md` (GDS-06) | Grouped NFRs, stated the test-coverage bar, flagged the NFR-4002/server-authority tension for GDS-08/09 (harvested as BL-0004). Recognized BL-0003/OQ-13 is now due before GDS-07 can proceed. | `02-research-orbital-and-tooling` (BL-0003/OQ-13, due now), then GDS-07 (Data Model). |
 | 9 | 2026-08-21 | iterate (`00-pipeline-manager`) | `02-research-orbital-and-tooling` | `docs/research/INDEX.md`, `docs/research/R-203-regime-plane-class-taxonomy.md` | Authored R-203, grounding a recommended 9-value regime taxonomy (3 altitude bands x 3 plane classes) in real Kepler/J2 facts, resolving BL-0003/OQ-13 (flipped `DONE`). Flagged a single-sourced formula as BL-0005, deferred until `Propagator`'s numerical implementation. | `03-architecture-design-synthesis` again — GDS-07 (Data Model), now grounded. |
 | 10 | 2026-08-21 | iterate (`00-pipeline-manager`) | `03-architecture-design-synthesis` | `docs/architecture/07-data-model.md` (GDS-07) | Defined SessionState/PlayerState/Asset/BeliefStateEntry/EffectStateEntry/EventRecord shapes, adopted R-203's regime taxonomy, made the fog-of-war boundary a structural type distinction (OpponentView vs. PlayerState). No new findings. | `03-architecture-design-synthesis` again — GDS-08 (Presentation Architecture), resolving BL-0004. |
+| 11 | 2026-08-21 | iterate (`00-pipeline-manager`) | `03-architecture-design-synthesis` | `docs/architecture/08-presentation-architecture.md` (GDS-08) | Mapped SOR panel inventory onto the ZabOW reference, designed turn-change UX, resolved BL-0004 (bounded client-side legality-rule copy). Flipped `DONE`. | `03-architecture-design-synthesis` again — GDS-09 (Interface Specification). |
