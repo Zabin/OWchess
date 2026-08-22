@@ -45,14 +45,14 @@ candidate module the requirement will land in once `05`/`06`/`07` assign real wo
 | FR-6200 | Belief-filtered outbound messages only | — | GDS-06, GDS-09 | — | BeliefState, GameEngine | UNASSIGNED | UNASSIGNED | UNASSIGNED |
 | FR-7100 | WebSocket push notifications | — | GDS-02 | ADR-0001 | WS transport | UNASSIGNED | UNASSIGNED | UNASSIGNED |
 | FR-7200 | Server sole authority | — | GDS-02, GDS-08 | — | GameEngine | UNASSIGNED | UNASSIGNED | UNASSIGNED |
-| FR-7300 | Disconnect/reconnect handling | — | GDS-01 (CR-02) | — | GameEngine, WS transport | UNASSIGNED | UNASSIGNED | UNASSIGNED |
+| FR-7300 | Disconnect/reconnect handling | — | GDS-01, FS-101 §W7 | — | GameEngine, WS transport | FS-101 | UNASSIGNED | UNASSIGNED |
 | FR-8100 | Render the panel set | — | GDS-08 | — | client UI | UNASSIGNED | UNASSIGNED | UNASSIGNED |
 | FR-8200 | Visual distinction of contact types | — | GDS-08 | — | client UI | UNASSIGNED | UNASSIGNED | UNASSIGNED |
 | FR-8300 | Cost/time-to-online shown before commit | — | GDS-08 | — | client UI | UNASSIGNED | UNASSIGNED | UNASSIGNED |
 | FR-8400 | Current AP always visible | — | GDS-08 | — | client UI | UNASSIGNED | UNASSIGNED | UNASSIGNED |
 | FR-8500 | Visible event log | — | GDS-07, GDS-08 | — | client UI | UNASSIGNED | UNASSIGNED | UNASSIGNED |
 | CR-01 | Belief-state decay rate | — | GDS-07 (mechanism only) | — | — | CANDIDATE — NOT BASELINED | — | — |
-| CR-02 | Disconnect/reconnect grace period | — | GDS-01 (mechanism only) | — | — | CANDIDATE — NOT BASELINED | — | — |
+| ~~CR-02~~ | ~~Disconnect/reconnect grace period~~ | — | — | — | — | **Resolved into FR-7300, 2026-08-22 — no longer a candidate.** | — | — |
 | CR-03 | Maneuver fuel-budget/transfer-time table | — | GDS-03/09 (mechanism only) | — | — | CANDIDATE — NOT BASELINED, pending R-201/202 | — | — |
 | NFR-1100 | Turn-notification latency budget | — | GDS-06 | ADR-0001 | WS transport | UNASSIGNED | UNASSIGNED | UNASSIGNED |
 | NFR-1200 | Propagation efficiency | — | GDS-06 | — | Propagator | UNASSIGNED | UNASSIGNED | UNASSIGNED |

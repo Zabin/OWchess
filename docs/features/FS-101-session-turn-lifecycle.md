@@ -68,6 +68,19 @@ this spec implements them; they constrain how this Feature is *built and verifie
    (FR-1420).
 4. If any condition fires, set `phase: 'ended'` and record the winner (or draw).
 
+**W7 — Disconnect mid-game** *(added 2026-08-22, resolving CR-02)*
+1. The server detects one player's WebSocket connection closing while `phase: 'active'`.
+2. The still-connected player's client is notified of the disconnect and presented two options:
+   **keep waiting** or **cancel the session**.
+3. If they choose to wait: nothing else happens — no timer starts, the session simply stays
+   `'active'` with the disconnected player's turn (if it was theirs) unresolved, exactly as if
+   they were thinking. If the disconnected player reconnects, play resumes normally.
+4. If they choose to cancel: the server ends the session. This is **not** a resignation (FR-1410)
+   — no winner is recorded, since the connected player chose to stop rather than the disconnected
+   player conceding. `phase` becomes `'ended'` with a distinct outcome value (e.g. `'cancelled'`)
+   from `'resigned'`/`'destroyed'`/`'denied'`/`'timeout'`, so the event log and any future stats
+   correctly distinguish "the game was called off" from an actual win/loss.
+
 ## System Behaviour
 
 | Workflow step | Normal path | Edge case(s) |
@@ -78,6 +91,7 @@ this spec implements them; they constrain how this Feature is *built and verifie
 | W4 | Player spends AP across 1+ actions, then passes or exhausts AP. | The non-active player submits any action: rejected outright (FR-1330), no partial effect, active player's state unaffected. A submitted action would cost more AP than remains: rejected (a legality check this Feature owns, distinct from the action's own domain-level legality checked by its owning module). |
 | W5 | Game ends, opponent wins. | Resignation submitted by a player not in the session, or after `phase: 'ended'`: rejected (guarded by ordinary session/phase validation, not a new mechanic). |
 | W6 | Exactly one win condition fires per check (destruction and denial-duration are mutually exclusive within one check, since destruction removes the King the denial tracker was tracking). | Two win conditions could theoretically be satisfiable in the same check (e.g. destruction fires exactly when the 60-turn cap is also reached) — destruction takes precedence, since it is checked first (W6 step 1) and immediately sets `phase: 'ended'`, short-circuiting the later checks. This ordering is this spec's own decision, not yet stated upstream — flagged in Open Questions for confirmation at `07`. |
+| W7 | The disconnected player reconnects before the connected player decides anything; play resumes with no visible interruption beyond the notification having been shown and dismissed. | The connected player chooses to cancel: session ends as `'cancelled'`, no winner. Both players disconnect simultaneously (or in close succession): no one is present to receive the "still-connected player" notification or make the wait/cancel choice — the session simply sits `'active'` and stalled until *either* reconnects and is offered the same choice about the other. |
 
 ## Module Responsibilities
 
@@ -108,7 +122,9 @@ already defines — this spec adds no schema.
 
 ## State Changes
 
-`SessionState.phase`: `'deploying'` → `'active'` (W3) → `'ended'` (W5 or W6).
+`SessionState.phase`: `'deploying'` → `'active'` (W3) → `'ended'` (W5, W6, or W7's cancel path).
+`'ended'` carries an outcome value distinguishing `'resigned'`/`'destroyed'`/`'denied'`/
+`'timeout'` (all have a recorded winner) from `'cancelled'` (W7, no winner).
 `SessionState.activeTurn`: flips on every `TurnManager.advanceTurn()` call (W4 step 5).
 `PlayerState.apRemaining`: reset to 5 at the start of each of that player's turns (no carryover,
 per the requirements baseline's tuning table); decremented by each accepted action's AP cost
@@ -119,12 +135,17 @@ per the requirements baseline's tuning table); decremented by each accepted acti
 - **Over-capacity join** (W2 edge case): rejected with a stated reason, per FR-1121.
 - **Out-of-turn action** (W4 edge case): rejected, per FR-1330; the rejection is visible to the
   submitting client (`RejectedActionMessage`) so it isn't mistaken for a dropped message.
-- **Disconnect mid-turn**: **Open Question** (CR-02, below) — the exact grace-period/forfeit
-  policy is not decided by any upstream artifact yet. This spec can state the mechanism-shape
-  requirement (the turn loop must have a well-defined "stalled" state distinguishable from a
-  normal wait, per GDS-01) but not the numeric grace period or forfeit trigger.
+- **Disconnect mid-game** *(resolved 2026-08-22, owner decision — see W7 and CR-02's disposition
+  below)*: **no grace period, no automatic forfeit or auto-pass, no timeout of any kind.** On
+  detecting a disconnect (WebSocket close on either connection), the server notifies the *still-
+  connected* player and offers them a choice: keep waiting (indefinitely — matches this project's
+  own no-pre-start-timeout precedent, applied consistently to mid-game as well) or cancel the
+  session. Only the connected player's choice matters here — the disconnected player has, by
+  definition, no way to respond. The turn loop's "stalled" state (GDS-01) is this notification,
+  not a hidden timer.
 - **Session with no second joiner**: not an error — an indefinite, valid `'deploying'` state
-  (SOR explicitly names no pre-start timeout as a requirement).
+  (SOR explicitly names no pre-start timeout as a requirement) — the mid-game disconnect policy
+  above is the same philosophy applied consistently after the game has started.
 
 ## Performance Considerations
 
@@ -187,17 +208,17 @@ FS's responsibility to produce correctly; this spec only consumes them.
   builds before FEAT-8000 but this Feature builds first of all; `07-implementation-planning`
   should ensure FEAT-1000's win-check code isn't exercised end-to-end until FEAT-4000 exists, or
   is stubbed/tested with fakes until then).
-- **CR-02 (disconnect policy)** — genuinely unresolved; ships as an Open Question, not a guessed
-  answer.
+- **W7's notification/choice UI** relies on FEAT-7000's transport layer being able to push a
+  disconnect notification to the *other* client — a small, new WebSocket message shape (not one
+  of GDS-09's existing three) that FEAT-7000's own spec needs to add. Flagged for that Feature's
+  FS to pick up, not invented here.
 
 ## Open Questions
 
-- **CR-02** (carried from `04-requirements-engineering`'s Candidate Requirements): the exact
-  disconnect/reconnect grace-period duration and forfeit-on-timeout policy. Matters because W4's
-  "stalled turn" state and FR-7300's reconnect handling can't be fully specified without it.
-  Resolved by: the owner, at this same `06-feature-specification` stage (per the requirements
-  baseline's own routing) — recommend surfacing this as a direct question rather than deferring
-  further, since it's the last unresolved item blocking this Feature's error-handling completeness.
+- ~~**CR-02** — disconnect/reconnect policy~~ **Resolved 2026-08-22 by owner decision:** no grace
+  period, no automatic forfeit/auto-pass/timeout. On disconnect, notify the still-connected player
+  and let them choose to keep waiting (indefinitely) or cancel the session (ends `'cancelled'`,
+  no winner — distinct from resignation). See W7 above.
 - **Win-condition check ordering** (new, this spec): when destruction and the timeout/tiebreak
   could both fire in the same check, this spec assigns destruction precedence (checked first, W6
   step 1) as a reasonable but not upstream-mandated default. Matters because a different ordering

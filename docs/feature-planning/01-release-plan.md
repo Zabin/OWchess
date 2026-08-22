@@ -67,10 +67,10 @@ flag as genuinely optional within v1's own scope.
 
 ## Deferred
 
-**CR-01, CR-02, CR-03** (the three Candidate Requirements `04` left open) are the only deferred
-items with any current traceability — each rides along with its owning Feature (FEAT-2000,
-FEAT-1000/7000, FEAT-5000 respectively) as an Open Question, to be resolved at `06-feature-
-specification`, not blocking this release plan.
+**CR-01 and CR-03** (of the three Candidate Requirements `04` left open) remain deferred, riding
+along with FEAT-2000 and FEAT-5000 respectively as Open Questions for `06-feature-specification`.
+**CR-02 was resolved 2026-08-22** (owner decision, specified in FS-101 §W7 — no grace period;
+notify-and-choose wait/cancel) and is no longer deferred.
 
 ## Recommended build sequence
 

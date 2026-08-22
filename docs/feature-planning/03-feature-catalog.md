@@ -44,8 +44,8 @@ follow it directly rather than re-deriving new ones. Every FR/NFR is owned by ex
   defect, not a cosmetic one.
 - **Suggested Verification Strategy:** Test — deterministic given a fixed action sequence
   (NFR-2100 exists specifically to make this testable).
-- **Open Questions:** CR-02 (disconnect/reconnect grace period) belongs here once `06` adopts a
-  concrete policy.
+- **Open Questions:** none — CR-02 (disconnect/reconnect policy) resolved 2026-08-22 by owner
+  decision, specified in FS-101 §W7 (no grace period; notify-and-choose wait/cancel).
 - **Notes:** NFR-5200 (pipeline compliance), NFR-8100 (test-coverage bar), and NFR-9100
   (reproducible build) are project-wide process requirements, not features of the shipped game —
   bookkept on this foundational Feature per the catalog's "every NFR owned by exactly one Feature"
@@ -226,11 +226,12 @@ follow it directly rather than re-deriving new ones. Every FR/NFR is owned by ex
 - **Technical Value:** High.
 - **Complexity:** Medium — WebSocket reconnection semantics are a known, bounded problem space,
   not a novel one.
-- **Risk:** Medium — CR-02 (disconnect grace period) is a real open design question that could
-  reshape this Feature's exact reconnection behavior once `06` decides it.
+- **Risk:** Low *(revised down from Medium, 2026-08-22)* — CR-02 resolved (FS-101 §W7): no grace
+  period/timer logic to get wrong, only a notify-and-choose flow and a new WebSocket message
+  shape for the disconnect notification (flagged in FS-101's Risks for this Feature's own FS to
+  pick up).
 - **Suggested Verification Strategy:** Test.
-- **Open Questions:** CR-02 (owned by `06`, shared with FEAT-1000 — see that Feature's own note;
-  listed here too since it directly shapes this Feature's reconnection contract).
+- **Open Questions:** none — CR-02 resolved, see FEAT-1000's note and FS-101 §W7.
 
 ### FEAT-8000 — Presentation / UI
 
