@@ -15,7 +15,7 @@ owned by `01-vision`).
 | GDS-06 | Non-Functional Requirements level — [`06-non-functional-requirements.md`](06-non-functional-requirements.md) | `03-architecture-design-synthesis` | ✅ Authored 2026-08-21 — gate closed; flagged NFR-4002/server-authority tension for GDS-08/09 |
 | GDS-07 | Data Model — [`07-data-model.md`](07-data-model.md) | `03-architecture-design-synthesis` | ✅ Authored 2026-08-21 — gate closed |
 | GDS-08 | Presentation Architecture — [`08-presentation-architecture.md`](08-presentation-architecture.md) | `03-architecture-design-synthesis` | ✅ Authored 2026-08-21 — gate closed; resolved BL-0004 |
-| GDS-09 | Interface Specification | `03-architecture-design-synthesis` | ⛔ Planned |
+| GDS-09 | Interface Specification — [`09-interface-specification.md`](09-interface-specification.md) | `03-architecture-design-synthesis` | ✅ Authored 2026-08-21 — gate closed |
 | GDS-10 | Requirements Traceability Matrix level | `03-architecture-design-synthesis` | ⛔ Planned |
 
 Also in this directory:
