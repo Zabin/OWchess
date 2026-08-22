@@ -11,8 +11,8 @@
 | IP-1010 | FS-101 | `08-code-implementation` | **VERIFIED** (2026-08-22, VR-1010-v2) | IP-0010 (VERIFIED) | Release plan (FEAT-1000, MVP) |
 | IP-3010 | FS-102 (code) | `08-code-implementation` | **VERIFIED** (2026-08-22, VR-3010) | IP-0010, IP-1010 (both VERIFIED) | Release plan (FEAT-3000, MVP) |
 | IP-3011 | FS-102 (content) | `08-content-authoring` | **VERIFIED** (2026-08-22, VR-3011) | IP-3010 (VERIFIED) | Release plan (FEAT-3000, MVP) |
-| IP-2010 | FS-103 | `08-code-implementation` | **COMPLETE** (re-submitted 2026-08-22 after VR-2010's RETURNED result) | IP-0010, IP-1010, IP-3010, IP-3011 | Release plan (FEAT-2000, MVP) |
-| IP-5010 | FS-104 | `08-code-implementation` | **COMPLETE** (2026-08-22) | IP-0010, IP-1010, IP-3010, IP-3011 | Release plan (FEAT-5000, MVP) |
+| IP-2010 | FS-103 | `08-code-implementation` | **VERIFIED** (2026-08-22, VR-2010-v2) | IP-0010, IP-1010, IP-3010, IP-3011 (all VERIFIED) | Release plan (FEAT-2000, MVP) |
+| IP-5010 | FS-104 | `08-code-implementation` | **VERIFIED** (2026-08-22, VR-5010) | IP-0010, IP-1010, IP-3010, IP-3011 (all VERIFIED) | Release plan (FEAT-5000, MVP) |
 | IP-6010 | FS-106 | `08-code-implementation` | **COMPLETE** (2026-08-22) | IP-0010, IP-2010 | Release plan (FEAT-6000, MVP) |
 | IP-4010 | FS-105 (code) | `08-code-implementation` | BLOCKED | IP-0010, IP-2010, IP-6010 | Release plan (FEAT-4000, MVP) |
 | IP-4011 | FS-105 (content) | `08-content-authoring` | BLOCKED | IP-4010 | Release plan (FEAT-4000, MVP) |
@@ -116,6 +116,48 @@ pre-spend rejection check (and a regression test) before re-verification. No pac
 `READY` from this VR: IP-6010/IP-4010 remain `BLOCKED`, now explicitly gated on IP-2010's
 fix-and-reverify cycle rather than merely on "awaiting first pass."
 
+**IP-5010 is now `VERIFIED`** (2026-08-22 — see [VR-5010](verification/VR-5010-propagator.md)). A
+fresh, independent session (no involvement in implementing IP-5010) read `Propagator.ts` in full
+and independently hand-re-derived FS-104's worked example (`LEO-EQUATORIAL → GEO-POLAR` = 11 fuel
+/ 5 turns) directly from FS-104's raw Maneuver Cost Table formula — not from the code or the
+regression test — and cross-checked every populated cell of `ALTITUDE_COST`/`PLANE_COST` against
+FS-104's two source tables: all matched, both directions of every pair, with the 25%
+combined-maneuver discount and `Math.floor` rounding applied correctly and only when both axes
+change. This closes a real gap in the package's own Analysis checklist item, which had relied
+solely on the regression test matching FS-104's prose rather than an independent re-derivation
+(Low, non-blocking finding). Both disclosed notes — BL-0030 (the `createGameEngine.ts` composition
+root, not named by any package's Files to Create list) and BL-0031 (maneuver AP is deducted but the
+Maneuver Cost Table's `fuelCost` is not yet gated against any fuel-analog budget field, since none
+exists yet on `Asset` or any content template) — were independently confirmed accurate against the
+code. Build clean; full suite green (60 tests, up from the package's own claimed 52 purely because
+a later, unrelated IP-2010 post-verification fix commit landed more tests after IP-5010 — Low,
+non-blocking finding, same drift pattern noted in VR-2010/VR-3011). All 7 Requirements Covered rows
+(FR-5100/5200/5300/5400/5500, NFR-1200, NFR-5300) trace correctly in the RTM to real code and
+tests/Inspection. **No package flips to `READY` from this VR**: IP-8010 (the only package naming
+IP-5010 as a dependency) needs all ten other packages `VERIFIED` first, and several (IP-2010,
+IP-6010, IP-4010, IP-4011, IP-7010) are not yet there.
+
+**IP-2010 is now `VERIFIED`** (2026-08-22 — see
+[VR-2010-v2](verification/VR-2010-sensing-f2t2e-v2.md)), superseding the earlier `RETURNED`
+[VR-2010](verification/VR-2010-sensing-f2t2e.md) result. A fresh, independent session (no
+involvement in the fix or in VR-2010) confirmed VR-2010's sole Critical finding (F1: an
+effector-only asset silently succeeded a tasking action, no rejection, AP spent) is genuinely
+fixed: `hasSensorCapability(chainRoles)` re-derives the real capability-ceiling logic (not a stub)
+and `taskAction.ts`'s `makeTaskHandler` now calls it and rejects, with a clear reason, strictly
+before `assertOnline`/AP-spend — confirmed both by direct line-order code reading and by this
+session's own live re-exercise of the exact original failing scenario (`chainRoles: ['engage']`
+through the real `GameEngine.handleAction('task', ...)` path), which now correctly rejects with
+zero AP spent and zero belief entries. The two new committed regression tests correctly distinguish
+the rejection from the legitimate ceiling-reached no-op refresh; this session additionally
+live-confirmed a previously-untested full-chain (`target`-ceiling) case was not broken by the fix.
+Full Definition of Done/Verification Checklist re-derived from scratch; build clean; full suite
+green (54 tests, exactly matching the package's own claim). No findings. **IP-6010's blocking
+dependencies (IP-0010, IP-2010) are both now `VERIFIED`** — IP-6010 itself was found already
+`COMPLETE` in the tree at verification time (a concurrent session's implementation work, the same
+pattern already seen with IP-5010), so it is now the next package eligible for its own
+`09-package-verification` pass; this VR did not itself audit IP-6010's implementation. IP-4010
+remains `BLOCKED` (still needs IP-6010 `VERIFIED`).
+
 ## Dependency graph
 
 ```
@@ -142,10 +184,9 @@ IP-2010/IP-6010's own sequence, converging only at IP-8010.
 
 ## Next action
 
-**IP-2010** (critical-path package) needs to return to `08-code-implementation` to fix VR-2010's
-Critical finding F1 (tasking a sensor with no relevant `chainRoles` silently succeeds and spends AP
-instead of being rejected) and then go through a fresh `09-package-verification` pass. Separately,
-`09-package-verification` on **IP-5010** remains available next — it is `COMPLETE`, has every named
-blocking dependency (IP-0010, IP-1010, IP-3010, IP-3011) `VERIFIED`, and is independently checkable
-in parallel with IP-2010's fix cycle. IP-6010/IP-4010/IP-4011/IP-7010/IP-8010 remain `BLOCKED` on
-further downstream dependencies regardless.
+**IP-5010 and IP-2010 are both `VERIFIED`** (see VR-5010 and VR-2010-v2 above) — no further action
+needed on either; both remain hard prerequisites of IP-8010 (IP-2010 also of IP-6010/IP-4010/
+IP-7010 downstream). **IP-6010** (found already `COMPLETE` in the tree, implemented concurrently)
+now has both its named blocking dependencies (IP-0010, IP-2010) `VERIFIED` — it is the next
+package due for its own `09-package-verification` pass. IP-4010/IP-4011/IP-7010/IP-8010 remain
+`BLOCKED`, gated on IP-6010's own verification.
