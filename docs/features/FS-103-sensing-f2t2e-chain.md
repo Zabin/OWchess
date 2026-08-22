@@ -2,7 +2,8 @@
 
 - **Feature ID:** FS-103 (from **FEAT-2000**, `docs/feature-planning/03-feature-catalog.md`)
 - **Status:** ✅ Authored, 2026-08-22 · **Owned by:** `06-feature-specification` · **Epic:** EP-1000 (Core Game Engine)
-- **Implemented by:** [IP-2010](../implementation/packages/IP-2010-sensing-f2t2e.md)
+- **Implemented by:** [IP-2010](../implementation/packages/IP-2010-sensing-f2t2e.md) (COMPLETE,
+  awaiting `09-package-verification`)
 
 ## Purpose
 

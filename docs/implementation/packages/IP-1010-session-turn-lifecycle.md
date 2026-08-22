@@ -92,9 +92,11 @@ FS-101's metadata: add `**Implemented by:** IP-1010`. Traceability matrix: mark 
 Implementing win-condition checks (FR-1420's tiebreak specifically) surfaced that GDS-07's
 `Asset` shape had no field for *cumulative* denial-turns, distinct from `consecutiveDenialTurns`
 (BL-0015's stored streak, which resets on a clean turn). Added `totalDenialTurns: number` and
-`destroyed: boolean` to `shared/src/types.ts` (the latter needed since GDS-07 leaves Destroy's
-exact mechanism — removal vs. flag — as an implementation choice, and a flag fits this session's
-single-King-field `PlayerState.king` shape better than array removal). Filed as BL-0021 for
+`destroyed: boolean` to `shared/src/types.ts` (the latter needed for Destroy's effect on the King
+specifically: GDS-07's Merge Gate commits to "removal, not a flag" for the general, array-stored
+`assets: Asset[]` case, but the King is stored in a distinct, single, non-array `PlayerState.king`
+field that can't be "removed from an array" — a flag is the only mechanism that shape supports for
+the King). Filed as BL-0021 for
 `07-implementation-planning`/GDS-07 to formally record the schema addition.
 
 ## Post-verification fix (VR-1010, 2026-08-22)

@@ -23,10 +23,10 @@ candidate module the requirement will land in once `05`/`06`/`07` assign real wo
 | FR-1405 | Destruction win | — | GDS-01, GDS-04 | — | GameEngine, EffectResolver | FS-101 | IP-1010 | GameEngine.winConditions.test.ts |
 | FR-1410 | Resignation | — | GDS-01 | — | GameEngine | FS-101 | IP-1010 | GameEngine.winConditions.test.ts |
 | FR-1420 | Timeout/tiebreak | — | GDS-01 | — | GameEngine | FS-101 | IP-1010 | GameEngine.winConditions.test.ts |
-| FR-2100 | Task a sensor | — | GDS-09 | — | BeliefState | UNASSIGNED | UNASSIGNED | UNASSIGNED |
-| FR-2200 | Precision gated by asset capability | — | GDS-04, GDS-09 | — | BeliefState | UNASSIGNED | UNASSIGNED | UNASSIGNED |
-| FR-2300 | Belief-state staleness/decay | — | GDS-07, FS-103 §W3 | — | BeliefState | FS-103 | UNASSIGNED | UNASSIGNED |
-| FR-2400 | Reflect precision/staleness to UI | — | GDS-08 | — | client UI | UNASSIGNED | UNASSIGNED | UNASSIGNED |
+| FR-2100 | Task a sensor | — | GDS-09 | — | BeliefState | FS-103 | IP-2010 | BeliefState.tasking.test.ts / taskAction.test.ts |
+| FR-2200 | Precision gated by asset capability | — | GDS-04, GDS-09 | — | BeliefState | FS-103 | IP-2010 | BeliefState.tasking.test.ts (ceiling cases) |
+| FR-2300 | Belief-state staleness/decay | — | GDS-07, FS-103 §W3 | — | BeliefState | FS-103 | IP-2010 | BeliefState.tasking.test.ts (decay cases) |
+| FR-2400 | Reflect precision/staleness to UI | — | GDS-08 | — | client UI | FS-103 | IP-8010 (pending) | UNASSIGNED |
 | FR-3100 | Data-driven asset templates | — | GDS-04 | — | content templates | FS-102 | IP-3010 (schema)/IP-3011 (content) | contentTemplates.test.ts |
 | FR-3200 | v1 roster support | R-203 | GDS-04 | — | content templates | FS-102 | IP-3011 | contentTemplates.test.ts |
 | FR-3300 | Ground/space cost-time asymmetry | — | GDS-04 (this doc's tuning table) | — | content templates | FS-102 | IP-3010 (mechanism) | deployAction.test.ts (ground-vs-space onlineAt case) |

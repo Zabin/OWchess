@@ -1,7 +1,7 @@
 # IP-2010 — Sensing & the F2T2E Chain
 
-- **Package ID:** IP-2010 · **Status:** BLOCKED (on IP-0010, IP-1010, IP-3010, IP-3011) ·
-  **Owning stage-08 peer:** `08-code-implementation`
+- **Package ID:** IP-2010 · **Status:** COMPLETE (2026-08-22) · **Owning stage-08 peer:**
+  `08-code-implementation`
 - **Source:** FS-103 (`docs/features/FS-103-sensing-f2t2e-chain.md`), FEAT-2000
 - **Authorization (G3):** Covered by the release plan.
 
@@ -58,15 +58,26 @@ FS-103 metadata: `**Implemented by:** IP-2010`.
 
 ## Definition of Done
 
-- [ ] All 4 Implementation Tasks complete; BL-0009's exact resolved behavior (5-turn window,
-      `'find'`-removal) passes as a named test case, not just an incidental one.
+- [x] All 4 Implementation Tasks complete; BL-0009's exact resolved behavior (5-turn window,
+      `'find'`-removal) passes as named test cases, not just incidental ones.
 
 ## Verification Checklist
 
-- [ ] **G5 gate:** build clean. **G5 gate:** full test suite passes.
-- [ ] FS-103 Acceptance Criteria mapped to passing tests.
-- [ ] Capability-ceiling enforcement verified for at least one sensor at each of the 3 non-`target`
-      ceilings (find/fix/track), not only the full-chain case.
+- [x] **G5 gate:** build clean. **G5 gate:** full test suite passes (38 total: 1 shared + 37
+      server, incl. this package's 9: `BeliefState.tasking.test.ts` ×7, `taskAction.test.ts` ×2).
+- [x] FS-103 Acceptance Criteria mapped to passing tests.
+- [x] Capability-ceiling enforcement verified for a `find`-only, a `fix`-ceiling, and a
+      `track`-ceiling sensor (three of `BeliefState.tasking.test.ts`'s 7 cases).
+
+## Deviation note
+
+GDS-09's `BeliefState.applyTasking(observer, sourceAsset, targetRegime, turnNumber)` has no
+parameter carrying the observer's own `PlayerState` (to read/write `beliefOfOpponent`) or the
+opponent's true state (to know what's actually present in `targetRegime` — tasking can't
+meaningfully resolve without it). Implemented with two additional parameters
+(`observerState: PlayerState`, `opponentTrueState: PlayerState`) rather than reaching into a
+session store from inside `BeliefState` itself (which would blur its module boundary). Filed as
+BL-0028 for `07-implementation-planning`/GDS-09 to reconcile the interface signature.
 
 ## Dependencies
 
