@@ -53,6 +53,7 @@ follow it directly rather than re-deriving new ones. Every FR/NFR is owned by ex
 
 ### FEAT-2000 — Sensing & the F2T2E Chain
 
+- **Specified by:** [FS-103](../features/FS-103-sensing-f2t2e-chain.md) (2026-08-22)
 - **Purpose:** Let a player advance their knowledge of the opponent through sensor tasking,
   gated by asset capability, decaying if not maintained.
 - **Description:** Task a sensor; advance belief precision along find→fix→track→target per the
