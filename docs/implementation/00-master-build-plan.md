@@ -7,8 +7,8 @@
 
 | Package | FS/BL | Owning 08 peer | Status | Blocking dependencies | G3 basis |
 |---|---|---|---|---|---|
-| IP-0010 | — (scaffold) | `08-code-implementation` | **COMPLETE** (2026-08-22) | none | Release plan (MVP needs a codebase) |
-| IP-1010 | FS-101 | `08-code-implementation` | BLOCKED | IP-0010 | Release plan (FEAT-1000, MVP) |
+| IP-0010 | — (scaffold) | `08-code-implementation` | **VERIFIED** (2026-08-22, VR-0010) | none | Release plan (MVP needs a codebase) |
+| IP-1010 | FS-101 | `08-code-implementation` | READY | IP-0010 (VERIFIED) | Release plan (FEAT-1000, MVP) |
 | IP-3010 | FS-102 (code) | `08-code-implementation` | BLOCKED | IP-0010, IP-1010 | Release plan (FEAT-3000, MVP) |
 | IP-3011 | FS-102 (content) | `08-content-authoring` | BLOCKED | IP-3010 | Release plan (FEAT-3000, MVP) |
 | IP-2010 | FS-103 | `08-code-implementation` | BLOCKED | IP-0010, IP-1010, IP-3010, IP-3011 | Release plan (FEAT-2000, MVP) |
@@ -19,10 +19,12 @@
 | IP-7010 | FS-107 | `08-code-implementation` | BLOCKED | IP-0010, IP-1010, IP-6010 | Release plan (FEAT-7000, MVP) |
 | IP-8010 | FS-108 | `08-code-implementation` | BLOCKED | all 10 above | Release plan (FEAT-8000, MVP) |
 
-**IP-0010 is `COMPLETE`** (implemented 2026-08-22; awaiting `09-package-verification` to advance
-it to `VERIFIED`). Every other package remains `BLOCKED` — `COMPLETE` is not sufficient to unblock
-a dependent (this skill's own rule: "`READY` means fully specified *and* every dependency
-`VERIFIED`"), so IP-1010/IP-3010/IP-2010/IP-5010 stay `BLOCKED` until IP-0010 is actually
+**IP-0010 is `VERIFIED`** (implemented 2026-08-22; independently verified 2026-08-22 by
+`09-package-verification` — see
+[VR-0010](verification/VR-0010-project-scaffold.md); 3 Low/Medium non-blocking findings recorded,
+none affecting the result). This unblocks its sole direct dependent: **IP-1010 is now `READY`**
+(fully specified and its only dependency, IP-0010, is `VERIFIED`). IP-3010/IP-2010/IP-5010/etc.
+remain `BLOCKED` — each still depends on packages (IP-1010 and beyond) that are not yet
 `VERIFIED`.
 
 ## Dependency graph
@@ -51,6 +53,5 @@ IP-2010/IP-6010's own sequence, converging only at IP-8010.
 
 ## Next action
 
-`09-package-verification` on **IP-0010** (now `COMPLETE`) — the only skill authorized to advance
-it to `VERIFIED`, which is what unblocks IP-1010 (and, in parallel, nothing else yet — IP-1010 is
-the sole direct dependent).
+`08-code-implementation` on **IP-1010** (now `READY` — its sole dependency, IP-0010, is
+`VERIFIED`) — the critical-path package for FS-101 (Session & Turn Lifecycle).
