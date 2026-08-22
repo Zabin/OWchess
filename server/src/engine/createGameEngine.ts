@@ -18,6 +18,8 @@ import { Propagator } from './Propagator.js';
 import { makeDeployHandler, tickDeployStates } from './deployAction.js';
 import { makeTaskHandler, registerBeliefDecay } from './taskAction.js';
 import { makeManeuverHandler, tickManeuvers } from './maneuverAction.js';
+import { makeEngageHandler } from './engageAction.js';
+import { EffectResolver } from './EffectResolver.js';
 import { loadContent } from '../content/loadContent.js';
 
 const TASK_AP_COST = 1;
@@ -29,15 +31,19 @@ export function createGameEngine() {
   loadContent(registry);
   const beliefState = new BeliefState();
   const propagator = new Propagator();
+  const effectResolver = new EffectResolver();
 
   const turnManagers = new Map<SessionId, TurnManager>();
   const turnManagerFor = (sessionId: SessionId): TurnManager => {
     let tm = turnManagers.get(sessionId);
     if (!tm) {
       tm = new TurnManager(store, sessionId);
-      tm.registerTurnEndHook((endingPlayer) => {
+      tm.registerTurnEndHook((endingPlayer, turnNumber) => {
         tickDeployStates(endingPlayer.assets);
         tickManeuvers([endingPlayer.king, ...endingPlayer.assets], propagator);
+        for (const asset of [endingPlayer.king, ...endingPlayer.assets]) {
+          effectResolver.tickActiveEffects(asset, turnNumber);
+        }
       });
       turnManagers.set(sessionId, tm);
       registerBeliefDecay(store, turnManagerFor, sessionId, beliefState);
@@ -48,6 +54,7 @@ export function createGameEngine() {
   engine.registerHandler('deploy', makeDeployHandler(store, turnManagerFor, registry));
   engine.registerHandler('task', makeTaskHandler(store, turnManagerFor, beliefState, TASK_AP_COST));
   engine.registerHandler('maneuver', makeManeuverHandler(store, turnManagerFor, propagator));
+  engine.registerHandler('engage', makeEngageHandler(store, turnManagerFor, effectResolver, beliefState));
 
-  return { store, engine, registry, beliefState, propagator, turnManagerFor };
+  return { store, engine, registry, beliefState, propagator, effectResolver, turnManagerFor };
 }

@@ -32,10 +32,10 @@ candidate module the requirement will land in once `05`/`06`/`07` assign real wo
 | FR-3300 | Ground/space cost-time asymmetry | — | GDS-04 (this doc's tuning table) | — | content templates | FS-102 | IP-3010 (mechanism) | deployAction.test.ts (ground-vs-space onlineAt case) |
 | FR-3400 | Deploy with cost deduction | — | GDS-07 | — | GameEngine | FS-102 | IP-3010 | deployAction.test.ts |
 | FR-3500 | Block pre-online use | — | GDS-07 | — | GameEngine | FS-102 | IP-3010 | deployAction.test.ts (assertOnline case) |
-| FR-4100 | Require targeting-quality data | — | GDS-09 | — | EffectResolver | UNASSIGNED | UNASSIGNED | UNASSIGNED |
-| FR-4200 | Apply the correct effect | — | GDS-04, GDS-07, GDS-09 | — | EffectResolver | UNASSIGNED | UNASSIGNED | UNASSIGNED |
-| FR-4300 | Cumulative Degrade | — | GDS-07 | — | EffectResolver | UNASSIGNED | UNASSIGNED | UNASSIGNED |
-| FR-4400 | Consecutive denial-turn tracking | — | GDS-01 (this doc's tuning table) | — | EffectResolver | UNASSIGNED | UNASSIGNED | UNASSIGNED |
+| FR-4100 | Require targeting-quality data | — | GDS-09 | — | EffectResolver | FS-105 | IP-4010 | EffectResolver.test.ts |
+| FR-4200 | Apply the correct effect | — | GDS-04, GDS-07, GDS-09 | — | EffectResolver | FS-105 | IP-4010 | EffectResolver.test.ts |
+| FR-4300 | Cumulative Degrade | — | GDS-07 | — | EffectResolver | FS-105 | IP-4010 | EffectResolver.test.ts (stacking case) |
+| FR-4400 | Consecutive denial-turn tracking | — | GDS-01 (this doc's tuning table) | — | EffectResolver | FS-105 | IP-4010 | EffectResolver.test.ts (denial-streak cases) |
 | FR-5100 | Real propagation | R-203, R-201 | GDS-03 | — | Propagator | FS-104 | IP-5010 | Propagator.propagation.test.ts |
 | FR-5200 | Discrete regime presentation | R-203 | GDS-07, GDS-09 | — | Propagator | FS-104 | IP-5010 | Propagator.propagation.test.ts |
 | FR-5300 | Maneuver within budget | R-201 | GDS-09 (this doc's tuning table) | — | Propagator | FS-104 | IP-5010 | Propagator.maneuverCost.test.ts |

@@ -14,7 +14,7 @@
 | IP-2010 | FS-103 | `08-code-implementation` | **VERIFIED** (2026-08-22, VR-2010-v2) | IP-0010, IP-1010, IP-3010, IP-3011 (all VERIFIED) | Release plan (FEAT-2000, MVP) |
 | IP-5010 | FS-104 | `08-code-implementation` | **VERIFIED** (2026-08-22, VR-5010) | IP-0010, IP-1010, IP-3010, IP-3011 (all VERIFIED) | Release plan (FEAT-5000, MVP) |
 | IP-6010 | FS-106 | `08-code-implementation` | **COMPLETE** (2026-08-22) | IP-0010, IP-2010 | Release plan (FEAT-6000, MVP) |
-| IP-4010 | FS-105 (code) | `08-code-implementation` | BLOCKED | IP-0010, IP-2010, IP-6010 | Release plan (FEAT-4000, MVP) |
+| IP-4010 | FS-105 (code) | `08-code-implementation` | **COMPLETE** (2026-08-22) | IP-0010, IP-2010, IP-6010 | Release plan (FEAT-4000, MVP) |
 | IP-4011 | FS-105 (content) | `08-content-authoring` | BLOCKED | IP-4010 | Release plan (FEAT-4000, MVP) |
 | IP-7010 | FS-107 | `08-code-implementation` | BLOCKED | IP-0010, IP-1010, IP-6010 | Release plan (FEAT-7000, MVP) |
 | IP-8010 | FS-108 | `08-code-implementation` | BLOCKED | all 10 above | Release plan (FEAT-8000, MVP) |

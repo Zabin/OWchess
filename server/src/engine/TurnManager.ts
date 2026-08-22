@@ -7,8 +7,11 @@ import type { SessionStore } from './SessionStore.js';
 
 const STARTING_AP = 5;
 
-/** A hook run against the ending player's state, once per turn-advance, before the switch. */
-export type TurnEndHook = (endingPlayer: PlayerState) => void;
+/** A hook run against the ending player's state, once per turn-advance, before the switch.
+ *  `turnNumber` is the session's turn count as of the hook call (pre-increment). Added by
+ *  IP-4010 (BL-0036): EffectResolver.tickActiveEffects needs the current turn to compute
+ *  elapsed-duration, which IP-3010's original hook signature didn't carry. */
+export type TurnEndHook = (endingPlayer: PlayerState, turnNumber: number) => void;
 
 export class TurnManager implements ITurnManager {
   private turnEndHooks: TurnEndHook[] = [];
@@ -67,7 +70,7 @@ export class TurnManager implements ITurnManager {
     const [a, b] = session.players;
     const ending = session.activeTurn === a.playerId ? a : b;
     const next = ending === a ? b : a;
-    for (const hook of this.turnEndHooks) hook(ending);
+    for (const hook of this.turnEndHooks) hook(ending, session.turnNumber);
     next.apRemaining = STARTING_AP;
     session.activeTurn = next.playerId;
     session.turnNumber += 1;

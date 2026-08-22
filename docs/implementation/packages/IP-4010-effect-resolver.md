@@ -1,6 +1,6 @@
 # IP-4010 — `EffectResolver` (the Five D's Mechanism)
 
-- **Package ID:** IP-4010 · **Status:** BLOCKED (on IP-0010, IP-2010) · **Owning stage-08 peer:**
+- **Package ID:** IP-4010 · **Status:** COMPLETE (2026-08-22) · **Owning stage-08 peer:**
   `08-code-implementation`
 - **Source:** FS-105 (`docs/features/FS-105-effect-resolution.md`), FEAT-4000 — mechanism portion
   (effect-definition parameters are IP-4011, `08-content-authoring`).
@@ -65,16 +65,29 @@ flips `DONE`.
 
 ## Definition of Done
 
-- [ ] All 3 Implementation Tasks complete; the Deceive/Destroy structural distinction verified by
-      a test that would fail if Deceive ever mutated true state.
-- [ ] Denial-streak tracker matches BL-0015's stored-field design.
+- [x] All 3 Implementation Tasks complete; the Deceive/Destroy structural distinction verified by
+      a test (`EffectResolver.test.ts`) that would fail if Deceive ever mutated true state.
+- [x] Denial-streak tracker matches BL-0015's stored-field design (`consecutiveDenialTurns`,
+      `totalDenialTurns`, both written by `tickActiveEffects`).
 
 ## Verification Checklist
 
-- [ ] **G5 gate:** build clean. **G5 gate:** full test suite passes.
-- [ ] FS-105 Acceptance Criteria mapped to passing tests.
-- [ ] Cross-checked against IP-1010's `FR-1420`/`FR-1405` consumers: the denial-streak field this
-      package writes is exactly what IP-1010's `checkWinConditions` reads (same field name/shape).
+- [x] **G5 gate:** build clean. **G5 gate:** full test suite passes (66 total: 1 shared + 65
+      server, incl. this package's 9 in `EffectResolver.test.ts`).
+- [x] FS-105 Acceptance Criteria mapped to passing tests.
+- [x] Cross-checked against IP-1010's `FR-1420`/`FR-1405` consumers: `GameEngine.checkWinConditions`
+      reads `king.destroyed`, `king.consecutiveDenialTurns`, `king.totalDenialTurns` — exactly the
+      fields `EffectResolver.resolveEngagement`/`tickActiveEffects` write, same names/shapes.
+
+## Deviation note
+
+`resolveEngagement`'s gating check reads the effector's own belief-of-opponent map for the
+target's precision — GDS-09's signature has no parameter for this (the same root cause BL-0028/
+BL-0033 already found in `BeliefState`'s methods). Implemented with an added
+`effectorObserverState: PlayerState` parameter. Also added a `turnNumber` parameter to
+`TurnManager.TurnEndHook` (BL-0036): `tickActiveEffects` needs the current turn to compute elapsed
+duration, which the hook signature IP-3010 introduced didn't carry — a small, additive,
+backward-compatible extension (existing hooks that ignore the second argument are unaffected).
 
 ## Dependencies
 
