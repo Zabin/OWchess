@@ -1,7 +1,7 @@
 # IP-2010 — Sensing & the F2T2E Chain
 
-- **Package ID:** IP-2010 · **Status:** COMPLETE (2026-08-22) · **Owning stage-08 peer:**
-  `08-code-implementation`
+- **Package ID:** IP-2010 · **Status:** COMPLETE (2026-08-22, re-submitted after VR-2010's
+  RETURNED result) · **Owning stage-08 peer:** `08-code-implementation`
 - **Source:** FS-103 (`docs/features/FS-103-sensing-f2t2e-chain.md`), FEAT-2000
 - **Authorization (G3):** Covered by the release plan.
 
@@ -63,8 +63,9 @@ FS-103 metadata: `**Implemented by:** IP-2010`.
 
 ## Verification Checklist
 
-- [x] **G5 gate:** build clean. **G5 gate:** full test suite passes (38 total: 1 shared + 37
-      server, incl. this package's 9: `BeliefState.tasking.test.ts` ×7, `taskAction.test.ts` ×2).
+- [x] **G5 gate:** build clean. **G5 gate:** full test suite passes (54 total as of this
+      re-submission: 1 shared + 53 server, incl. this package's own 11: `BeliefState.tasking.test.ts`
+      ×7, `taskAction.test.ts` ×4 [2 new, for VR-2010's F1 fix]).
 - [x] FS-103 Acceptance Criteria mapped to passing tests.
 - [x] Capability-ceiling enforcement verified for a `find`-only, a `fix`-ceiling, and a
       `track`-ceiling sensor (three of `BeliefState.tasking.test.ts`'s 7 cases).
@@ -78,6 +79,20 @@ meaningfully resolve without it). Implemented with two additional parameters
 (`observerState: PlayerState`, `opponentTrueState: PlayerState`) rather than reaching into a
 session store from inside `BeliefState` itself (which would blur its module boundary). Filed as
 BL-0028 for `07-implementation-planning`/GDS-09 to reconcile the interface signature.
+
+## Post-verification fix (VR-2010, 2026-08-22)
+
+VR-2010 returned this package: live-exercising `GameEngine.handleAction('task', ...)` with an
+effector-only source asset (`chainRoles: ['engage']`, no find/fix/track/target role) showed the
+action **silently succeeded** — 1 AP debited, zero belief entries created, no rejection — violating
+FS-103's Acceptance Criterion 4/Error Handling ("no relevant chainRoles is rejected, with a
+reason"). Root cause: `applyTasking` itself correctly no-ops when `capabilityCeiling < 0`, but
+nothing upstream of the AP-spend checked for that case first. **Fixed**: exported
+`hasSensorCapability(chainRoles)` from `BeliefState.ts`; `taskAction.ts`'s handler now rejects
+before spending AP when the source asset has no sensing role, with a test asserting both the
+rejection (no AP spent, no belief entry) and the legitimate ceiling-reached no-op case (still
+accepted, still AP-spending, just capped) are distinguishable — the two cases VR-2010's finding
+specifically named as needing separation.
 
 ## Dependencies
 

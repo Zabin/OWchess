@@ -21,6 +21,15 @@ function precisionIndex(p: BeliefPrecision): number {
   return PRECISION_ORDER.indexOf(p);
 }
 
+/**
+ * True if chainRoles includes at least one F2T2E sensing role (find/fix/track/target) — false
+ * for a purely 'engage' (effector-only) asset, which has nothing to task with (VR-2010 F1: a
+ * caller must check this before spending AP, since applyTasking itself only no-ops silently).
+ */
+export function hasSensorCapability(chainRoles: ChainRole[]): boolean {
+  return capabilityCeiling(chainRoles) >= 0;
+}
+
 /** The highest F2T2E precision level a sensor's declared chainRoles can produce. */
 function capabilityCeiling(chainRoles: ChainRole[]): number {
   let ceiling = -1;

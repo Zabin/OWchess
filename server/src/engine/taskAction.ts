@@ -5,7 +5,7 @@
 import type { ActionResult, OrbitalRegimeLabel, PlayerId, SessionId, TemplateId } from '@owchess/shared';
 import type { SessionStore } from './SessionStore.js';
 import type { TurnManager } from './TurnManager.js';
-import { BeliefState } from './BeliefState.js';
+import { BeliefState, hasSensorCapability } from './BeliefState.js';
 import { assertOnline } from './deployAction.js';
 
 export function makeTaskHandler(
@@ -30,6 +30,12 @@ export function makeTaskHandler(
       (a) => a.assetId === sourceAssetId
     );
     if (!source) return { accepted: false, reason: `no such owned asset ${sourceAssetId}` };
+
+    // VR-2010 F1: an effector-only asset (no find/fix/track/target role) has nothing to task
+    // with — reject with a reason before spending AP, rather than silently no-oping.
+    if (!hasSensorCapability(source.chainRoles)) {
+      return { accepted: false, reason: `${sourceAssetId} has no F2T2E sensing capability (chainRoles has no find/fix/track/target role)` };
+    }
 
     const session = store.getSession(sessionId)!;
     const online = assertOnline(source, session.turnNumber);
