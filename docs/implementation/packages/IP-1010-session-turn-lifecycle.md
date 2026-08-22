@@ -1,7 +1,7 @@
 # IP-1010 — Session & Turn Lifecycle
 
-- **Package ID:** IP-1010 · **Status:** COMPLETE (2026-08-22) · **Owning stage-08 peer:**
-  `08-code-implementation`
+- **Package ID:** IP-1010 · **Status:** COMPLETE (2026-08-22, re-submitted after VR-1010's
+  RETURNED result) · **Owning stage-08 peer:** `08-code-implementation`
 - **Source:** FS-101 (`docs/features/FS-101-session-turn-lifecycle.md`), FEAT-1000
 - **Authorization (G3):** Covered by the release plan — FEAT-1000 is MVP-bucketed in the shape
   FS-101 describes.
@@ -78,8 +78,11 @@ FS-101's metadata: add `**Implemented by:** IP-1010`. Traceability matrix: mark 
 ## Verification Checklist
 
 - [x] **G5 gate:** `npm run build` clean.
-- [x] **G5 gate:** `npm test` full suite passes (16 tests: 1 shared smoke + 15 server —
-      `SessionStore.test.ts` ×4, `TurnManager.test.ts` ×4, `GameEngine.winConditions.test.ts` ×7).
+- [x] **G5 gate:** `npm test` — the full repo suite passes (25 tests total as of this
+      re-submission: 1 shared smoke + 24 server, of which **this package's own 16** are
+      `SessionStore.test.ts` ×5 [incl. the new NFR-3200 entropy test], `TurnManager.test.ts` ×4,
+      `GameEngine.winConditions.test.ts` ×7 — worded per-package vs. full-suite explicitly, per
+      VR-1010's F4 finding).
 - [x] Acceptance Criteria 1–5 of FS-101 (§Acceptance Criteria) each map to a passing test.
 - [x] No module outside `TurnManager` performs turn/AP legality checks (Inspection — `GameEngine`
       delegates every turn check to `tm.submitAction`, never checks `activeTurn` itself).
@@ -93,6 +96,19 @@ Implementing win-condition checks (FR-1420's tiebreak specifically) surfaced tha
 exact mechanism — removal vs. flag — as an implementation choice, and a flag fits this session's
 single-King-field `PlayerState.king` shape better than array removal). Filed as BL-0021 for
 `07-implementation-planning`/GDS-07 to formally record the schema addition.
+
+## Post-verification fix (VR-1010, 2026-08-22)
+
+VR-1010 returned this package for one Critical finding: `SessionStore.createSession` used a
+sequential counter (`session-1`, `session-2`, ...) — trivially guessable, violating NFR-3200
+(≥122 bits of entropy) and FS-101's Acceptance Criterion 1. VR-1010 also independently judged the
+BL-0021 `destroyed` field reasonable for the King's single, non-array `PlayerState.king` storage,
+while noting GDS-07's Merge Gate does commit to array-removal for the general case (Low finding,
+filed as part of BL-0021's disposition, not a defect in this package's own code). **Fixed**:
+`generateSessionId` now uses `crypto.randomBytes(16)` (128 bits) base64url-encoded, with a new
+test asserting 50 draws collide-free and never match the old sequential format. Also filled the
+RTM rows for NFR-2100/2200/3200/6100 (VR-1010's second finding — these were in this package's
+Requirements Covered but left `UNASSIGNED`).
 
 ## Dependencies
 

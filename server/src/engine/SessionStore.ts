@@ -1,6 +1,7 @@
 /**
  * In-memory SessionState/PlayerState storage (IP-1010). No database in v1 (NFR-6100).
  */
+import { randomBytes } from 'node:crypto';
 import type {
   Asset,
   MissionSetId,
@@ -56,13 +57,20 @@ class SessionRecord {
   constructor(public readonly sessionId: SessionId) {}
 }
 
+/**
+ * NFR-3200: session IDs must be computationally infeasible to guess (>=122 bits of entropy).
+ * 16 random bytes = 128 bits, base64url-encoded (no padding) -> a 22-character unguessable token.
+ */
+function generateSessionId(): SessionId {
+  return `session-${randomBytes(16).toString('base64url')}`;
+}
+
 export class SessionStore {
   private sessions = new Map<SessionId, SessionRecord>();
-  private nextId = 1;
 
   /** FR-1110: create a session, returning its join-able ID. */
   createSession(creatorId: PlayerId): SessionId {
-    const sessionId = `session-${this.nextId++}`;
+    const sessionId = generateSessionId();
     const record = new SessionRecord(sessionId);
     record.playerIds.push(creatorId);
     this.sessions.set(sessionId, record);

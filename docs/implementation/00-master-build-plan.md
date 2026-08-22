@@ -8,7 +8,7 @@
 | Package | FS/BL | Owning 08 peer | Status | Blocking dependencies | G3 basis |
 |---|---|---|---|---|---|
 | IP-0010 | — (scaffold) | `08-code-implementation` | **VERIFIED** (2026-08-22, VR-0010) | none | Release plan (MVP needs a codebase) |
-| IP-1010 | FS-101 | `08-code-implementation` | **IN PROGRESS** (returned 2026-08-22, VR-1010) | IP-0010 (VERIFIED) | Release plan (FEAT-1000, MVP) |
+| IP-1010 | FS-101 | `08-code-implementation` | **COMPLETE** (re-submitted 2026-08-22 after VR-1010) | IP-0010 (VERIFIED) | Release plan (FEAT-1000, MVP) |
 | IP-3010 | FS-102 (code) | `08-code-implementation` | **COMPLETE** (2026-08-22) | IP-0010, IP-1010 | Release plan (FEAT-3000, MVP) |
 | IP-3011 | FS-102 (content) | `08-content-authoring` | BLOCKED | IP-3010 | Release plan (FEAT-3000, MVP) |
 | IP-2010 | FS-103 | `08-code-implementation` | BLOCKED | IP-0010, IP-1010, IP-3010, IP-3011 | Release plan (FEAT-2000, MVP) |
@@ -26,15 +26,14 @@ none affecting the result).
 
 **IP-1010 was independently verified 2026-08-22 and RETURNED** — see
 [VR-1010](verification/VR-1010-session-turn-lifecycle.md). Critical finding: `SessionStore`
-generates sequential, guessable session IDs (`session-1`, `session-2`, …), violating NFR-3200
-(unguessable session identifiers, ≥122 bits entropy) and FS-101 Acceptance Criterion 1; no test in
-the package's suite would catch it. Also: RTM rows for NFR-2100/2200/3200/6100 left `UNASSIGNED`
-despite being in the package's own Requirements Covered. IP-1010 is back to `IN PROGRESS` for
-`08-code-implementation` to address VR-1010's findings (primarily: replace the ID generator with a
-cryptographically random one sized for ≥122 bits, add a test for it, and fill the four NFR RTM
-rows once fixed/tested) before being resubmitted for verification. IP-3010/IP-2010/IP-5010/etc.
-remain `BLOCKED`, unchanged — none were unblocked by IP-0010 alone, and none are unblocked by this
-result either, since IP-1010 is not `VERIFIED`.
+generated sequential, guessable session IDs (`session-1`, `session-2`, …), violating NFR-3200
+(unguessable session identifiers, ≥122 bits entropy) and FS-101 Acceptance Criterion 1. Also: RTM
+rows for NFR-2100/2200/3200/6100 left `UNASSIGNED` despite being in the package's own Requirements
+Covered. **Both fixed same day**: `generateSessionId` now uses `crypto.randomBytes(16)`
+(128 bits), base64url-encoded, with a new test (50-draw collision/format check); the four NFR RTM
+rows filled. IP-1010 is back to `COMPLETE`, re-submitted for a fresh, independent
+`09-package-verification` pass — not yet `VERIFIED`. IP-3010/IP-2010/IP-5010/etc. remain `BLOCKED`,
+unchanged until that fresh verification lands.
 
 ## Dependency graph
 

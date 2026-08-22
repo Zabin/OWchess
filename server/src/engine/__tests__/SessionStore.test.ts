@@ -2,6 +2,20 @@ import { describe, expect, it } from 'vitest';
 import { SessionStore } from '../SessionStore.js';
 
 describe('SessionStore', () => {
+  it('generates unguessable, non-sequential session IDs with sufficient entropy (NFR-3200)', () => {
+    const store = new SessionStore();
+    const ids = new Set<string>();
+    for (let i = 0; i < 50; i++) {
+      ids.add(store.createSession(`player-${i}`));
+    }
+    // No collisions across 50 draws, and no shared sequential/predictable suffix pattern.
+    expect(ids.size).toBe(50);
+    for (const id of ids) {
+      expect(id).toMatch(/^session-[A-Za-z0-9_-]{20,}$/); // base64url(16 random bytes) = 22 chars
+      expect(id).not.toMatch(/^session-\d+$/); // not the old sequential-counter format
+    }
+  });
+
   it('rejects a third join attempt once both slots are filled (FR-1121)', () => {
     const store = new SessionStore();
     const sessionId = store.createSession('alice');

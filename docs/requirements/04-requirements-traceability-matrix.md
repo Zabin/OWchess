@@ -56,16 +56,16 @@ candidate module the requirement will land in once `05`/`06`/`07` assign real wo
 | ~~CR-03~~ | Maneuver fuel-budget/transfer-time table | FR-5300/5400 | GDS-03/09 | R-201 | FS-104 | **RESOLVED 2026-08-22** — R-201 grounded the Δv/time shape; FS-104's Maneuver Cost Table adopted it. | — | — |
 | NFR-1100 | Turn-notification latency budget | — | GDS-06 | ADR-0001 | WS transport | UNASSIGNED | UNASSIGNED | UNASSIGNED |
 | NFR-1200 | Propagation efficiency | — | GDS-06 | — | Propagator | UNASSIGNED | UNASSIGNED | UNASSIGNED |
-| NFR-2100 | Deterministic resolution | — | GDS-06 | — | GameEngine | UNASSIGNED | UNASSIGNED | UNASSIGNED |
-| NFR-2200 | Session isolation | — | GDS-02, GDS-06 | — | GameEngine | UNASSIGNED | UNASSIGNED | UNASSIGNED |
+| NFR-2100 | Deterministic resolution | — | GDS-06 | — | GameEngine | FS-101 | IP-1010 | (structural — pure functions of stored state, no randomness/wall-clock; no dedicated test, per VR-1010 F2) |
+| NFR-2200 | Session isolation | — | GDS-02, GDS-06 | — | GameEngine | FS-101 | IP-1010 | (structural — `SessionStore` keyed by `SessionId` in a `Map`, each `SessionRecord` independent; no dedicated test, per VR-1010 F2) |
 | NFR-3100 | Fog-of-war non-leakage | — | GDS-06 | — | BeliefState | UNASSIGNED | UNASSIGNED | UNASSIGNED |
-| NFR-3200 | Unguessable session identifiers | — | GDS-02, GDS-06 | — | GameEngine | UNASSIGNED | UNASSIGNED | UNASSIGNED |
+| NFR-3200 | Unguessable session identifiers | — | GDS-02, GDS-06 | — | GameEngine | FS-101 | IP-1010 | SessionStore.test.ts (entropy/non-sequential test, fixed post-VR-1010 F1) |
 | NFR-4100 | UI as rules reference | — | GDS-06 | — | client UI | UNASSIGNED | UNASSIGNED | UNASSIGNED |
 | NFR-4200 | No post-hoc rejection under normal play | — | GDS-06, GDS-08 | — | client UI | UNASSIGNED | UNASSIGNED | UNASSIGNED |
 | NFR-5100 | Data-driven content, no code changes | — | GDS-04 | — | content templates | FS-102 | IP-3010 (schema)/IP-3011 (content, pending) | TemplateRegistry.test.ts |
 | NFR-5200 | Pipeline compliance | — | — | — | — | UNASSIGNED | UNASSIGNED | UNASSIGNED |
 | NFR-5300 | `Propagator` isolation protects fidelity upgrades | — | GDS-03 | — | Propagator | UNASSIGNED | UNASSIGNED | UNASSIGNED |
-| NFR-6100 | Server-authoritative state | — | GDS-02, GDS-09 | — | GameEngine | UNASSIGNED | UNASSIGNED | UNASSIGNED |
+| NFR-6100 | Server-authoritative state | — | GDS-02, GDS-09 | — | GameEngine | FS-101 | IP-1010 | (structural — all mutation originates in `GameEngine`/`TurnManager`/`SessionStore`, no client-writable path; no dedicated test, per VR-1010 F2) |
 | NFR-7100 | Browser targets | — | GDS-08 | ADR-0001 | client UI | UNASSIGNED | UNASSIGNED | UNASSIGNED |
 | NFR-7200 | Graceful WebSocket degradation | — | GDS-02 | — | client UI, WS transport | UNASSIGNED | UNASSIGNED | UNASSIGNED |
 | NFR-8100 | Deterministic-core test coverage | — | GDS-06 | — | — | UNASSIGNED | UNASSIGNED | UNASSIGNED |
