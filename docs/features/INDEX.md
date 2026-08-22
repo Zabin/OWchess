@@ -17,4 +17,6 @@
 
 | [FS-107](FS-107-server-authoritative-transport.md) | Server-Authoritative Transport | FEAT-7000 | EP-2000 | ✅ Authored | WebSocket push, optimistic-render override, disconnect notify/choice/reconnect. Adds `DisconnectNotification`/`DisconnectResponse` to GDS-09's message schema. No open questions. |
 
-Remaining FEAT-8000 not yet specified — the last one, per the release plan's build sequence.
+| [FS-108](FS-108-presentation-ui.md) | Presentation / UI | FEAT-8000 | EP-3000 | ✅ Authored | Six-panel render (orbital board, action menu, asset tray, mission/King status, intel panel, event log), client-side legality pre-filter (resolves BL-0004), fog-of-war-safe rendering boundary. Resolves BL-0008 (verification-method split: Demonstration for visual/UX, Test for pre-filter logic and the type-level fog-of-war boundary). No open questions. |
+
+All 8 Features now specified (FS-101 through FS-108) — `06-feature-specification` is complete.

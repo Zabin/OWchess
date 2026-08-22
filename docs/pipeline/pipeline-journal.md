@@ -2,21 +2,19 @@
 
 ## Position
 
-- **Updated:** 2026-08-22 (run #25)
-- **Increment:** Bootstrap increment continues — FS-107 (FEAT-7000) authored. Nothing has shipped
+- **Updated:** 2026-08-22 (run #26)
+- **Increment:** Bootstrap increment continues — FS-108 (FEAT-8000) authored. Nothing has shipped
   yet.
-- **Pipeline state:** `00` — manager iterating. `01`–`05` — complete. `06` — **in progress.**
-  FS-101–107 authored (7 of 8 Features). Only FEAT-8000 (Presentation/UI) remains unspecified.
-  `07`–`11` — not started.
-- **Backlog:** 9 open — BL-0005 (`DEFERRED`), BL-0006/0007 (`DEFERRED`, Low), BL-0008
-  (`SCHEDULED`), BL-0011 (`SCHEDULED`, needs `02` research first), BL-0012/BL-0013/BL-0014/BL-0015
-  (`SCHEDULED`, all low stakes, no rush).
-- **Next step:** `06-feature-specification` again — FEAT-8000 (Presentation/UI), the last Feature.
-  Once specified, `06` is complete and the pipeline advances to `07-implementation-planning`.
-- **Open gates:** none currently blocking.
-- **Next step:** `03-architecture-design-synthesis` again — GDS-07 (Data Model), now grounded by
-  R-203's 9-regime recommendation.
-- **Open gates:** none currently blocking.
+- **Pipeline state:** `00` — manager iterating. `01`–`06` — **complete.** All 8 Features specified
+  (FS-101 through FS-108). `07`–`11` — not started.
+- **Backlog:** 8 open — BL-0005 (`DEFERRED`), BL-0006/0007 (`DEFERRED`, Low), BL-0011
+  (`SCHEDULED`, needs `02` research first), BL-0012/BL-0013/BL-0014/BL-0015 (`SCHEDULED`, all low
+  stakes, no rush). BL-0008 flipped `DONE` this run (resolved by FS-108's Verification Plan).
+- **Next step:** `07-implementation-planning` — build the Technical Work Breakdown and IP-####
+  Implementation Packages from the 8 FS-### specs. **G3 note:** package authorization still
+  requires the owner's explicit go-ahead before any `08-*` code-writing stage begins.
+- **Open gates:** none currently blocking `07`; G3 (code-writing authorization) remains a gate
+  ahead of `08`.
 
 ## Run log
 
@@ -47,3 +45,4 @@
 | 23 | 2026-08-22 | iterate (`00-pipeline-manager`) | `06-feature-specification` | `docs/features/FS-105-effect-resolution.md`, `docs/features/INDEX.md` | Authored FS-105 for FEAT-4000: engagement gating, Deceive/Destroy dispatch, cumulative Degrade, denial-streak tracker. Pinned effect durations as this stage's own numeric refinement (Disrupt/Deny 3 turns, Degrade 4 turns). Filed BL-0015 (denial-streak storage, low stakes). | `06-feature-specification` again — FEAT-6000 (Fog-of-War Enforcement). |
 | 24 | 2026-08-22 | iterate (`00-pipeline-manager`) | `06-feature-specification` | `docs/features/FS-106-fog-of-war-enforcement.md`, `docs/features/INDEX.md` | Authored FS-106 for FEAT-6000: single-construction-point discipline, structural type distinction, centrally-run test-suite verification plan. No open questions. | `06-feature-specification` again — FEAT-7000 (Server-Authoritative Transport). |
 | 25 | 2026-08-22 | iterate (`00-pipeline-manager`) | `06-feature-specification` | `docs/features/FS-107-server-authoritative-transport.md`, `docs/features/INDEX.md`, `docs/architecture/09-interface-specification.md` (new `DisconnectNotification`/`DisconnectResponse` messages) | Authored FS-107 for FEAT-7000: WebSocket push, optimistic-render override, disconnect notify/choice/reconnect. Extended GDS-09's message schema. No open questions. | `06-feature-specification` again — FEAT-8000 (Presentation/UI), the last unspecified Feature. |
+| 26 | 2026-08-22 | iterate (`00-pipeline-manager`, user requested "continue from where you left off") | `06-feature-specification` | `docs/features/FS-108-presentation-ui.md`, `docs/features/INDEX.md`, `docs/feature-planning/03-feature-catalog.md` (FEAT-8000 cross-reference), `docs/pipeline/backlog.md` (BL-0008) | Authored FS-108 for FEAT-8000: six-panel render, client-side legality pre-filter (W2), fog-of-war-safe rendering boundary. Verification Plan resolves BL-0008 (Demonstration/Test split). No open questions. **All 8 Features now specified — `06-feature-specification` is complete.** | `07-implementation-planning` — Technical Work Breakdown and IP-#### packages from the 8 FS-### specs. G3 (owner go-ahead) still gates `08-*` code-writing. |

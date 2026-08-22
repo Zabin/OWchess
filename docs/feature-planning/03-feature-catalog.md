@@ -241,6 +241,7 @@ follow it directly rather than re-deriving new ones. Every FR/NFR is owned by ex
 
 ### FEAT-8000 — Presentation / UI
 
+- **Specified by:** [FS-108](../features/FS-108-presentation-ui.md) (2026-08-22)
 - **Purpose:** Render every other Feature's state legibly, with no dead menu entries and no
   fog-of-war leakage in the render layer itself.
 - **Description:** The six-panel layout (orbital board, action menu, asset tray, mission/King
