@@ -11,6 +11,7 @@ follow it directly rather than re-deriving new ones. Every FR/NFR is owned by ex
 
 ### FEAT-1000 — Session & Turn Lifecycle
 
+- **Specified by:** [FS-101](../features/FS-101-session-turn-lifecycle.md) (2026-08-22)
 - **Purpose:** Get two players from "create a link" to "a resolved game," enforcing strict
   turn alternation throughout.
 - **Description:** Session creation/join, secret simultaneous King deployment, the AP-driven turn
