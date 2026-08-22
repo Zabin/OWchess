@@ -11,7 +11,7 @@
 | [IP-3011](IP-3011-asset-mission-content.md) | Mission-Set & Asset-Type Content Templates | FS-102 (content) | `08-content-authoring` | VERIFIED |
 | [IP-2010](IP-2010-sensing-f2t2e.md) | Sensing & the F2T2E Chain | FS-103 | `08-code-implementation` | VERIFIED |
 | [IP-5010](IP-5010-propagator.md) | `Propagator` (Two-Body Orbital Mechanics) | FS-104 | `08-code-implementation` | VERIFIED |
-| [IP-4010](IP-4010-effect-resolver.md) | `EffectResolver` (the Five D's Mechanism) | FS-105 (code) | `08-code-implementation` | COMPLETE |
+| [IP-4010](IP-4010-effect-resolver.md) | `EffectResolver` (the Five D's Mechanism) | FS-105 (code) | `08-code-implementation` | VERIFIED |
 | [IP-4011](IP-4011-effect-content.md) | Five D's Effect-Definition Content | FS-105 (content) | `08-content-authoring` | COMPLETE |
 | [IP-6010](IP-6010-fog-of-war-enforcement.md) | Fog-of-War Enforcement | FS-106 | `08-code-implementation` | VERIFIED |
 | [IP-7010](IP-7010-transport.md) | Server-Authoritative WebSocket Transport | FS-107 | `08-code-implementation` | COMPLETE |
@@ -88,3 +88,22 @@ package eligible for its own `09-package-verification` pass once that work is co
 (observed, at this same moment, to be progressing fast: IP-4011 was also found already `COMPLETE`
 in the shared working tree, ahead of IP-4010's own verification — this VR does not audit either).
 IP-8010 (depends on all 10 others) remains `BLOCKED`.
+
+**IP-4010 was independently verified 2026-08-22 and confirmed VERIFIED** — see
+[VR-4010](../verification/VR-4010-effect-resolver.md): the Deceive/Destroy structural distinction
+was live-exercised beyond `EffectResolver.test.ts`'s own coverage, through the real
+`GameEngine.handleAction('engage', ...)` path, against a King pre-populated with a non-default
+active effect and non-zero denial-streak fields, repeated twice — the true state stayed
+byte-for-byte unchanged throughout, while a Destroy call on a separate target did mutate
+`destroyed`, confirming genuinely distinct code paths. Denial-streak arithmetic
+(`consecutiveDenialTurns`/`totalDenialTurns`) was independently cross-checked field-for-field
+against `GameEngine.checkWinConditions` (IP-1010) and FS-105/FR-4400/FR-1420 — no drift. The
+`TurnEndHook` `turnNumber` widening (BL-0036) was confirmed additive/backward-compatible by
+re-running IP-1010's/IP-3010's own already-`VERIFIED` hook-consumer tests, all unchanged and
+passing. Two Low, non-blocking findings: the `resolveEngagement` Deviation note undercounts its
+actual signature delta (same category as VR-6010's F1 for `applyDeception`); the package's prose
+describes a "`handleAction` switch" that doesn't literally exist (the real mechanism is
+`GameEngine.registerHandler`). Build clean; full suite green (66 tests, matching the package's own
+claim exactly). **IP-4011** (its sole named blocking dependency, IP-4010, is now `VERIFIED`) is
+the next package eligible for its own `09-package-verification` pass. IP-8010 (depends on all 10
+others) remains `BLOCKED`.

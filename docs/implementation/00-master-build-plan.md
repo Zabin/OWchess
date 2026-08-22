@@ -14,8 +14,8 @@
 | IP-2010 | FS-103 | `08-code-implementation` | **VERIFIED** (2026-08-22, VR-2010-v2) | IP-0010, IP-1010, IP-3010, IP-3011 (all VERIFIED) | Release plan (FEAT-2000, MVP) |
 | IP-5010 | FS-104 | `08-code-implementation` | **VERIFIED** (2026-08-22, VR-5010) | IP-0010, IP-1010, IP-3010, IP-3011 (all VERIFIED) | Release plan (FEAT-5000, MVP) |
 | IP-6010 | FS-106 | `08-code-implementation` | **VERIFIED** (2026-08-22, VR-6010) | IP-0010, IP-2010 (both VERIFIED) | Release plan (FEAT-6000, MVP) |
-| IP-4010 | FS-105 (code) | `08-code-implementation` | **COMPLETE** (2026-08-22) | IP-0010, IP-2010, IP-6010 (all VERIFIED — package eligible for its own verification once committed) | Release plan (FEAT-4000, MVP) |
-| IP-4011 | FS-105 (content) | `08-content-authoring` | **COMPLETE** (2026-08-22) | IP-4010 | Release plan (FEAT-4000, MVP) |
+| IP-4010 | FS-105 (code) | `08-code-implementation` | **VERIFIED** (2026-08-22, VR-4010) | IP-0010, IP-2010, IP-6010 (all VERIFIED) | Release plan (FEAT-4000, MVP) |
+| IP-4011 | FS-105 (content) | `08-content-authoring` | **COMPLETE** (2026-08-22) | IP-4010 (VERIFIED) | Release plan (FEAT-4000, MVP) |
 | IP-7010 | FS-107 | `08-code-implementation` | **COMPLETE** (2026-08-22) | IP-0010, IP-1010, IP-6010 (all VERIFIED) | Release plan (FEAT-7000, MVP) |
 | IP-8010 | FS-108 | `08-code-implementation` | BLOCKED | all 10 above | Release plan (FEAT-8000, MVP) |
 
@@ -187,6 +187,31 @@ also now all `VERIFIED`**, but it was found already `COMPLETE` in the shared wor
 `BLOCKED` awaiting this flip — once committed, IP-4010 is the next package eligible for its own
 `09-package-verification` pass; this VR did not itself audit IP-4010's or IP-4011's implementation.
 
+**IP-4010 is now `VERIFIED`** (2026-08-22 — see [VR-4010](verification/VR-4010-effect-resolver.md)).
+The Deceive/Destroy structural distinction (GDS-04/07's most safety-critical mechanism in this
+package) was live-exercised beyond `EffectResolver.test.ts`'s own coverage: a King pre-populated
+with an active Disrupt entry and non-zero `consecutiveDenialTurns`/`totalDenialTurns` was Deceived
+twice in a row through the real `GameEngine.handleAction('engage', ...)` path — its true state was
+byte-for-byte unchanged across both calls (not just `trueRegime`/`destroyed`, but also
+`activeEffects` and both denial-streak fields, none of which the committed fixture ever populates
+non-default), while a separate Destroy call on a different target did flip `destroyed`, confirming
+two genuinely different code paths. Denial-streak arithmetic was independently cross-checked
+field-for-field: `GameEngine.checkWinConditions` (IP-1010) reads `king.destroyed`,
+`king.consecutiveDenialTurns` (against `DENIAL_STREAK_THRESHOLD = 6`, matching FR-4400's tuning
+table), and `king.totalDenialTurns` (at `TIMEOUT_TURN_CAP = 60`, matching FR-1420) — exactly the
+fields `EffectResolver` writes, no drift. The `TurnEndHook` `turnNumber` widening (BL-0036) is
+confirmed additive/backward-compatible: IP-1010's/IP-3010's own already-`VERIFIED` hook-consumer
+tests (`TurnManager.test.ts`, `deployAction.test.ts`, `taskAction.test.ts`,
+`createGameEngine.wiring.test.ts`) all re-run clean, unmodified. One Low, non-blocking finding: the
+`resolveEngagement` Deviation note discloses only the added `effectorObserverState` parameter but
+undercounts the actual delta (also silently adds `currentTurn`/`falseRegime`, neither disclosed) —
+the same category of gap VR-6010's F1 found in `applyDeception`'s note. One more Low, cosmetic
+finding: the package's own prose describes a "`handleAction` switch" that doesn't literally exist
+(the real mechanism is `GameEngine.registerHandler`, the same pattern already established by prior
+packages). Build clean; full suite green (66 tests, exactly matching the package's own claim).
+**IP-4011 (names IP-4010 as its sole blocking dependency, already `COMPLETE`) is now the next
+package eligible for its own `09-package-verification` pass.**
+
 ## Dependency graph
 
 ```
@@ -213,11 +238,9 @@ IP-2010/IP-6010's own sequence, converging only at IP-8010.
 
 ## Next action
 
-**IP-5010, IP-2010, and IP-6010 are all `VERIFIED`** (see VR-5010, VR-2010-v2, and VR-6010 above) —
-no further action needed on any of them. **IP-7010 is `READY`** (all three named blocking
-dependencies — IP-0010, IP-1010, IP-6010 — are `VERIFIED`): the next package due for
-`08-code-implementation`. **IP-4010** (found already `COMPLETE` in the shared working tree,
-uncommitted, concurrent implementation) also has all three of its named blocking dependencies
-(IP-0010, IP-2010, IP-6010) `VERIFIED` — once committed, it is the next package eligible for its
-own `09-package-verification` pass. IP-4011 (`COMPLETE`, uncommitted, depends on IP-4010) and
-IP-8010 (depends on all 10 other packages) remain `BLOCKED`/not yet eligible.
+**IP-5010, IP-2010, IP-6010, and IP-4010 are all `VERIFIED`** (see VR-5010, VR-2010-v2, VR-6010,
+and VR-4010 above) — no further action needed on any of them. **IP-7010 is `READY`** (all three
+named blocking dependencies — IP-0010, IP-1010, IP-6010 — are `VERIFIED`): a package due for
+`08-code-implementation`. **IP-4011** (already `COMPLETE`; its sole named blocking dependency,
+IP-4010, is now `VERIFIED`) is the next package eligible for its own `09-package-verification`
+pass. IP-8010 (depends on all 10 other packages) remains `BLOCKED`/not yet eligible.
