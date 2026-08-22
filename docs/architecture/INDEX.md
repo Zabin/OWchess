@@ -16,7 +16,7 @@ owned by `01-vision`).
 | GDS-07 | Data Model — [`07-data-model.md`](07-data-model.md) | `03-architecture-design-synthesis` | ✅ Authored 2026-08-21 — gate closed |
 | GDS-08 | Presentation Architecture — [`08-presentation-architecture.md`](08-presentation-architecture.md) | `03-architecture-design-synthesis` | ✅ Authored 2026-08-21 — gate closed; resolved BL-0004 |
 | GDS-09 | Interface Specification — [`09-interface-specification.md`](09-interface-specification.md) | `03-architecture-design-synthesis` | ✅ Authored 2026-08-21 — gate closed |
-| GDS-10 | Requirements Traceability Matrix level | `03-architecture-design-synthesis` | ⛔ Planned |
+| GDS-10 | Requirements Traceability Matrix level — [`10-requirements-traceability-matrix.md`](10-requirements-traceability-matrix.md) | `03-architecture-design-synthesis` | ✅ Authored 2026-08-21 — gate closed. **Full GDS-00–10 ladder complete.** |
 
 Also in this directory:
 
