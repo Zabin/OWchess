@@ -8,7 +8,7 @@
 | Package | FS/BL | Owning 08 peer | Status | Blocking dependencies | G3 basis |
 |---|---|---|---|---|---|
 | IP-0010 | — (scaffold) | `08-code-implementation` | **VERIFIED** (2026-08-22, VR-0010) | none | Release plan (MVP needs a codebase) |
-| IP-1010 | FS-101 | `08-code-implementation` | **COMPLETE** (re-submitted 2026-08-22 after VR-1010) | IP-0010 (VERIFIED) | Release plan (FEAT-1000, MVP) |
+| IP-1010 | FS-101 | `08-code-implementation` | **VERIFIED** (2026-08-22, VR-1010-v2) | IP-0010 (VERIFIED) | Release plan (FEAT-1000, MVP) |
 | IP-3010 | FS-102 (code) | `08-code-implementation` | **COMPLETE** (2026-08-22) | IP-0010, IP-1010 | Release plan (FEAT-3000, MVP) |
 | IP-3011 | FS-102 (content) | `08-content-authoring` | **COMPLETE** (2026-08-22) | IP-3010 | Release plan (FEAT-3000, MVP) |
 | IP-2010 | FS-103 | `08-code-implementation` | BLOCKED | IP-0010, IP-1010, IP-3010, IP-3011 | Release plan (FEAT-2000, MVP) |
@@ -24,16 +24,22 @@
 [VR-0010](verification/VR-0010-project-scaffold.md); 3 Low/Medium non-blocking findings recorded,
 none affecting the result).
 
-**IP-1010 was independently verified 2026-08-22 and RETURNED** — see
-[VR-1010](verification/VR-1010-session-turn-lifecycle.md). Critical finding: `SessionStore`
-generated sequential, guessable session IDs (`session-1`, `session-2`, …), violating NFR-3200
-(unguessable session identifiers, ≥122 bits entropy) and FS-101 Acceptance Criterion 1. Also: RTM
-rows for NFR-2100/2200/3200/6100 left `UNASSIGNED` despite being in the package's own Requirements
-Covered. **Both fixed same day**: `generateSessionId` now uses `crypto.randomBytes(16)`
+**IP-1010 is now `VERIFIED`** (2026-08-22). History: an initial verification pass
+([VR-1010](verification/VR-1010-session-turn-lifecycle.md)) RETURNED it for a Critical finding
+(`SessionStore` generated sequential, guessable session IDs, violating NFR-3200 and FS-101
+Acceptance Criterion 1) plus a Medium RTM gap (NFR-2100/2200/3200/6100 left `UNASSIGNED`) and two
+Low notes. Both were fixed same day: `generateSessionId` now uses `crypto.randomBytes(16)`
 (128 bits), base64url-encoded, with a new test (50-draw collision/format check); the four NFR RTM
-rows filled. IP-1010 is back to `COMPLETE`, re-submitted for a fresh, independent
-`09-package-verification` pass — not yet `VERIFIED`. IP-3010/IP-2010/IP-5010/etc. remain `BLOCKED`,
-unchanged until that fresh verification lands.
+rows filled. A fresh, independent re-verification
+([VR-1010-v2](verification/VR-1010-session-turn-lifecycle-v2.md)) re-derived the full Definition
+of Done/Verification Checklist audit from scratch against the current tree (not just the delta),
+confirmed the fix is real cryptographic randomness backed by a real test, rebuilt and re-ran the
+full suite itself, and confirmed the result: **`VERIFIED`**, with one new Low, non-blocking note
+(F5: the fix commit's claim of having "reworded" the Deviation note was imprecise — it appended a
+corrective section rather than editing the original sentence in place). No package flips to
+`READY` from this alone: IP-3010/IP-3011 (both `COMPLETE`, not yet `VERIFIED`) remain the
+next-in-line packages for `09-package-verification`; IP-2010/IP-5010/IP-6010/IP-4010/IP-7010/
+IP-8010 remain `BLOCKED` on those and further downstream dependencies.
 
 ## Dependency graph
 
@@ -61,6 +67,7 @@ IP-2010/IP-6010's own sequence, converging only at IP-8010.
 
 ## Next action
 
-`08-code-implementation` back on **IP-1010** — resolve VR-1010's findings (critical: unguessable
-session IDs; medium: RTM gaps for the covered NFRs) and resubmit for `09-package-verification` —
-the critical-path package for FS-101 (Session & Turn Lifecycle).
+`09-package-verification` on **IP-3010** (and/or IP-3011) — both are `COMPLETE` and now have their
+sole currently-checkable dependency (IP-1010) `VERIFIED`; IP-3010 also still needs IP-0010
+(already `VERIFIED`). Once IP-3010 is `VERIFIED`, IP-2010 and IP-5010 become checkable against
+their remaining dependencies (IP-3011).
