@@ -2,18 +2,20 @@
 
 ## Position
 
-- **Updated:** 2026-08-22 (run #19)
-- **Increment:** Bootstrap increment continues — FS-102 (FEAT-3000) authored. Nothing has shipped
-  yet.
-- **Pipeline state:** `00` — manager iterating. `01`–`05` — complete. `06` — **in progress.**
-  FS-101 (Session & Turn Lifecycle), FS-102 (Asset Roster & Mission Sets) authored. 6 Features
-  remain unspecified. `07`–`11` — not started.
-- **Backlog:** 7 open — BL-0005 (`DEFERRED`), BL-0006/0007 (`DEFERRED`, Low), BL-0008
-  (`SCHEDULED`), BL-0009 (`SCHEDULED` for `06`), BL-0011 (`SCHEDULED`), BL-0012 (`SCHEDULED` for
-  `07`), BL-0013 (`SCHEDULED`, new this run — per-template deploy limits, low stakes).
-- **Next step:** `06-feature-specification` again — FEAT-2000 (Sensing & F2T2E Chain), next per
-  the release plan's build sequence (parallel with FEAT-5000, either order is fine).
-- **Open gates:** none currently blocking.
+- **Updated:** 2026-08-22 (run #20)
+- **Increment:** Bootstrap increment continues — FS-103 (FEAT-2000) authored; iteration halted at
+  a gate. Nothing has shipped yet.
+- **Pipeline state:** `00` — manager, iteration halted this run. `01`–`05` — complete. `06` — **in
+  progress.** FS-101, FS-102, FS-103 authored. 5 Features remain unspecified. `07`–`11` — not
+  started.
+- **Backlog:** 8 open — BL-0005 (`DEFERRED`), BL-0006/0007 (`DEFERRED`, Low), BL-0008
+  (`SCHEDULED`), **BL-0009 (`NEEDS-USER`, ripened this run)**, BL-0011 (`SCHEDULED`), BL-0012
+  (`SCHEDULED` for `07`), BL-0013 (`SCHEDULED`, low stakes).
+- **Next step:** put BL-0009 (belief-state decay rate + `'find'`-floor behavior) to the owner —
+  the run's one ripe `NEEDS-USER` gate. Once answered, resume `06-feature-specification` for
+  FEAT-5000 (Orbital Mechanics), which does not depend on BL-0009's answer.
+- **Open gates:** **BL-0009** — belief-state staleness/decay rate. FS-103 could not complete its
+  numeric behavior without it.
 - **Next step:** `03-architecture-design-synthesis` again — GDS-07 (Data Model), now grounded by
   R-203's 9-regime recommendation.
 - **Open gates:** none currently blocking.
@@ -41,3 +43,4 @@
 | 17 | 2026-08-22 | iterate (`00-pipeline-manager`, user requested "iterate pipeline") | `06-feature-specification` | `docs/features/FS-101-session-turn-lifecycle.md`, `docs/features/INDEX.md` | Authored FS-101 for FEAT-1000, all 20 fields. Surfaced BL-0010 (CR-02, disconnect policy) as genuinely ripe — the spec's own Error Handling field couldn't be completed without it — and BL-0012 (win-condition ordering, low-stakes, self-resolved with a stated default). **Iteration halted at BL-0010, the run's one ripe `NEEDS-USER` gate.** | Put BL-0010 to the owner (gate). Once answered: `06-feature-specification` again for FEAT-3000. |
 | 18 | 2026-08-22 | manual (owner answered the gate; user then said "continue from where you left off") | — (no stage skill; propagation of an owner decision across existing docs) | FS-101 (§W7 added), `docs/requirements/01-functional-requirements.md` (FR-7300), `docs/requirements/04-requirements-traceability-matrix.md`, `docs/feature-planning/03-feature-catalog.md` (FEAT-1000/7000), `docs/feature-planning/01-release-plan.md`, `docs/architecture/strategic-assumptions-register.md` | Owner resolved BL-0010: no grace period/timeout; on disconnect, notify the still-connected player and let them choose to wait indefinitely or cancel (no winner recorded). Propagated to every artifact that carried CR-02/BL-0010 as open. BL-0010 flipped `DONE`. | `06-feature-specification` — FEAT-3000 (Asset Roster & Mission Sets). |
 | 19 | 2026-08-22 | iterate (`00-pipeline-manager`, user requested "iterate pipeline") | `06-feature-specification` | `docs/features/FS-102-asset-roster-mission-sets.md`, `docs/features/INDEX.md` | Authored FS-102 for FEAT-3000: template registration, deploy cost/time-to-online lifecycle, pre-online blocking. Surfaced BL-0013 (per-template deploy limits) — low stakes, doesn't block continuation. | `06-feature-specification` again — FEAT-2000 (Sensing & F2T2E Chain). |
+| 20 | 2026-08-22 | iterate (`00-pipeline-manager`) | `06-feature-specification` | `docs/features/FS-103-sensing-f2t2e-chain.md`, `docs/features/INDEX.md` | Authored FS-103 for FEAT-2000: tasking, capability-gated precision, staleness decay. CR-01/BL-0009 ripened — genuinely blocks this spec's numeric completeness. **Iteration halted at BL-0009.** | Put BL-0009 to the owner (gate). Once answered: `06-feature-specification` for FEAT-5000. |
