@@ -27,8 +27,8 @@ candidate module the requirement will land in once `05`/`06`/`07` assign real wo
 | FR-2200 | Precision gated by asset capability | — | GDS-04, GDS-09 | — | BeliefState | UNASSIGNED | UNASSIGNED | UNASSIGNED |
 | FR-2300 | Belief-state staleness/decay | — | GDS-07, FS-103 §W3 | — | BeliefState | FS-103 | UNASSIGNED | UNASSIGNED |
 | FR-2400 | Reflect precision/staleness to UI | — | GDS-08 | — | client UI | UNASSIGNED | UNASSIGNED | UNASSIGNED |
-| FR-3100 | Data-driven asset templates | — | GDS-04 | — | content templates | FS-102 | IP-3010 (schema)/IP-3011 (content, pending) | TemplateRegistry.test.ts |
-| FR-3200 | v1 roster support | R-203 | GDS-04 | — | content templates | FS-102 | IP-3011 (pending) | UNASSIGNED |
+| FR-3100 | Data-driven asset templates | — | GDS-04 | — | content templates | FS-102 | IP-3010 (schema)/IP-3011 (content) | contentTemplates.test.ts |
+| FR-3200 | v1 roster support | R-203 | GDS-04 | — | content templates | FS-102 | IP-3011 | contentTemplates.test.ts |
 | FR-3300 | Ground/space cost-time asymmetry | — | GDS-04 (this doc's tuning table) | — | content templates | FS-102 | IP-3010 (mechanism) | deployAction.test.ts (ground-vs-space onlineAt case) |
 | FR-3400 | Deploy with cost deduction | — | GDS-07 | — | GameEngine | FS-102 | IP-3010 | deployAction.test.ts |
 | FR-3500 | Block pre-online use | — | GDS-07 | — | GameEngine | FS-102 | IP-3010 | deployAction.test.ts (assertOnline case) |
@@ -62,7 +62,7 @@ candidate module the requirement will land in once `05`/`06`/`07` assign real wo
 | NFR-3200 | Unguessable session identifiers | — | GDS-02, GDS-06 | — | GameEngine | FS-101 | IP-1010 | SessionStore.test.ts (entropy/non-sequential test, fixed post-VR-1010 F1) |
 | NFR-4100 | UI as rules reference | — | GDS-06 | — | client UI | UNASSIGNED | UNASSIGNED | UNASSIGNED |
 | NFR-4200 | No post-hoc rejection under normal play | — | GDS-06, GDS-08 | — | client UI | UNASSIGNED | UNASSIGNED | UNASSIGNED |
-| NFR-5100 | Data-driven content, no code changes | — | GDS-04 | — | content templates | FS-102 | IP-3010 (schema)/IP-3011 (content, pending) | TemplateRegistry.test.ts |
+| NFR-5100 | Data-driven content, no code changes | — | GDS-04 | — | content templates | FS-102 | IP-3010 (schema)/IP-3011 (content) | contentTemplates.test.ts |
 | NFR-5200 | Pipeline compliance | — | — | — | — | UNASSIGNED | UNASSIGNED | UNASSIGNED |
 | NFR-5300 | `Propagator` isolation protects fidelity upgrades | — | GDS-03 | — | Propagator | UNASSIGNED | UNASSIGNED | UNASSIGNED |
 | NFR-6100 | Server-authoritative state | — | GDS-02, GDS-09 | — | GameEngine | FS-101 | IP-1010 | (structural — all mutation originates in `GameEngine`/`TurnManager`/`SessionStore`, no client-writable path; no dedicated test, per VR-1010 F2) |

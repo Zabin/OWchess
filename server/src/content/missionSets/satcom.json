@@ -1,0 +1,6 @@
+{
+  "missionSetId": "satcom",
+  "assetTypeIds": ["ground-tracking-array", "space-based-sda-sensor", "ew-jamming-effector"],
+  "kingRegimeAffinity": ["GEO-EQUATORIAL"],
+  "_rationale": "SATCOM/comms-relay King affinity is equatorial-GEO — a real orbit class whose entire practical value is being geostationary (R-203 Operational Context), matching the doctrinal grouping R-203 §4 recommends for this mission set."
+}

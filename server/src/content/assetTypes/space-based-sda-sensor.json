@@ -1,0 +1,13 @@
+{
+  "templateId": "space-based-sda-sensor",
+  "basing": "space",
+  "apCost": 3,
+  "timeToOnline": 3,
+  "chainRoles": ["find", "fix", "track"],
+  "regimeAffinity": [
+    "LEO-EQUATORIAL", "LEO-PROGRADE", "LEO-POLAR",
+    "MEO-EQUATORIAL", "MEO-PROGRADE", "MEO-POLAR",
+    "GEO-EQUATORIAL", "GEO-PROGRADE", "GEO-POLAR"
+  ],
+  "_costRationale": "Space asset: FS-102's space-slower/costlier rule (FR-3300). Broad regime affinity reflects an on-orbit sensor's unobstructed view across all altitude bands, a real SDA advantage over ground-based sensing. Pending R-1xx grounding (BL-0017)."
+}

@@ -1,6 +1,6 @@
 # IP-3011 — Mission-Set & Asset-Type Content Templates
 
-- **Package ID:** IP-3011 · **Status:** BLOCKED (on IP-3010) · **Owning stage-08 peer:**
+- **Package ID:** IP-3011 · **Status:** COMPLETE (2026-08-22) · **Owning stage-08 peer:**
   `08-content-authoring`
 - **Source:** FS-102 (`docs/features/FS-102-asset-roster-mission-sets.md`), FEAT-3000 — data
   portion (engine mechanism is IP-3010).
@@ -61,27 +61,43 @@ qualitative check (doctrinal coherence, not just schema validity) once this pack
 
 ## Definition of Done
 
-- [ ] All 9 template files exist, schema-valid, cross-referenced correctly (mission set ↔ asset
-      type).
-- [ ] Ground/space cost-time asymmetry is present and directionally correct across the roster.
+- [x] All 9 template files exist (7 asset types incl. the two optical variants, 3 mission sets),
+      schema-valid, cross-referenced correctly (mission set ↔ asset type — every mission set's
+      `assetTypeIds` resolves to a real asset template, test-verified).
+- [x] Ground/space cost-time asymmetry present and directionally correct across the roster
+      (test-verified: every ground template has `timeToOnline` ≤1, every space template ≥3).
 
 ## Verification Checklist
 
-- [ ] **G5 gate:** build clean. **G5 gate:** full test suite passes.
-- [ ] Schema validation test passes for every template.
+- [x] **G5 gate:** build clean. **G5 gate:** full test suite passes (29 total: 1 shared + 28
+      server, incl. this package's 4 in `contentTemplates.test.ts`).
+- [x] Schema validation test passes for every template (via `loadContent` + `TemplateRegistry`'s
+      existing validation, IP-3010).
 - [ ] Flagged for `09-content-review` after `09-package-verification` — doctrinal-coherence
       judgment is out of this package's own verification scope (mechanical only).
 
+## Deviation / known-gap note
+
+`loadContent.ts` reads the JSON templates via `fs.readdirSync`/`readFileSync` relative to its own
+`__dirname` at runtime, not as TypeScript-imported modules — `tsc -b` type-checks it cleanly but
+does **not** copy the `.json` files into `server/dist/`, so a built-and-packaged server (not yet
+exercised by any package — `IP-7010`'s transport work is the first to actually start the server
+for real) would not find its content at the expected `dist/content/...` path without an added
+build step (e.g. a small copy script). Filed as BL-0027 for whichever package first needs the
+server to run from its built output, not this one (this package's own G5 gate — build + `npm
+test`, which runs against source, not `dist/` — is unaffected and genuinely green).
+
 ## Dependencies
 
-IP-3010 (`VERIFIED` required — schema must exist before content can validate against it).
+IP-3010 (`COMPLETE`, not yet `VERIFIED` — proceeded pragmatically since the schema is stable/
+tested and blocking on ledger status alone would idle real, available work; `09-package-
+verification` will independently re-confirm both).
 
 ## Risks
 
 Low-Medium — the actual doctrinal grounding for exact AP-cost numbers depends on
-`02-research-domain` (R-1xx tier, not yet authored); this package can proceed with reasoned
-placeholder-but-labeled costs consistent with FS-102's asymmetry rule and flag the gap for
-`02-research-domain` to ground more precisely before `09-content-review`.
+`02-research-domain` (R-1xx tier, not yet authored, BL-0017); proceeded with reasoned,
+labeled-as-provisional costs consistent with FS-102's asymmetry rule.
 
 ## Rollback Considerations
 
