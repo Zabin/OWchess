@@ -2,18 +2,20 @@
 
 ## Position
 
-- **Updated:** 2026-08-21 (run #13)
-- **Increment:** Bootstrap increment continues — **the full GDS-00–10 architecture ladder is now
-  authored, every gate closed.** ADR-0001 (tech stack) accepted; R-203 (regime taxonomy) authored.
-  Nothing has shipped yet.
-- **Pipeline state:** `00` — manager iterating. `01` — complete, gate closed. `02` — R-203
-  authored; R-201/202/204-207 remain `PLANNED`, authored on demand. `03` — **complete**, all 11
-  levels (GDS-00–10) gate-closed, ADR-0001 accepted. `04`–`11` — not started.
-- **Backlog:** 1 open — BL-0005 (`DEFERRED`, trigger: `Propagator`'s numerical implementation at
-  `07`/`08`).
-- **Next step:** `04-requirements-engineering` — formalize `FR-####`/`NFR-####` from GDS-05/06,
-  and resolve the numeric tuning questions this stage explicitly owns (OQ-05 asset costs, OQ-06
-  mission-denial threshold, OQ-07 session length/tiebreak, OQ-10 AP cadence).
+- **Updated:** 2026-08-22 (run #14)
+- **Increment:** Bootstrap increment continues — the full GDS-00–10 ladder, ADR-0001, R-203, and
+  now the **full v1 requirements baseline** (FR/NFR/Review/RTM) are authored. Nothing has shipped
+  yet.
+- **Pipeline state:** `00` — manager iterating. `01`/`03` — complete. `02` — R-203 authored;
+  R-201/202/204-207 `PLANNED`. `04` — **complete.** 43 FRs, 17 NFRs, 3 Candidate Requirements;
+  Review found 4 issues (1 closed inline, 3 open Low); resolved OQ-05/06/07/10 with first-guess
+  numeric values (5 AP/turn, flat 1-AP action costs, per-asset deploy table, 6-turn denial
+  threshold, 60-turn cap + tiebreak). `05`–`11` — not started.
+- **Backlog:** 6 open — BL-0005 (`DEFERRED`), BL-0006/0007 (`DEFERRED`, Low), BL-0008 (`SCHEDULED`
+  for `06`/`07`), BL-0009/0010 (`SCHEDULED` for `06`, design questions on decay rate and
+  disconnect policy), BL-0011 (`SCHEDULED` for `02` then `06`, maneuver fuel/transfer table).
+- **Next step:** `05-feature-decomposition` — turn the FR/NFR baseline into a Release Plan, Epic
+  Catalog, Feature Catalog, and Feature Dependency Graph.
 - **Open gates:** none currently blocking.
 - **Next step:** `03-architecture-design-synthesis` again — GDS-07 (Data Model), now grounded by
   R-203's 9-regime recommendation.
@@ -36,3 +38,4 @@
 | 11 | 2026-08-21 | iterate (`00-pipeline-manager`) | `03-architecture-design-synthesis` | `docs/architecture/08-presentation-architecture.md` (GDS-08) | Mapped SOR panel inventory onto the ZabOW reference, designed turn-change UX, resolved BL-0004 (bounded client-side legality-rule copy). Flipped `DONE`. | `03-architecture-design-synthesis` again — GDS-09 (Interface Specification). |
 | 12 | 2026-08-21 | iterate (`00-pipeline-manager`) | `03-architecture-design-synthesis` | `docs/architecture/09-interface-specification.md` (GDS-09) | Wrote concrete contracts for all five GDS-03 modules and the WebSocket message schema. No new findings. | `03-architecture-design-synthesis` again — GDS-10 (RTM level, final ladder level). |
 | 13 | 2026-08-21 | iterate (`00-pipeline-manager`) | `03-architecture-design-synthesis` | `docs/architecture/10-requirements-traceability-matrix.md` (GDS-10) | Confirmed the traceability chain end-to-end with a spot-check table; no orphaned SOR requirements found. **Full GDS-00-10 ladder now complete, every gate closed.** No new findings. | `04-requirements-engineering` — formalize FR-####/NFR-#### and resolve OQ-05/06/07/10. |
+| 14 | 2026-08-22 | iterate (`00-pipeline-manager`) | `04-requirements-engineering` | `docs/requirements/01-04*.md`, `docs/requirements/INDEX.md` | Formalized 43 FRs/17 NFRs from GDS-05/06, resolved OQ-05/06/07/10 with cited first-guess numeric values, ran the Review (4 findings, 1 closed inline), built the RTM. Harvested BL-0006–0011. | `05-feature-decomposition` — Release Plan, Epic/Feature Catalog, Feature Dependency Graph. |
