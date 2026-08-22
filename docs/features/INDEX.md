@@ -13,5 +13,7 @@
 
 | [FS-105](FS-105-effect-resolution.md) | Effect Resolution (the Five D's) | FEAT-4000 | EP-1000 | ✅ Authored | Engagement gating, Deceive/Destroy dispatch, cumulative Degrade, King denial-streak tracker. Pinned effect durations (Disrupt/Deny 3 turns, Degrade 4 turns) as this stage's own numeric refinement. |
 
-Remaining FEAT-6000–8000 not yet specified — next per the release plan's build sequence:
-FEAT-6000, then FEAT-7000, then FEAT-8000.
+| [FS-106](FS-106-fog-of-war-enforcement.md) | Fog-of-War Enforcement | FEAT-6000 | EP-2000 | ✅ Authored | Server-only ground truth, single-construction-point discipline (`computeOpponentView`). No open questions — fully specified by GDS-06/07/09. |
+
+Remaining FEAT-7000, FEAT-8000 not yet specified — next per the release plan's build sequence:
+FEAT-7000, then FEAT-8000.

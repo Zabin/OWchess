@@ -180,6 +180,7 @@ follow it directly rather than re-deriving new ones. Every FR/NFR is owned by ex
 
 ### FEAT-6000 — Fog-of-War Enforcement
 
+- **Specified by:** [FS-106](../features/FS-106-fog-of-war-enforcement.md) (2026-08-22)
 - **Purpose:** Guarantee, as a single centrally-tested boundary, that no client ever receives more
   opponent information than that player has earned.
 - **Description:** Server-only ground truth (no client-side storage/inference of opponent state);
