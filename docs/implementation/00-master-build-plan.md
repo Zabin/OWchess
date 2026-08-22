@@ -10,7 +10,7 @@
 | IP-0010 | — (scaffold) | `08-code-implementation` | **VERIFIED** (2026-08-22, VR-0010) | none | Release plan (MVP needs a codebase) |
 | IP-1010 | FS-101 | `08-code-implementation` | **VERIFIED** (2026-08-22, VR-1010-v2) | IP-0010 (VERIFIED) | Release plan (FEAT-1000, MVP) |
 | IP-3010 | FS-102 (code) | `08-code-implementation` | **VERIFIED** (2026-08-22, VR-3010) | IP-0010, IP-1010 (both VERIFIED) | Release plan (FEAT-3000, MVP) |
-| IP-3011 | FS-102 (content) | `08-content-authoring` | **COMPLETE** (2026-08-22) | IP-3010 | Release plan (FEAT-3000, MVP) |
+| IP-3011 | FS-102 (content) | `08-content-authoring` | **VERIFIED** (2026-08-22, VR-3011) | IP-3010 (VERIFIED) | Release plan (FEAT-3000, MVP) |
 | IP-2010 | FS-103 | `08-code-implementation` | **COMPLETE** (2026-08-22) | IP-0010, IP-1010, IP-3010, IP-3011 | Release plan (FEAT-2000, MVP) |
 | IP-5010 | FS-104 | `08-code-implementation` | **COMPLETE** (2026-08-22) | IP-0010, IP-1010, IP-3010, IP-3011 | Release plan (FEAT-5000, MVP) |
 | IP-6010 | FS-106 | `08-code-implementation` | BLOCKED | IP-0010, IP-2010 | Release plan (FEAT-6000, MVP) |
@@ -69,6 +69,34 @@ IP-3010/IP-3011 were all `VERIFIED`). This is recorded here as an observation fo
 `07-implementation-planning`/the pipeline journal; this VR pass verified IP-3010 only and did not
 audit IP-5010's own implementation.
 
+**IP-3011 is now `VERIFIED`** (2026-08-22 — see
+[VR-3011](verification/VR-3011-asset-mission-content.md)). A fresh, independent session (no
+involvement in implementing IP-3011) read every one of the 7 asset-type + 3 mission-set JSON
+templates and `loadContent.ts` directly, confirmed each against `TemplateRegistry`'s actual
+validator (IP-3010), confirmed the ground/space `timeToOnline` asymmetry (≤1 ground, ≥3 space)
+holds across the whole roster, and confirmed every numeric AP-cost/timing field carries an
+in-content disclosure that it is provisional pending `02-research-domain`'s R-1xx grounding
+(BL-0017) — not silently presented as final. BL-0027 (the `loadContent.ts` runtime-`__dirname`
+JSON read not being copied into `server/dist/` by `tsc -b`) was independently reproduced (`dist/
+content/` confirmed to hold the compiled loader but no `.json` files) and its scoping confirmed
+accurate: this package's own G5 gate (`vitest`, which runs against source) is genuinely
+unaffected. Rebuilt and re-ran the full suite fresh: 52 tests across 12 files, all green — up
+from the package's own claimed 29 (1 shared + 28 server) purely because IP-2010 and IP-5010 landed
+additional tests concurrently/after IP-3011 on this branch; IP-3011's own 4
+`contentTemplates.test.ts` tests are unchanged and still pass.
+`createGameEngine.wiring.test.ts` was confirmed as a genuine live exercise of the shipped content
+end-to-end (real templates, real deploy/online-lifecycle behavior), not merely a re-run of the
+package's own schema test. Three Low, non-blocking findings recorded (a stale test-count line in
+the package's own Verification Checklist; a pre-existing FS-102/package wording drift between "six"
+and "seven" asset types; the FR-3300 RTM row not explicitly naming the content-side test) — none
+affect the result.
+
+**IP-2010 and IP-5010 are now unblocked toward their own verification.** Both packages' sole
+named blocking dependencies are IP-0010, IP-1010, IP-3010, and IP-3011 — all four are now
+`VERIFIED`. Both remain `COMPLETE` (already implemented), but each is now the next checkable
+package for `09-package-verification`. IP-6010/IP-4010/IP-4011/IP-7010/IP-8010 remain `BLOCKED`
+regardless — their own blocking dependencies (IP-2010 and/or IP-6010) are not yet `VERIFIED`.
+
 ## Dependency graph
 
 ```
@@ -95,7 +123,9 @@ IP-2010/IP-6010's own sequence, converging only at IP-8010.
 
 ## Next action
 
-`09-package-verification` on **IP-3011** next — its sole blocking dependency, IP-3010, is now
-`VERIFIED`. IP-2010 and IP-5010 (both `COMPLETE`) remain gated on IP-3011's own `VERIFIED` status
-before either can flip to `READY`; IP-6010/IP-4010/IP-4011/IP-7010/IP-8010 remain `BLOCKED` on
-further downstream dependencies regardless.
+`09-package-verification` on **IP-2010** (critical-path package) or **IP-5010** next — both are
+`COMPLETE` and both now have every named blocking dependency (IP-0010, IP-1010, IP-3010, IP-3011)
+`VERIFIED`. IP-2010 sits on the critical path (`IP-0010 → IP-1010 → IP-3010 → IP-2010 → IP-6010 →
+IP-7010 → IP-8010`) so verifying it first is recommended; IP-5010 is independently checkable in
+parallel. IP-6010/IP-4010/IP-4011/IP-7010/IP-8010 remain `BLOCKED` on further downstream
+dependencies regardless.
