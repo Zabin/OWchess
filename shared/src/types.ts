@@ -60,6 +60,15 @@ export interface Asset {
   missionSet: MissionSetId | null;
   /** BL-0015: stored, not recomputed from activeEffects — King-only, meaningful iff isKing. */
   consecutiveDenialTurns: number;
+  /**
+   * Lifetime cumulative denial-turns, for FR-1420's timeout/tiebreak rule — distinct from
+   * consecutiveDenialTurns (which resets on a clean turn). King-only. Added during IP-1010
+   * (win-condition checks needed it; not in GDS-07's original text — see IP-1010's Documentation
+   * Updates note and BL-0021).
+   */
+  totalDenialTurns: number;
+  /** Destroy removes the asset from play (GDS-07 §Asset: "or marks it destroyed"). */
+  destroyed: boolean;
 }
 
 export interface BeliefStateEntry {

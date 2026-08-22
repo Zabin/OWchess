@@ -8,7 +8,7 @@
 | Package | FS/BL | Owning 08 peer | Status | Blocking dependencies | G3 basis |
 |---|---|---|---|---|---|
 | IP-0010 | — (scaffold) | `08-code-implementation` | **VERIFIED** (2026-08-22, VR-0010) | none | Release plan (MVP needs a codebase) |
-| IP-1010 | FS-101 | `08-code-implementation` | READY | IP-0010 (VERIFIED) | Release plan (FEAT-1000, MVP) |
+| IP-1010 | FS-101 | `08-code-implementation` | **COMPLETE** (2026-08-22) | IP-0010 (VERIFIED) | Release plan (FEAT-1000, MVP) |
 | IP-3010 | FS-102 (code) | `08-code-implementation` | BLOCKED | IP-0010, IP-1010 | Release plan (FEAT-3000, MVP) |
 | IP-3011 | FS-102 (content) | `08-content-authoring` | BLOCKED | IP-3010 | Release plan (FEAT-3000, MVP) |
 | IP-2010 | FS-103 | `08-code-implementation` | BLOCKED | IP-0010, IP-1010, IP-3010, IP-3011 | Release plan (FEAT-2000, MVP) |

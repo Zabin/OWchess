@@ -8,21 +8,21 @@ candidate module the requirement will land in once `05`/`06`/`07` assign real wo
 
 | Req ID | Title | Research Source | Architecture Section | ADR | Module | Feature Spec | Implementation Package | Test |
 |---|---|---|---|---|---|---|---|---|
-| FR-1110 | Create session | — | GDS-01, GDS-02 | ADR-0001 | GameEngine | UNASSIGNED | UNASSIGNED | UNASSIGNED |
-| FR-1120 | Join session | — | GDS-01, GDS-02 | ADR-0001 | GameEngine | UNASSIGNED | UNASSIGNED | UNASSIGNED |
-| FR-1121 | Reject over-capacity join | — | GDS-01 | — | GameEngine | UNASSIGNED | UNASSIGNED | UNASSIGNED |
-| FR-1130 | Withhold start until both joined | — | GDS-01 | — | GameEngine | UNASSIGNED | UNASSIGNED | UNASSIGNED |
-| FR-1210 | Secret King selection | — | GDS-01, GDS-04 | — | GameEngine, BeliefState | UNASSIGNED | UNASSIGNED | UNASSIGNED |
-| FR-1220 | Simultaneous resolution | — | GDS-01 | — | GameEngine, TurnManager | UNASSIGNED | UNASSIGNED | UNASSIGNED |
-| FR-1230 | King immutability | — | GDS-04 | — | GameEngine | UNASSIGNED | UNASSIGNED | UNASSIGNED |
-| FR-1310 | Grant AP allotment | — | GDS-01, GDS-07 | — | TurnManager | UNASSIGNED | UNASSIGNED | UNASSIGNED |
+| FR-1110 | Create session | — | GDS-01, GDS-02 | ADR-0001 | GameEngine | FS-101 | IP-1010 | TurnManager.test.ts (via SessionStore fixture setup) |
+| FR-1120 | Join session | — | GDS-01, GDS-02 | ADR-0001 | GameEngine | FS-101 | IP-1010 | TurnManager.test.ts (via SessionStore fixture setup) |
+| FR-1121 | Reject over-capacity join | — | GDS-01 | — | GameEngine | FS-101 | IP-1010 | SessionStore.test.ts |
+| FR-1130 | Withhold start until both joined | — | GDS-01 | — | GameEngine | FS-101 | IP-1010 | SessionStore.test.ts |
+| FR-1210 | Secret King selection | — | GDS-01, GDS-04 | — | GameEngine, BeliefState | FS-101 | IP-1010 | TurnManager.test.ts (via SessionStore fixture setup) |
+| FR-1220 | Simultaneous resolution | — | GDS-01 | — | GameEngine, TurnManager | FS-101 | IP-1010 | TurnManager.test.ts (via SessionStore fixture setup) |
+| FR-1230 | King immutability | — | GDS-04 | — | GameEngine | FS-101 | IP-1010 | SessionStore.test.ts |
+| FR-1310 | Grant AP allotment | — | GDS-01, GDS-07 | — | TurnManager | FS-101 | IP-1010 | TurnManager.test.ts |
 | FR-1320 | Enumerate legal actions | — | GDS-06, GDS-08 | — | TurnManager, client UI | UNASSIGNED | UNASSIGNED | UNASSIGNED |
-| FR-1330 | Reject out-of-turn actions | — | GDS-03, GDS-09 | — | TurnManager | UNASSIGNED | UNASSIGNED | UNASSIGNED |
-| FR-1340 | Pass ends turn | — | GDS-01 | — | TurnManager | UNASSIGNED | UNASSIGNED | UNASSIGNED |
-| FR-1350 | AP-exhaustion ends turn | — | GDS-01 | — | TurnManager | UNASSIGNED | UNASSIGNED | UNASSIGNED |
-| FR-1405 | Destruction win | — | GDS-01, GDS-04 | — | GameEngine, EffectResolver | UNASSIGNED | UNASSIGNED | UNASSIGNED |
-| FR-1410 | Resignation | — | GDS-01 | — | GameEngine | UNASSIGNED | UNASSIGNED | UNASSIGNED |
-| FR-1420 | Timeout/tiebreak | — | GDS-01 | — | GameEngine | UNASSIGNED | UNASSIGNED | UNASSIGNED |
+| FR-1330 | Reject out-of-turn actions | — | GDS-03, GDS-09 | — | TurnManager | FS-101 | IP-1010 | TurnManager.test.ts |
+| FR-1340 | Pass ends turn | — | GDS-01 | — | TurnManager | FS-101 | IP-1010 | TurnManager.test.ts |
+| FR-1350 | AP-exhaustion ends turn | — | GDS-01 | — | TurnManager | FS-101 | IP-1010 | TurnManager.test.ts |
+| FR-1405 | Destruction win | — | GDS-01, GDS-04 | — | GameEngine, EffectResolver | FS-101 | IP-1010 | GameEngine.winConditions.test.ts |
+| FR-1410 | Resignation | — | GDS-01 | — | GameEngine | FS-101 | IP-1010 | GameEngine.winConditions.test.ts |
+| FR-1420 | Timeout/tiebreak | — | GDS-01 | — | GameEngine | FS-101 | IP-1010 | GameEngine.winConditions.test.ts |
 | FR-2100 | Task a sensor | — | GDS-09 | — | BeliefState | UNASSIGNED | UNASSIGNED | UNASSIGNED |
 | FR-2200 | Precision gated by asset capability | — | GDS-04, GDS-09 | — | BeliefState | UNASSIGNED | UNASSIGNED | UNASSIGNED |
 | FR-2300 | Belief-state staleness/decay | — | GDS-07, FS-103 §W3 | — | BeliefState | FS-103 | UNASSIGNED | UNASSIGNED |

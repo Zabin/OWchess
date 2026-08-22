@@ -1,6 +1,6 @@
 # IP-1010 — Session & Turn Lifecycle
 
-- **Package ID:** IP-1010 · **Status:** BLOCKED (on IP-0010) · **Owning stage-08 peer:**
+- **Package ID:** IP-1010 · **Status:** COMPLETE (2026-08-22) · **Owning stage-08 peer:**
   `08-code-implementation`
 - **Source:** FS-101 (`docs/features/FS-101-session-turn-lifecycle.md`), FEAT-1000
 - **Authorization (G3):** Covered by the release plan — FEAT-1000 is MVP-bucketed in the shape
@@ -69,17 +69,30 @@ FS-101's metadata: add `**Implemented by:** IP-1010`. Traceability matrix: mark 
 
 ## Definition of Done
 
-- [ ] All 5 Implementation Tasks complete; all 4 win-condition paths independently testable and
-      passing, including the BL-0012 ordering case.
-- [ ] `handleAction`'s dispatch shell compiles and routes correctly to stubs (proven by test
-      doubles, not real module bodies).
+- [x] All 5 Implementation Tasks complete; all 4 win-condition paths independently testable and
+      passing, including the BL-0012 ordering case (`GameEngine.winConditions.test.ts`).
+- [x] `handleAction`'s dispatch shell compiles and routes correctly to stubs — `registerHandler`
+      accepts injected `deploy`/`maneuver`/`task`/`engage` handlers (none registered yet; an
+      unregistered type is rejected with a clear reason, not silently ignored).
 
 ## Verification Checklist
 
-- [ ] **G5 gate:** `npm run build` clean.
-- [ ] **G5 gate:** `npm test` full suite passes.
-- [ ] Acceptance Criteria 1–5 of FS-101 (§Acceptance Criteria) each map to a passing test.
-- [ ] No module outside `TurnManager` performs turn/AP legality checks (Inspection, per FR-1009).
+- [x] **G5 gate:** `npm run build` clean.
+- [x] **G5 gate:** `npm test` full suite passes (16 tests: 1 shared smoke + 15 server —
+      `SessionStore.test.ts` ×4, `TurnManager.test.ts` ×4, `GameEngine.winConditions.test.ts` ×7).
+- [x] Acceptance Criteria 1–5 of FS-101 (§Acceptance Criteria) each map to a passing test.
+- [x] No module outside `TurnManager` performs turn/AP legality checks (Inspection — `GameEngine`
+      delegates every turn check to `tm.submitAction`, never checks `activeTurn` itself).
+
+## Deviation note
+
+Implementing win-condition checks (FR-1420's tiebreak specifically) surfaced that GDS-07's
+`Asset` shape had no field for *cumulative* denial-turns, distinct from `consecutiveDenialTurns`
+(BL-0015's stored streak, which resets on a clean turn). Added `totalDenialTurns: number` and
+`destroyed: boolean` to `shared/src/types.ts` (the latter needed since GDS-07 leaves Destroy's
+exact mechanism — removal vs. flag — as an implementation choice, and a flag fits this session's
+single-King-field `PlayerState.king` shape better than array removal). Filed as BL-0021 for
+`07-implementation-planning`/GDS-07 to formally record the schema addition.
 
 ## Dependencies
 
