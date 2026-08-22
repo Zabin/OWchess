@@ -1,6 +1,7 @@
 # IP-0010 — Project Scaffold & Shared Types
 
-- **Package ID:** IP-0010 · **Status:** READY · **Owning stage-08 peer:** `08-code-implementation`
+- **Package ID:** IP-0010 · **Status:** COMPLETE (2026-08-22) · **Owning stage-08 peer:**
+  `08-code-implementation`
 - **Source:** foundational (no FS) — required by every other package in this plan.
 - **Authorization (G3):** Covered by the release plan (`docs/feature-planning/01-release-plan.md`)
   — the MVP release requires a working, testable codebase; this package is the prerequisite
@@ -77,19 +78,23 @@ test`/`npm run dev` commands for every downstream package's Verification Checkli
 
 ## Definition of Done
 
-- [ ] `npm run build` succeeds from a clean checkout with zero TypeScript errors.
-- [ ] `npm test` runs and passes (the one smoke test) in all three workspaces.
-- [ ] `npm run dev` starts both the server and client dev processes without crashing.
-- [ ] Every GDS-07 entity and GDS-09 interface/message type exists in `shared/`, importable from
+- [x] `npm run build` succeeds from a clean checkout with zero TypeScript errors.
+- [x] `npm test` runs and passes (the one smoke test) in all three workspaces (server/client pass
+      via `passWithNoTests` — no logic to test yet, per this package's own scope).
+- [x] `npm run dev` starts both the server and client dev processes without crashing (verified:
+      client's Vite dev server serves HTTP 200; server's entry point runs cleanly under `tsx`).
+- [x] Every GDS-07 entity and GDS-09 interface/message type exists in `shared/`, importable from
       `server`/`client` via the built package, not a relative source path.
 
 ## Verification Checklist
 
-- [ ] **G5 gate:** `npm run build` — clean.
-- [ ] **G5 gate:** `npm test` — full suite passes (smoke test only, at this stage).
+- [x] **G5 gate:** `npm run build` — clean (all three workspaces).
+- [x] **G5 gate:** `npm test` — full suite passes (1 test in `shared`; `server`/`client` pass with
+      `passWithNoTests`, no logic exists yet to test).
 - [ ] Every `shared` type/interface traces to a specific GDS-07/GDS-09 section (spot-checked by
-      `09-package-verification`).
-- [ ] No game logic present in `server`/`client` beyond the empty entry points named above (this
+      `09-package-verification` — self-evident from `types.ts`/`interfaces.ts`/`messages.ts`'s own
+      header comments citing GDS-07/09 directly, but left for 09 to independently confirm).
+- [x] No game logic present in `server`/`client` beyond the empty entry points named above (this
       package's own scope boundary — logic belongs to IP-1010 onward).
 
 ## Dependencies
