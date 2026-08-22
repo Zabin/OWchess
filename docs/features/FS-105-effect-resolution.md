@@ -3,7 +3,7 @@
 - **Feature ID:** FS-105 (from **FEAT-4000**, `docs/feature-planning/03-feature-catalog.md`)
 - **Status:** ✅ Authored, 2026-08-22 · **Owned by:** `06-feature-specification` · **Epic:** EP-1000 (Core Game Engine)
 - **Implemented by:** [IP-4010](../implementation/packages/IP-4010-effect-resolver.md) (mechanism,
-  COMPLETE, awaiting `09-package-verification`), [IP-4011](../implementation/packages/IP-4011-effect-content.md) (content, not yet started). Note: `BeliefState.applyDeception` lives in [IP-6010](../implementation/packages/IP-6010-fog-of-war-enforcement.md), assigned there during implementation planning.
+  COMPLETE, awaiting `09-package-verification`), [IP-4011](../implementation/packages/IP-4011-effect-content.md) (content, COMPLETE, awaiting `09-package-verification` and `09-content-review`). Note: `BeliefState.applyDeception` lives in [IP-6010](../implementation/packages/IP-6010-fog-of-war-enforcement.md), assigned there during implementation planning.
 
 ## Purpose
 

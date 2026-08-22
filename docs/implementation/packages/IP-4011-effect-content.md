@@ -1,6 +1,6 @@
 # IP-4011 — Five D's Effect-Definition Content
 
-- **Package ID:** IP-4011 · **Status:** BLOCKED (on IP-4010) · **Owning stage-08 peer:**
+- **Package ID:** IP-4011 · **Status:** COMPLETE (2026-08-22) · **Owning stage-08 peer:**
   `08-content-authoring`
 - **Source:** FS-105 (`docs/features/FS-105-effect-resolution.md`), FEAT-4000 — data portion.
 - **Authorization (G3):** Covered by the release plan.
@@ -51,14 +51,30 @@ FS-105 metadata: content half of `**Implemented by:**` line.
 
 ## Definition of Done
 
-- [ ] All 5 effect-definition files exist, schema-valid, durations match FS-105 exactly.
+- [x] All 5 effect-definition files exist, schema-valid, durations match FS-105 exactly (3/3/4/
+      terminal/until-cleared — test-verified).
 
 ## Verification Checklist
 
-- [ ] **G5 gate:** build clean. **G5 gate:** full test suite passes.
-- [ ] Schema validation test passes for every effect file.
+- [x] **G5 gate:** build clean. **G5 gate:** full test suite passes (70 total: 1 shared + 69
+      server, incl. this package's 4 in `effectDefinitions.test.ts`).
+- [x] Schema validation test passes for every effect file.
 - [ ] Flagged for `09-content-review` (doctrinal coherence of effector-to-effect mapping) after
       `09-package-verification`.
+
+## Deviation note (BL-0037)
+
+IP-4010 (already `COMPLETE`) implemented `EffectResolver.ts`'s actual game logic with hardcoded
+duration constants (`DISRUPT_DENY_DURATION`/`DEGRADE_DURATION`), not by reading a content schema —
+this content package's schema/data didn't exist yet when IP-4010 was built. This package's
+`EffectDefinitionRegistry` is a real, tested, schema-validated content layer (effector-to-effect
+capability mapping, duration documentation), but is **not yet the runtime source of truth**
+`EffectResolver` reads from — the two are cross-checked by `effectDefinitions.test.ts`'s "BL-0037
+cross-check" test, which would fail if they ever drifted, but nothing prevents someone editing one
+without the other outside that test's coverage. Filed as BL-0037 for `07-implementation-planning`
+to decide whether a future package should make `EffectResolver` genuinely content-driven (read
+durations from this registry) or whether the hardcoded-constants-plus-cross-check-test pattern is
+an acceptable permanent design for v1.
 
 ## Dependencies
 

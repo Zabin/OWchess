@@ -12,9 +12,9 @@
 | [IP-2010](IP-2010-sensing-f2t2e.md) | Sensing & the F2T2E Chain | FS-103 | `08-code-implementation` | VERIFIED |
 | [IP-5010](IP-5010-propagator.md) | `Propagator` (Two-Body Orbital Mechanics) | FS-104 | `08-code-implementation` | VERIFIED |
 | [IP-4010](IP-4010-effect-resolver.md) | `EffectResolver` (the Five D's Mechanism) | FS-105 (code) | `08-code-implementation` | COMPLETE |
-| [IP-4011](IP-4011-effect-content.md) | Five D's Effect-Definition Content | FS-105 (content) | `08-content-authoring` | BLOCKED |
-| [IP-6010](IP-6010-fog-of-war-enforcement.md) | Fog-of-War Enforcement | FS-106 | `08-code-implementation` | COMPLETE |
-| [IP-7010](IP-7010-transport.md) | Server-Authoritative WebSocket Transport | FS-107 | `08-code-implementation` | BLOCKED |
+| [IP-4011](IP-4011-effect-content.md) | Five D's Effect-Definition Content | FS-105 (content) | `08-content-authoring` | COMPLETE |
+| [IP-6010](IP-6010-fog-of-war-enforcement.md) | Fog-of-War Enforcement | FS-106 | `08-code-implementation` | VERIFIED |
+| [IP-7010](IP-7010-transport.md) | Server-Authoritative WebSocket Transport | FS-107 | `08-code-implementation` | READY |
 | [IP-8010](IP-8010-presentation-ui.md) | Presentation / UI | FS-108 | `08-code-implementation` | BLOCKED |
 
 All 11 packages authorized under the current release plan's MVP-bucketing (G3 satisfied by
@@ -66,3 +66,25 @@ already `COMPLETE` in the tree (implemented concurrently by another session), so
 next package eligible for its own `09-package-verification` pass. No package flips to `READY` from
 either the IP-5010 or IP-2010 verification alone: IP-8010 needs every other package `VERIFIED`
 first, and IP-4010/IP-4011/IP-7010 remain `BLOCKED` on IP-6010's own verification.
+
+**IP-6010 was independently verified 2026-08-22 and confirmed VERIFIED** — see
+[VR-6010](../verification/VR-6010-fog-of-war-enforcement.md): `computeOpponentView`/
+`applyDeception` independently confirmed structurally incapable of leaking true opponent state; the
+package's own supersession sweep independently re-run across all of `server/src` (every file
+touching `PlayerState`, not just the three grepped identifiers) reached the same clean conclusion;
+the fog-of-war boundary was live-exercised with three of this session's own constructed scenarios
+(zero-belief observer vs. a fully-populated secret opponent, object-identity/mutation isolation,
+byte-for-byte true-`Asset` snapshot around `applyDeception`) beyond the committed test file's own
+coverage — all held. One Low, non-blocking finding: BL-0033's Deviation note undercounts
+`applyDeception`'s actual signature delta (a documentation-completeness gap for
+`07-implementation-planning`'s eventual GDS-09 reconciliation, not a code defect). Build clean; full
+suite green (57 tests, matching the package's own claim), run from an isolated `git worktree` since
+the live shared tree carried unrelated, concurrent, uncommitted IP-4010 edits that broke its own
+build. **IP-7010** (names IP-0010, IP-1010, IP-6010 — all three now `VERIFIED`) flips `BLOCKED` →
+**`READY`**. **IP-4010** (names IP-0010, IP-2010, IP-6010 — all three now `VERIFIED`) has its
+dependency gate satisfied too, but was found already `COMPLETE` in the shared working tree
+(uncommitted, concurrent implementation) rather than `BLOCKED` awaiting this flip — it is the next
+package eligible for its own `09-package-verification` pass once that work is committed
+(observed, at this same moment, to be progressing fast: IP-4011 was also found already `COMPLETE`
+in the shared working tree, ahead of IP-4010's own verification — this VR does not audit either).
+IP-8010 (depends on all 10 others) remains `BLOCKED`.

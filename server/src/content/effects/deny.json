@@ -1,0 +1,7 @@
+{
+  "effectId": "deny",
+  "durationTurns": 3,
+  "stacking": "independent",
+  "allowedEffectorTemplateIds": ["kinetic-rpo-effector", "ew-jamming-effector"],
+  "_rationale": "Same 3-turn duration and rationale as Disrupt (FS-105 pins them identically). Both effector types can apply it, matching their asset-type templates' _effectAffinity."
+}

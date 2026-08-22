@@ -1,0 +1,7 @@
+{
+  "effectId": "degrade",
+  "durationTurns": 4,
+  "stacking": "independent",
+  "allowedEffectorTemplateIds": ["ew-jamming-effector"],
+  "_rationale": "4-turn duration pinned by FS-105 (slightly longer than Disrupt/Deny, matching SOR's 'wears down over multiple turns' framing). Multiple concurrent Degrade entries on one target coexist and tick independently (FR-4300) -- this content's stacking field documents that, EffectResolver.ts's own logic is the enforcement point."
+}
