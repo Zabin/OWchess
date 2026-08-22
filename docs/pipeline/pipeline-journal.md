@@ -2,17 +2,18 @@
 
 ## Position
 
-- **Updated:** 2026-08-21 (run #7)
-- **Increment:** Bootstrap increment continues — GDS-01 through GDS-05 authored and gate-closed;
+- **Updated:** 2026-08-21 (run #8)
+- **Increment:** Bootstrap increment continues — GDS-01 through GDS-06 authored and gate-closed;
   ADR-0001 (tech stack) accepted. Nothing has shipped yet.
 - **Pipeline state:** `00` — manager iterating (this run). `01` — complete, gate closed. `03` —
-  **in progress.** GDS-01–05 authored and gate-closed. GDS-05 grouped capability into eight areas
-  cleanly mapping the seed SOR's FR-1xxx-8xxx numbering, no new findings. GDS-06–10 not yet
-  authored. `02`, `04`–`11` — not started.
-- **Backlog:** 1 open — BL-0003 (`SCHEDULED` for `02-research-orbital-and-tooling`, before GDS-07
-  needs it; does not block GDS-06).
-- **Next step:** `03-architecture-design-synthesis` again — GDS-06 (Non-Functional Requirements
-  level).
+  **in progress.** GDS-01–06 authored and gate-closed. GDS-06 flagged a design tension (NFR-4002
+  vs. server authority) for GDS-08/09, harvested as BL-0004. GDS-07–10 not yet authored. `02`,
+  `04`–`11` — not started.
+- **Backlog:** 2 open — BL-0003 (`SCHEDULED` for `02-research-orbital-and-tooling`, before GDS-07
+  needs it), BL-0004 (`SCHEDULED` for GDS-08/09).
+- **Next step:** `02-research-orbital-and-tooling` — BL-0003/OQ-13 (regime/plane-class taxonomy)
+  is now due: GDS-07 (Data Model) needs a concrete schema for `OrbitalRegime`, which requires this
+  research first. GDS-07 follows once that grounding lands.
 - **Open gates:** none currently blocking.
 
 ## Run log
@@ -26,3 +27,4 @@
 | 5 | 2026-08-21 | iterate (`00-pipeline-manager`) | `03-architecture-design-synthesis` | `docs/architecture/adr/ADR-0001-tech-stack.md`, `docs/architecture/03-architecture.md` (GDS-03) | ADR-0001 confirmed the tech stack via genuine comparison (TypeScript full-stack vs. Python/Go/Rust), resolving OQ-02. GDS-03 decomposed the system into modules and resolved BL-0001 (transfer-time counts in mover's own turns) and BL-0002 (passive detection is human inference only). Both backlog entries flipped `DONE`. | `03-architecture-design-synthesis` again — GDS-04 (Domain Model). |
 | 6 | 2026-08-21 | iterate (`00-pipeline-manager`) | `03-architecture-design-synthesis` | `docs/architecture/04-domain-model.md` (GDS-04) | Defined core entities (King, Asset, MissionSet, roster, OrbitalRegime, BeliefStateEntry, effect state) and relationships, keeping content data-driven per FR-2001/NFR-5001. Raised OQ-13 (regime taxonomy), harvested as BL-0003, scheduled for `02-research-orbital-and-tooling`, non-blocking for GDS-05/06. | `03-architecture-design-synthesis` again — GDS-05 (Functional Requirements level). |
 | 7 | 2026-08-21 | iterate (`00-pipeline-manager`) | `03-architecture-design-synthesis` | `docs/architecture/05-functional-requirements.md` (GDS-05) | Grouped capability into eight areas, each traced to GDS-01-04, cleanly mapping the seed SOR's FR numbering. No new findings. | `03-architecture-design-synthesis` again — GDS-06 (Non-Functional Requirements level). |
+| 8 | 2026-08-21 | iterate (`00-pipeline-manager`) | `03-architecture-design-synthesis` | `docs/architecture/06-non-functional-requirements.md` (GDS-06) | Grouped NFRs, stated the test-coverage bar, flagged the NFR-4002/server-authority tension for GDS-08/09 (harvested as BL-0004). Recognized BL-0003/OQ-13 is now due before GDS-07 can proceed. | `02-research-orbital-and-tooling` (BL-0003/OQ-13, due now), then GDS-07 (Data Model). |
