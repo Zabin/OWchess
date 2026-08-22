@@ -64,6 +64,16 @@ naturally clusters into before this document can pin the taxonomy down further t
 analog crossed with a small number of plane classes"). `Propagator` is the only module that
 translates between continuous elements and this discrete presentation (GDS-03).
 
+**Amendment, 2026-08-22 (MSTR-001 C4 v0.3):** the v1 `Propagator` baseline is two-body Keplerian
+motion, not Kepler+J2. R-203's own justification for the polar/sun-synchronous plane class rests
+entirely on J2-driven nodal precession (§3.3 of that topic) — without it, that plane class has
+**no physical mechanism distinguishing it from any other inclination** for v1; it would be a label
+only. This is not fixed here: **OQ-14** (new, entry stage `03`/post-implementation) — whether the
+polar/sun-synchronous class ships as label-only for v1 (accepting the reduced doctrinal grounding)
+or whether J2 gets added before FEAT-5000 ships (restoring the physical justification) is an
+explicit, deliberate call deferred to real gameplay/implementation experience, per the Strategic
+Assumptions Register's new A8 row — not decided at this domain-model level.
+
 ### BeliefStateEntry
 
 Per SOR §8.4: one entry per player, per subject (a specific opposing asset, or an unresolved
@@ -127,8 +137,9 @@ indirectly, through `EffectResolver` applying an engagement's result.
 **Merge decision:** GDS-01 remains authoritative for the operational concept; this document is
 authoritative for entity shape and relationships, feeding GDS-05/06/07 directly.
 
-**Gate:** closed 2026-08-21. One new Open Question raised: **OQ-13** (exact orbital-regime/plane-
-class taxonomy), entry stage `02-research-orbital-and-tooling` then `03`/`04` — does not block
-GDS-05/06 (functional/non-functional requirements can proceed citing "a discrete regime taxonomy,
-exact count TBD"), but should be resolved before GDS-07 (Data Model) needs a concrete schema for
-it. Next: GDS-05 (Functional Requirements level).
+**Gate:** closed 2026-08-21 (amended 2026-08-22, MSTR-001 C4 v0.3 — see amendment note above, OQ-14
+added; gate remains closed, this is a recorded amendment not a reopening). Open Questions: **OQ-13**
+(exact orbital-regime/plane-class taxonomy), entry stage `02-research-orbital-and-tooling` then
+`03`/`04` — does not block GDS-05/06. **OQ-14** (whether the polar/sun-synchronous plane class
+ships label-only or gets J2 added before FEAT-5000 ships), entry stage `03`/post-implementation —
+does not block any downstream stage; it's a call to make once FEAT-5000 exists to playtest.

@@ -139,9 +139,10 @@ follow it directly rather than re-deriving new ones. Every FR/NFR is owned by ex
 
 - **Purpose:** Give every asset a real, physically-grounded position, presented to players as a
   discrete regime, isolated behind a swappable interface.
-- **Description:** Kepler+J2-minimum propagation; the 9-value regime taxonomy (R-203); maneuver
-  budget/cost; turn-scale maneuver completion counted in the mover's own turns; the `Propagator`
-  interface itself.
+- **Description:** Two-body Keplerian propagation (v1 baseline per MSTR-001 C4 v0.3 — J2 deferred,
+  see Open Questions); the 9-value regime taxonomy (R-203, amended); maneuver budget/cost;
+  turn-scale maneuver completion counted in the mover's own turns; the `Propagator` interface
+  itself, built as a genuine seam so J2/SGP4 can be added later without a rewrite.
 - **Scope:** *Where things are and how they get there.* Excludes what a player does with that
   position once reached (tasking/engaging live in FEAT-2000/4000).
 - **Included Requirements:** FR-5100, FR-5200, FR-5300, FR-5400, FR-5500, NFR-1200, NFR-5300.
@@ -152,18 +153,25 @@ follow it directly rather than re-deriving new ones. Every FR/NFR is owned by ex
   FEAT-8000 (board renders `Propagator`'s regime output).
 - **Affected Modules:** `Propagator`.
 - **Related ADRs:** ADR-0001.
-- **User Value:** Medium-High — invisible when working correctly (players see labels, not math),
-  but the game's doctrinal-grounding promise (G-3) rests on it being real.
-- **Technical Value:** High — the one module the vision/architecture explicitly calls "the
-  architecturally hardest part of this project" (kickoff prompt); isolating it well protects
-  every other Feature from that complexity.
-- **Complexity:** High — real orbital mechanics, a from-scratch numerical implementation, and the
-  one area with a still-open research cross-verification item (BL-0005).
-- **Risk:** High — the single Feature most likely to need rework if R-201/202/the numerical
-  implementation surfaces a problem the current schema-level taxonomy work didn't anticipate.
+- **User Value:** Medium-High — invisible when working correctly (players see labels, not math);
+  the polar/sun-synchronous plane class's doctrinal grounding is a v1 label-only tradeoff pending
+  OQ-14, not a promise this Feature currently keeps in full.
+- **Technical Value:** High — still the module the vision/architecture called "the
+  architecturally hardest part of this project" before this amendment, but the amendment
+  specifically targets that risk.
+- **Complexity:** Medium *(revised down from High, 2026-08-22)* — two-body motion is a canonical,
+  well-documented algorithm with closed-form reference solutions; the from-scratch-implementation
+  and single-sourced-formula risks that drove the original High rating (BL-0005) applied to the
+  J2 term specifically, which is no longer part of the v1 baseline.
+- **Risk:** Medium *(revised down from High, 2026-08-22, same reason as Complexity above)* — the
+  remaining risk is OQ-14 (a design/gameplay-legibility question, not an implementation-
+  correctness one) and the ordinary risk of any new module, not orbital-mechanics-specific risk.
 - **Suggested Verification Strategy:** Test (deterministic given fixed elements) + Analysis
-  (cross-check against R-201/202 once authored, per BL-0005/BL-0011).
+  (cross-check against a primary astrodynamics reference, e.g. Vallado — no longer gated on
+  R-201/202 the way the J2 formula was).
 - **Open Questions:** CR-03 (per-regime-pair fuel/transfer-time table) — owned by `02` then `06`.
+  **OQ-14** (new, 2026-08-22) — whether the polar/sun-synchronous plane class ships label-only or
+  gets J2 added before this Feature ships, decided after playtesting/implementation experience.
 
 ### FEAT-6000 — Fog-of-War Enforcement
 

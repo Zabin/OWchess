@@ -1,10 +1,22 @@
 # R-203 — Mapping continuous orbital state to OW Chess's discrete regime/plane-class taxonomy
 
-- **Status:** ✅ DONE, 2026-08-21 · **Owned by:** `02-research-orbital-and-tooling`
+- **Status:** ✅ DONE, 2026-08-21 (amended 2026-08-22 — see §3.3 note) · **Owned by:**
+  `02-research-orbital-and-tooling`
 - **Dependencies:** none authored yet (R-201/R-202 planned; this topic states the minimum
   Kepler/J2 facts it needs inline rather than waiting on them)
-- **Referenced by:** GDS-04 (`docs/architecture/04-domain-model.md`, OQ-13), GDS-07 (Data Model,
-  pending) · **Resolves:** BL-0003 / OQ-13
+- **Referenced by:** GDS-04 (`docs/architecture/04-domain-model.md`, OQ-13, OQ-14), GDS-07 (Data
+  Model, pending) · **Resolves:** BL-0003 / OQ-13
+
+**Amendment, 2026-08-22 (MSTR-001 C4 v0.3):** the v1 `Propagator` baseline is now two-body
+Keplerian motion, not Kepler+J2 (owner decision, prioritizing implementation-risk reduction over
+J2 fidelity for v1). **§3.3's argument below is J2-dependent** — under pure two-body motion, it
+does not hold: there is no nodal precession, so no physical mechanism distinguishes ~98° from any
+other inclination. The recommended 9-value taxonomy in §5 still stands as a **presentation/
+labeling scheme** (three altitude bands × three named plane classes remain a reasonable, doctrine-
+flavored grouping for gameplay legibility even without J2 backing them), but the "polar/sun-
+synchronous-analog" class is, for v1, a **label without the physical justification this topic
+originally provided for it**. Whether to add J2 back (restoring §3.3's grounding) is GDS-04's
+OQ-14, not decided here.
 
 ## 1. Purpose
 

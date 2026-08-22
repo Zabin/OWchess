@@ -11,7 +11,7 @@
 | FEAT-2000 — Sensing & F2T2E Chain | **MVP** | The core strategic loop the entire pitch rests on (G-2/G-3) — not optional at any scope. |
 | FEAT-3000 — Asset Roster & Mission Sets | **MVP** | Foundational content; FEAT-2000/4000/5000 have nothing to operate on without it. |
 | FEAT-4000 — Effect Resolution (Five D's) | **MVP** | Without it, "engage" (the E in F2T2E) doesn't exist — the loop is incomplete without it. |
-| FEAT-5000 — Orbital Mechanics / `Propagator` | **MVP** | The hybrid-fidelity requirement (MSTR-001 C4) is a scope commitment, not a nice-to-have; also Highest Risk (see below) — deferring it would just move the project's hardest problem later, not remove it. |
+| FEAT-5000 — Orbital Mechanics / `Propagator` | **MVP** | The hybrid-fidelity requirement (MSTR-001 C4, amended v0.3 to a two-body-only v1 baseline) is a scope commitment, not a nice-to-have. No longer the catalog's Highest Risk (see below) — the amendment specifically retired that. |
 | FEAT-6000 — Fog-of-War Enforcement | **MVP** | Non-negotiable per MSTR-001 C3/NFR-2001 — a security requirement, not a design preference. |
 | FEAT-7000 — Server-Authoritative Transport | **MVP** | Required for the two-player, no-polling experience G-6/SOR §8.1 commit to. |
 | FEAT-8000 — Presentation / UI | **MVP** | Without it, nothing above is playable by an actual human. |
@@ -43,13 +43,14 @@ Every other Feature exists to support, secure, or render this pair.
 
 ## Highest Risk
 
-**FEAT-5000 (Orbital Mechanics / `Propagator`)** — the project's own kickoff instructions named
-this "the architecturally hardest part of this project," it's the only Feature with an open
-research-verification item (BL-0005/BL-0011), and it's a from-scratch numerical implementation
-with no existing codebase to lean on (MSTR-001 §0 — zero shared code with `ZabSpaceExercise`).
-**FEAT-6000 (Fog-of-War Enforcement)** is a close second: not hard to build once, but carrying an
-ongoing structural risk (every future change to FEAT-1000–5000 is a chance to violate it) that
-persists for the life of the project, not just its first build.
+**FEAT-6000 (Fog-of-War Enforcement)** is now the catalog's Highest Risk — *(revised 2026-08-22;
+previously FEAT-5000)*. It was never hard to build once; it carries an ongoing **structural**
+risk instead (every future change to FEAT-1000–5000 is a chance to violate it) that persists for
+the life of the project, not just its first build — the reason it was already a close second.
+**FEAT-5000 (Orbital Mechanics / `Propagator`)** dropped out of this bucket the same day: MSTR-001
+C4 was amended (v0.3) to a two-body-only v1 baseline specifically to retire its implementation
+risk (see `03-feature-catalog.md`'s own updated Risk field) — it remains worth watching for OQ-14
+(a design question, not a correctness one), just no longer the catalog's riskiest Feature.
 
 ## Foundational
 
