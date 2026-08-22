@@ -1,7 +1,7 @@
 # GDS-00 — Vision (design-facing restatement)
 
-- **Owned by:** `01-vision` · **Status:** 🟢 Gate-confirmed, same gate state as MSTR-001 v0.2 ·
-  **Source:** `docs/master/MSTR-001-program-vision.md` v0.2
+- **Owned by:** `01-vision` · **Status:** 🟢 Gate-confirmed, same gate state as MSTR-001 v0.3 ·
+  **Source:** `docs/master/MSTR-001-program-vision.md` v0.3
 
 This is the design-facing restatement of MSTR-001, in the vocabulary the GDS ladder builds on.
 MSTR-001 is authoritative for purpose-level statements; this document translates its commitments
@@ -26,8 +26,10 @@ A single authoritative Node process per game session, running a strict turn-reso
 5. **Win-check** — after each resolved action, check King-destruction, mission-denial-duration,
    resignation, and timeout/tiebreak conditions (FR-1010–1011, §7.9).
 
-Underlying all of this: asset positions are propagated by a real Kepler+J2-minimum model, isolated
-behind a `Propagator`-equivalent interface (FR-5001, FR-5005); the player-facing presentation
+Underlying all of this: asset positions are propagated by a real orbital-mechanics model —
+**two-body Keplerian motion for the v1 baseline** (MSTR-001 C4, amended v0.3; J2/SGP4 are a later,
+deliberate call, not a fixed floor) — isolated behind a `Propagator`-equivalent interface
+(FR-5001, FR-5005); the player-facing presentation
 never shows raw orbital elements, only discrete named regimes/slots (FR-5002).
 
 There is no simultaneous/concurrent-action resolution to design for — turns are strict

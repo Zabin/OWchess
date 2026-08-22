@@ -6,7 +6,7 @@ owned by `01-vision`).
 
 | Level | Document | Owned by | Status |
 |---|---|---|---|
-| GDS-00 | Vision (design-facing restatement) — [`00-vision.md`](00-vision.md) | `01-vision` | 🟢 Gate closed, same as MSTR-001 v0.2 |
+| GDS-00 | Vision (design-facing restatement) — [`00-vision.md`](00-vision.md) | `01-vision` | 🟢 Gate closed, same as MSTR-001 v0.3 (two-body-only v1 propagation, see A8) |
 | GDS-01 | Concept of Operations — [`01-concept-of-operations.md`](01-concept-of-operations.md) | `03-architecture-design-synthesis` | ✅ Authored 2026-08-21 — gate closed; raised OQ-11, OQ-12 (entry stage `03`, non-blocking for GDS-02) |
 | GDS-02 | System Context — [`02-system-context.md`](02-system-context.md) | `03-architecture-design-synthesis` | ✅ Authored 2026-08-21 — gate closed |
 | GDS-03 | Architecture (incl. `Propagator` boundary) — [`03-architecture.md`](03-architecture.md) | `03-architecture-design-synthesis` | ✅ Authored 2026-08-21 — gate closed; resolved BL-0001/BL-0002 |
