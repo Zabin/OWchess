@@ -158,6 +158,35 @@ pattern already seen with IP-5010), so it is now the next package eligible for i
 `09-package-verification` pass; this VR did not itself audit IP-6010's implementation. IP-4010
 remains `BLOCKED` (still needs IP-6010 `VERIFIED`).
 
+**IP-6010 is now `VERIFIED`** (2026-08-22 — see [VR-6010](verification/VR-6010-fog-of-war-enforcement.md)),
+the project's highest-priority security test surface (NFR-3100/GDS-06), audited with extra
+scrutiny per its own Risks note. `computeOpponentView`/`applyDeception` were independently
+confirmed structurally incapable of leaking true opponent state — both methods read/write only
+identifiers into the observer's own `beliefOfOpponent` map, never a reference to the opponent's
+true `Asset`/King/`activeEffects` objects. This session independently re-ran the package's own
+mandatory supersession sweep from scratch (not trusting its "found nothing else, confirmed clean"
+claim) — re-grepped `OpponentView`/`beliefOfOpponent`/`opponentTrueState` across all of `server/src`
+and additionally read every file touching `PlayerState` — and reached the same clean conclusion,
+including cross-checking `EffectResolver.ts` (a concurrent, uncommitted IP-4010 file already
+present in the tree) as a legitimate, correctly-scoped consumer of `applyDeception`, not a rival
+construction site. The fog-of-war boundary was live-exercised beyond the committed test file's own
+coverage with three independently-constructed scenarios (a zero-belief observer against a fully-
+populated, even King-bearing secret opponent; a mutation/object-identity isolation check on the
+returned `OpponentView`; a byte-for-byte true-`Asset` snapshot around `applyDeception`) — all held.
+One Low, non-blocking finding: BL-0033's Deviation note is accurate for `computeOpponentView` but
+undercounts `applyDeception`'s actual signature delta (silently drops GDS-09's `observer: PlayerId`
+rather than retaining it, and adds an undisclosed `turnNumber` parameter) — functionally benign,
+flagged for `07-implementation-planning`'s eventual GDS-09/BL-0033 reconciliation. Build clean; full
+suite green (57 tests, exactly matching the package's own claim), run from an isolated `git
+worktree` at `HEAD` since the live shared tree carried unrelated, concurrent, uncommitted IP-4010
+edits that broke its own build (not an IP-6010 defect). **IP-7010's blocking dependencies (IP-0010,
+IP-1010, IP-6010) are now all `VERIFIED`** — IP-7010 flips `BLOCKED` → **`READY`**, the next package
+due for `08-code-implementation`. **IP-4010's blocking dependencies (IP-0010, IP-2010, IP-6010) are
+also now all `VERIFIED`**, but it was found already `COMPLETE` in the shared working tree
+(uncommitted, concurrent implementation, along with IP-4011 similarly `COMPLETE`) rather than
+`BLOCKED` awaiting this flip — once committed, IP-4010 is the next package eligible for its own
+`09-package-verification` pass; this VR did not itself audit IP-4010's or IP-4011's implementation.
+
 ## Dependency graph
 
 ```
@@ -184,9 +213,11 @@ IP-2010/IP-6010's own sequence, converging only at IP-8010.
 
 ## Next action
 
-**IP-5010 and IP-2010 are both `VERIFIED`** (see VR-5010 and VR-2010-v2 above) — no further action
-needed on either; both remain hard prerequisites of IP-8010 (IP-2010 also of IP-6010/IP-4010/
-IP-7010 downstream). **IP-6010** (found already `COMPLETE` in the tree, implemented concurrently)
-now has both its named blocking dependencies (IP-0010, IP-2010) `VERIFIED` — it is the next
-package due for its own `09-package-verification` pass. IP-4010/IP-4011/IP-7010/IP-8010 remain
-`BLOCKED`, gated on IP-6010's own verification.
+**IP-5010, IP-2010, and IP-6010 are all `VERIFIED`** (see VR-5010, VR-2010-v2, and VR-6010 above) —
+no further action needed on any of them. **IP-7010 is `READY`** (all three named blocking
+dependencies — IP-0010, IP-1010, IP-6010 — are `VERIFIED`): the next package due for
+`08-code-implementation`. **IP-4010** (found already `COMPLETE` in the shared working tree,
+uncommitted, concurrent implementation) also has all three of its named blocking dependencies
+(IP-0010, IP-2010, IP-6010) `VERIFIED` — once committed, it is the next package eligible for its
+own `09-package-verification` pass. IP-4011 (`COMPLETE`, uncommitted, depends on IP-4010) and
+IP-8010 (depends on all 10 other packages) remain `BLOCKED`/not yet eligible.
