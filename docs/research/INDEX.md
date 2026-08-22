@@ -15,8 +15,8 @@ ground (SOR §3.3, §12).
 ## R-2xx — Orbital mechanics & tooling
 
 | ID | Title | Status |
-| R-201 | Keplerian orbital elements & basic two-body propagation | ⛔ PLANNED |
-| R-202 | J2 perturbation and its relevance to a LEO/MEO/GEO-analog discrete-band presentation | ⛔ PLANNED |
+| R-201 | Keplerian orbital elements & basic two-body propagation (v1 maneuver Δv/time figures) | ✅ DONE |
+| R-202 | J2 perturbation and its relevance to a LEO/MEO/GEO-analog discrete-band presentation | ⛔ PLANNED (deferred — moot for v1's two-body baseline; revisit if OQ-14 resolves toward adding J2) |
 | R-203 | Mapping continuous orbital state to OW Chess's discrete regime/plane-class taxonomy | ✅ DONE |
 | R-204 | The `Propagator` interface boundary — what it must/must not expose | ⛔ PLANNED |
 | R-205 | Server-authoritative architecture & fog-of-war/belief-state patterns for turn-based multiplayer | ⛔ PLANNED |
@@ -26,5 +26,8 @@ ground (SOR §3.3, §12).
 R-203 was authored first, out of the suggested numeric order, because it was the specific gap
 blocking `03-architecture-design-synthesis`'s GDS-07 (Data Model) pass (BL-0003/OQ-13) — the
 pipeline manager routes to the topic an upstream stage actually needs, not strictly numeric order.
-R-201/R-202/R-204–207 remain planned, to be authored as GDS-03/07/09 or `07-implementation-
-planning` need their specific grounding.
+R-201 was authored second (2026-08-22), out of order for the same reason: it was the specific gap
+blocking CR-03/BL-0011 (FS-104's maneuver cost/time table). R-202/R-204–207 remain planned, to be
+authored as GDS-03/07/09 or `07-implementation-planning` need their specific grounding; R-202
+specifically is deferred rather than merely pending, since v1's two-body baseline has no use for
+it unless OQ-14 resolves toward adding J2.
