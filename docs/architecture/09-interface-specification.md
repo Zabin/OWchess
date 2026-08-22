@@ -118,10 +118,18 @@ type StateDeltaMessage = {
 };
 
 type RejectedActionMessage = { type: 'action-rejected'; reason: string };
+
+// Added 2026-08-22 by FS-107, specifying FS-101 §W7's disconnect policy (no grace period;
+// notify the still-connected player and let them choose to wait or cancel).
+type DisconnectNotification = { type: 'disconnect-notification' };
+type DisconnectResponse = { type: 'disconnect-response'; choice: 'wait' | 'cancel' };
 ```
 
-No other message type exists in v1 (GDS-02's "exactly two channels" is preserved here at the
-literal schema level — no chat, no spectator feed, no replay-export message).
+No other message type exists in v1 beyond these — GDS-02's "exactly two channels" (action
+submission, state-delta push) is preserved at the conceptual level; `DisconnectNotification`/
+`DisconnectResponse` are a small, fully-specified extension of the state-delta-push channel's own
+purpose (informing a client of session-relevant state), not a new channel — still no chat,
+spectator feed, or replay-export message.
 
 ## Merge gate
 

@@ -15,5 +15,6 @@
 
 | [FS-106](FS-106-fog-of-war-enforcement.md) | Fog-of-War Enforcement | FEAT-6000 | EP-2000 | ✅ Authored | Server-only ground truth, single-construction-point discipline (`computeOpponentView`). No open questions — fully specified by GDS-06/07/09. |
 
-Remaining FEAT-7000, FEAT-8000 not yet specified — next per the release plan's build sequence:
-FEAT-7000, then FEAT-8000.
+| [FS-107](FS-107-server-authoritative-transport.md) | Server-Authoritative Transport | FEAT-7000 | EP-2000 | ✅ Authored | WebSocket push, optimistic-render override, disconnect notify/choice/reconnect. Adds `DisconnectNotification`/`DisconnectResponse` to GDS-09's message schema. No open questions. |
+
+Remaining FEAT-8000 not yet specified — the last one, per the release plan's build sequence.

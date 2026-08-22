@@ -213,6 +213,7 @@ follow it directly rather than re-deriving new ones. Every FR/NFR is owned by ex
 
 ### FEAT-7000 — Server-Authoritative Transport
 
+- **Specified by:** [FS-107](../features/FS-107-server-authoritative-transport.md) (2026-08-22)
 - **Purpose:** Push turn-change and resolved-action state to both clients reliably, with the
   server always the final authority.
 - **Description:** WebSocket push (no polling); server overrides any client-side optimistic
