@@ -11,7 +11,7 @@
 | IP-1010 | FS-101 | `08-code-implementation` | **VERIFIED** (2026-08-22, VR-1010-v2) | IP-0010 (VERIFIED) | Release plan (FEAT-1000, MVP) |
 | IP-3010 | FS-102 (code) | `08-code-implementation` | **VERIFIED** (2026-08-22, VR-3010) | IP-0010, IP-1010 (both VERIFIED) | Release plan (FEAT-3000, MVP) |
 | IP-3011 | FS-102 (content) | `08-content-authoring` | **VERIFIED** (2026-08-22, VR-3011) | IP-3010 (VERIFIED) | Release plan (FEAT-3000, MVP) |
-| IP-2010 | FS-103 | `08-code-implementation` | **COMPLETE** (2026-08-22) | IP-0010, IP-1010, IP-3010, IP-3011 | Release plan (FEAT-2000, MVP) |
+| IP-2010 | FS-103 | `08-code-implementation` | **COMPLETE** (2026-08-22) — **RETURNED by VR-2010** (2026-08-22), needs fix + re-verify | IP-0010, IP-1010, IP-3010, IP-3011 | Release plan (FEAT-2000, MVP) |
 | IP-5010 | FS-104 | `08-code-implementation` | **COMPLETE** (2026-08-22) | IP-0010, IP-1010, IP-3010, IP-3011 | Release plan (FEAT-5000, MVP) |
 | IP-6010 | FS-106 | `08-code-implementation` | BLOCKED | IP-0010, IP-2010 | Release plan (FEAT-6000, MVP) |
 | IP-4010 | FS-105 (code) | `08-code-implementation` | BLOCKED | IP-0010, IP-2010, IP-6010 | Release plan (FEAT-4000, MVP) |
@@ -97,6 +97,25 @@ named blocking dependencies are IP-0010, IP-1010, IP-3010, and IP-3011 — all f
 package for `09-package-verification`. IP-6010/IP-4010/IP-4011/IP-7010/IP-8010 remain `BLOCKED`
 regardless — their own blocking dependencies (IP-2010 and/or IP-6010) are not yet `VERIFIED`.
 
+**IP-2010 was independently verified and `RETURNED`** (2026-08-22 — see
+[VR-2010](verification/VR-2010-sensing-f2t2e.md)). A fresh, independent session (no involvement in
+implementing IP-2010) confirmed all 4 Implementation Tasks, both belief-decay behaviors (BL-0009's
+5-turn window and `'find'`-removal), and the BL-0028 deviation (`applyTasking`'s two extra
+`observerState`/`opponentTrueState` parameters beyond GDS-09) as reasonable and accurately
+disclosed, judged against the VR-1010/VR-3010 model. Build clean; full suite green (52 tests,
+re-run fresh — includes IP-5010's `Propagator.*.test.ts` and the cross-package
+`createGameEngine.wiring.test.ts`, which was independently confirmed to genuinely exercise
+IP-2010's own decay logic end-to-end, not superficially). **One Critical finding (F1)**, found only
+by live-exercising a case none of the package's own fixtures cover (per the skill's
+tunable-parameter gotcha): tasking a sensor with no F2T2E-relevant `chainRoles` at all (e.g. an
+effector) is not rejected — it silently succeeds, deducts 1 AP, and produces zero belief effect,
+with no distinguishable reason returned, directly violating FS-103 Acceptance Criterion 4 and its
+Error Handling section despite the package's own Verification Checklist marking that item
+satisfied. **IP-2010 stays `COMPLETE`, returned to `08-code-implementation`** to add the missing
+pre-spend rejection check (and a regression test) before re-verification. No package flips to
+`READY` from this VR: IP-6010/IP-4010 remain `BLOCKED`, now explicitly gated on IP-2010's
+fix-and-reverify cycle rather than merely on "awaiting first pass."
+
 ## Dependency graph
 
 ```
@@ -123,9 +142,10 @@ IP-2010/IP-6010's own sequence, converging only at IP-8010.
 
 ## Next action
 
-`09-package-verification` on **IP-2010** (critical-path package) or **IP-5010** next — both are
-`COMPLETE` and both now have every named blocking dependency (IP-0010, IP-1010, IP-3010, IP-3011)
-`VERIFIED`. IP-2010 sits on the critical path (`IP-0010 → IP-1010 → IP-3010 → IP-2010 → IP-6010 →
-IP-7010 → IP-8010`) so verifying it first is recommended; IP-5010 is independently checkable in
-parallel. IP-6010/IP-4010/IP-4011/IP-7010/IP-8010 remain `BLOCKED` on further downstream
-dependencies regardless.
+**IP-2010** (critical-path package) needs to return to `08-code-implementation` to fix VR-2010's
+Critical finding F1 (tasking a sensor with no relevant `chainRoles` silently succeeds and spends AP
+instead of being rejected) and then go through a fresh `09-package-verification` pass. Separately,
+`09-package-verification` on **IP-5010** remains available next — it is `COMPLETE`, has every named
+blocking dependency (IP-0010, IP-1010, IP-3010, IP-3011) `VERIFIED`, and is independently checkable
+in parallel with IP-2010's fix cycle. IP-6010/IP-4010/IP-4011/IP-7010/IP-8010 remain `BLOCKED` on
+further downstream dependencies regardless.

@@ -9,7 +9,7 @@
 | [IP-1010](IP-1010-session-turn-lifecycle.md) | Session & Turn Lifecycle | FS-101 | `08-code-implementation` | VERIFIED |
 | [IP-3010](IP-3010-asset-roster-lifecycle.md) | Asset Roster: Registration & Deploy Lifecycle | FS-102 (code) | `08-code-implementation` | VERIFIED |
 | [IP-3011](IP-3011-asset-mission-content.md) | Mission-Set & Asset-Type Content Templates | FS-102 (content) | `08-content-authoring` | VERIFIED |
-| [IP-2010](IP-2010-sensing-f2t2e.md) | Sensing & the F2T2E Chain | FS-103 | `08-code-implementation` | COMPLETE |
+| [IP-2010](IP-2010-sensing-f2t2e.md) | Sensing & the F2T2E Chain | FS-103 | `08-code-implementation` | COMPLETE (RETURNED by VR-2010, needs fix + re-verify) |
 | [IP-5010](IP-5010-propagator.md) | `Propagator` (Two-Body Orbital Mechanics) | FS-104 | `08-code-implementation` | COMPLETE |
 | [IP-4010](IP-4010-effect-resolver.md) | `EffectResolver` (the Five D's Mechanism) | FS-105 (code) | `08-code-implementation` | BLOCKED |
 | [IP-4011](IP-4011-effect-content.md) | Five D's Effect-Definition Content | FS-105 (content) | `08-content-authoring` | BLOCKED |
@@ -37,4 +37,9 @@ labeled provisional per BL-0017; BL-0027's `dist/`-content gap confirmed accurat
 scoped; three Low, non-blocking wording-drift findings). With IP-3011 now `VERIFIED`, IP-2010 and
 IP-5010 — both already `COMPLETE` and both naming IP-0010/IP-1010/IP-3010/IP-3011 as their sole
 blocking dependencies, all four now `VERIFIED` — each become the next checkable package for their
-own `09-package-verification` pass.
+own `09-package-verification` pass. IP-2010 was independently verified 2026-08-22 and
+**RETURNED** — see [VR-2010](../verification/VR-2010-sensing-f2t2e.md) (Critical: tasking a sensor
+with no F2T2E-relevant `chainRoles` — e.g. an effector — silently succeeds and spends 1 AP instead
+of being rejected, violating FS-103 AC4 despite the package's own Checklist marking that item
+satisfied; the BL-0028 deviation itself judged reasonable and accurately disclosed). IP-2010 stays
+`COMPLETE`, pending a fix from `08-code-implementation` and a fresh verification pass.
