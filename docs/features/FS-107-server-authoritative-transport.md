@@ -2,7 +2,8 @@
 
 - **Feature ID:** FS-107 (from **FEAT-7000**, `docs/feature-planning/03-feature-catalog.md`)
 - **Status:** ✅ Authored, 2026-08-22 · **Owned by:** `06-feature-specification` · **Epic:** EP-2000 (Trust Boundary & Transport)
-- **Implemented by:** [IP-7010](../implementation/packages/IP-7010-transport.md)
+- **Implemented by:** [IP-7010](../implementation/packages/IP-7010-transport.md) (COMPLETE,
+  awaiting `09-package-verification`)
 
 ## Purpose
 

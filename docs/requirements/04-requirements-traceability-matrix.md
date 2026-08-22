@@ -43,9 +43,9 @@ candidate module the requirement will land in once `05`/`06`/`07` assign real wo
 | FR-5500 | `Propagator` interface isolation | — | GDS-03, GDS-09 | — | Propagator | FS-104 | IP-5010 | (Inspection — see IP-5010's Verification Checklist) |
 | FR-6100 | Server-only ground truth | — | GDS-02, GDS-08 | — | client UI (negative req.) | FS-106 | IP-6010 | BeliefState.fogOfWar.test.ts |
 | FR-6200 | Belief-filtered outbound messages only | — | GDS-06, GDS-09 | — | BeliefState, GameEngine | FS-106 | IP-6010 | BeliefState.fogOfWar.test.ts |
-| FR-7100 | WebSocket push notifications | — | GDS-02 | ADR-0001 | WS transport | UNASSIGNED | UNASSIGNED | UNASSIGNED |
-| FR-7200 | Server sole authority | — | GDS-02, GDS-08 | — | GameEngine | UNASSIGNED | UNASSIGNED | UNASSIGNED |
-| FR-7300 | Disconnect/reconnect handling | — | GDS-01, FS-101 §W7 | — | GameEngine, WS transport | FS-101 | UNASSIGNED | UNASSIGNED |
+| FR-7100 | WebSocket push notifications | — | GDS-02 | ADR-0001 | WS transport | FS-107 | IP-7010 | websocketServer.test.ts |
+| FR-7200 | Server sole authority | — | GDS-02, GDS-08 | — | GameEngine | FS-107 | IP-7010 | websocketServer.test.ts (two-independent-views case) |
+| FR-7300 | Disconnect/reconnect handling | — | GDS-01, FS-101 §W7 | — | GameEngine, WS transport | FS-101/FS-107 | IP-7010 | disconnectFlow.test.ts |
 | FR-8100 | Render the panel set | — | GDS-08 | — | client UI | UNASSIGNED | UNASSIGNED | UNASSIGNED |
 | FR-8200 | Visual distinction of contact types | — | GDS-08 | — | client UI | UNASSIGNED | UNASSIGNED | UNASSIGNED |
 | FR-8300 | Cost/time-to-online shown before commit | — | GDS-08 | — | client UI | UNASSIGNED | UNASSIGNED | UNASSIGNED |
@@ -54,7 +54,7 @@ candidate module the requirement will land in once `05`/`06`/`07` assign real wo
 | ~~CR-01~~ | ~~Belief-state decay rate~~ | — | — | — | — | **Resolved into FR-2300, 2026-08-22 — no longer a candidate.** | — | — |
 | ~~CR-02~~ | ~~Disconnect/reconnect grace period~~ | — | — | — | — | **Resolved into FR-7300, 2026-08-22 — no longer a candidate.** | — | — |
 | ~~CR-03~~ | Maneuver fuel-budget/transfer-time table | FR-5300/5400 | GDS-03/09 | R-201 | FS-104 | **RESOLVED 2026-08-22** — R-201 grounded the Δv/time shape; FS-104's Maneuver Cost Table adopted it. | — | — |
-| NFR-1100 | Turn-notification latency budget | — | GDS-06 | ADR-0001 | WS transport | UNASSIGNED | UNASSIGNED | UNASSIGNED |
+| NFR-1100 | Turn-notification latency budget | — | GDS-06 | ADR-0001 | WS transport | FS-107 | IP-7010 | websocketServer.test.ts (soft 3s round-trip check) |
 | NFR-1200 | Propagation efficiency | — | GDS-06 | — | Propagator | FS-104 | IP-5010 | (structural — closed-form per-asset update, no iterative terms; no dedicated perf test yet) |
 | NFR-2100 | Deterministic resolution | — | GDS-06 | — | GameEngine | FS-101 | IP-1010 | (structural — pure functions of stored state, no randomness/wall-clock; no dedicated test, per VR-1010 F2) |
 | NFR-2200 | Session isolation | — | GDS-02, GDS-06 | — | GameEngine | FS-101 | IP-1010 | (structural — `SessionStore` keyed by `SessionId` in a `Map`, each `SessionRecord` independent; no dedicated test, per VR-1010 F2) |
@@ -67,7 +67,7 @@ candidate module the requirement will land in once `05`/`06`/`07` assign real wo
 | NFR-5300 | `Propagator` isolation protects fidelity upgrades | — | GDS-03 | — | Propagator | FS-104 | IP-5010 | (Inspection — internal state private, only currentRegime exposed) |
 | NFR-6100 | Server-authoritative state | — | GDS-02, GDS-09 | — | GameEngine | FS-101 | IP-1010 | (structural — all mutation originates in `GameEngine`/`TurnManager`/`SessionStore`, no client-writable path; no dedicated test, per VR-1010 F2) |
 | NFR-7100 | Browser targets | — | GDS-08 | ADR-0001 | client UI | UNASSIGNED | UNASSIGNED | UNASSIGNED |
-| NFR-7200 | Graceful WebSocket degradation | — | GDS-02 | — | client UI, WS transport | UNASSIGNED | UNASSIGNED | UNASSIGNED |
+| NFR-7200 | Graceful WebSocket degradation | — | GDS-02 | — | client UI, WS transport | FS-107 | IP-7010 (transport half)/IP-8010 (client half, pending) | disconnectFlow.test.ts |
 | NFR-8100 | Deterministic-core test coverage | — | GDS-06 | — | — | UNASSIGNED | UNASSIGNED | UNASSIGNED |
 | NFR-9100 | Reproducible build | — | — | ADR-0001 | — | UNASSIGNED | UNASSIGNED | UNASSIGNED |
 | NFR-9200 | Roster expansion readiness | — | GDS-04 | — | content templates | FS-102 | IP-3010 (schema) | TemplateRegistry.test.ts |

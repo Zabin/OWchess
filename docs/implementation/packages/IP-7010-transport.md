@@ -1,6 +1,6 @@
 # IP-7010 — Server-Authoritative WebSocket Transport
 
-- **Package ID:** IP-7010 · **Status:** BLOCKED (on IP-0010, IP-1010, IP-6010) · **Owning
+- **Package ID:** IP-7010 · **Status:** COMPLETE (2026-08-22) · **Owning
   stage-08 peer:** `08-code-implementation`
 - **Source:** FS-107 (`docs/features/FS-107-server-authoritative-transport.md`), FEAT-7000
 - **Authorization (G3):** Covered by the release plan.
@@ -69,20 +69,29 @@ FS-107 metadata: `**Implemented by:** IP-7010`.
 
 ## Definition of Done
 
-- [ ] All 4 Implementation Tasks complete; the two-independently-computed-views test is a named,
-      passing regression test (this package's own strongest fog-of-war-adjacent guarantee).
-- [ ] No grace-period timer exists anywhere in the disconnect path (Inspection — a literal search
-      for any `setTimeout`/timer construct in `transport/` tied to disconnect handling should find
-      none, per FR-7300's explicit "no grace period or automatic forfeit/auto-pass/timeout of any
-      kind").
+- [x] All 4 Implementation Tasks complete; the two-independently-computed-views test
+      (`websocketServer.test.ts`) is a named, passing regression test.
+- [x] No grace-period timer exists anywhere in the disconnect path — `grep -rn "setTimeout\|
+      setInterval" server/src/transport/` finds none.
 
 ## Verification Checklist
 
-- [ ] **G5 gate:** build clean. **G5 gate:** full test suite passes.
-- [ ] FS-107 Acceptance Criteria mapped to passing tests.
-- [ ] NFR-1100's turn-latency budget (3s) measured for at least one action round-trip in the test
-      suite (even as a soft assertion, per BL-0006's own noted lack of a real measurement harness
-      — this package is the first real chance to start grounding that NFR empirically).
+- [x] **G5 gate:** build clean. **G5 gate:** full test suite passes (79 total: 1 shared + 78
+      server, incl. this package's 9: `websocketServer.test.ts` ×4, `disconnectFlow.test.ts` ×5).
+- [x] FS-107 Acceptance Criteria mapped to passing tests.
+- [x] NFR-1100's turn-latency budget (3s) soft-measured: `websocketServer.test.ts`'s round-trip
+      test asserts `elapsedMs < 3000` for a real action dispatch — a genuine (if in-memory, no
+      real network) first data point, per BL-0006's own noted lack of a measurement harness.
+
+## Deviation note
+
+Game logic is decoupled from the actual `ws` library via a `Connection` interface
+(`connectionRegistry.ts`) — `send`/`onMessage`/`onClose` — so it's unit-testable with a fake
+connection rather than a real socket. `server/src/index.ts` remains a scaffold placeholder; no
+package yet bootstraps a real `WebSocketServer` wrapping actual sockets into `Connection` and
+calling `createTransport`/`handleConnection`. This is the same "no production bootstrap yet"
+pattern already disclosed for deploy/belief/maneuver/effect ticking (BL-0022/0030) — filed as
+BL-0038, the last remaining piece before the server can actually run end-to-end.
 
 ## Dependencies
 
