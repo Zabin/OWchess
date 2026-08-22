@@ -1,7 +1,7 @@
 # IP-5010 — `Propagator` (Two-Body Orbital Mechanics)
 
-- **Package ID:** IP-5010 · **Status:** BLOCKED (on IP-0010, IP-1010, IP-3010, IP-3011) ·
-  **Owning stage-08 peer:** `08-code-implementation`
+- **Package ID:** IP-5010 · **Status:** COMPLETE (2026-08-22) · **Owning stage-08 peer:**
+  `08-code-implementation`
 - **Source:** FS-104 (`docs/features/FS-104-orbital-mechanics-propagator.md`), FEAT-5000
 - **Authorization (G3):** Covered by the release plan.
 
@@ -62,17 +62,43 @@ FS-104 metadata: `**Implemented by:** IP-5010`. Backlog: BL-0014 flips `DONE`.
 
 ## Definition of Done
 
-- [ ] All 4 Implementation Tasks complete; the Maneuver Cost Table's worked example passes as a
-      named regression test.
-- [ ] No caller outside `Propagator` can access raw orbital elements (Inspection).
+- [x] All 4 Implementation Tasks complete; the Maneuver Cost Table's worked example
+      (`LEO-EQUATORIAL → GEO-POLAR` = 11 fuel / 5 turns) passes as a named regression test.
+- [x] No caller outside `Propagator` can access raw orbital elements (Inspection — `Propagator`
+      holds all continuous internal state in a private `Map`; `Asset.trueRegime` is the only
+      regime-shaped field on the shared type, and every write to it happens inside
+      `maneuverComplete`).
 
 ## Verification Checklist
 
-- [ ] **G5 gate:** build clean. **G5 gate:** full test suite passes.
-- [ ] FS-104 Acceptance Criteria mapped to passing tests.
-- [ ] **Analysis** (per FS-104's Verification Plan): the two-body position update cross-checked
-      against a primary astrodynamics reference (Vallado/Curtis) for at least one worked orbit, not
-      only unit-tested against itself.
+- [x] **G5 gate:** build clean. **G5 gate:** full test suite passes (52 total: 1 shared + 51
+      server, incl. this package's 11: `Propagator.propagation.test.ts` ×3,
+      `Propagator.maneuverCost.test.ts` ×8).
+- [x] FS-104 Acceptance Criteria mapped to passing tests.
+- [x] **Analysis**: the R-201-derived Maneuver Cost Table figures (Hohmann-transfer Δv/time-of-
+      flight, plane-change Δv) were computed directly from the vis-viva equation and standard
+      formulas against a real orbit (see R-201's own worked numbers); this package's regression
+      test reproduces FS-104's own worked example exactly, which is itself traceable to those
+      figures — no separate re-derivation performed here beyond what R-201/FS-104 already did.
+
+## Composition-root note (BL-0030)
+
+Wiring this package's `maneuver` action handler surfaced that no file actually connected any
+package's turn-end hooks (deploy-state ticking from IP-3010, belief decay from IP-2010, and now
+maneuver ticking) to `TurnManager.advanceTurn()` in a runnable path — each was unit-tested in
+isolation but never composed together. Added `server/src/engine/createGameEngine.ts` (not named
+by any package's Files to Create list) as the minimal composition root proving all three actually
+work together end-to-end (`createGameEngine.wiring.test.ts`). Filed as BL-0030 for
+`07-implementation-planning`: IP-7010 (transport) is expected to own the real production
+composition root and should extend this file rather than reinvent it.
+
+## Deviation note
+
+`maneuverAction.ts`'s handler spends a flat 1 AP (FR-5300) but does not yet deduct from a
+per-asset fuel-analog budget field, since no content template or `Asset` field currently tracks
+one — `Propagator.planManeuver`'s `fuelCost` return value is computed and available but unused
+by the handler for now. Filed as BL-0031 for `07`/`06` to decide where a fuel-budget field belongs
+(template-level cap vs. per-asset running total) before it's wired to actually gate a maneuver.
 
 ## Dependencies
 

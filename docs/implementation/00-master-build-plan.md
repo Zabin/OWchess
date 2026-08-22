@@ -9,10 +9,10 @@
 |---|---|---|---|---|---|
 | IP-0010 | — (scaffold) | `08-code-implementation` | **VERIFIED** (2026-08-22, VR-0010) | none | Release plan (MVP needs a codebase) |
 | IP-1010 | FS-101 | `08-code-implementation` | **VERIFIED** (2026-08-22, VR-1010-v2) | IP-0010 (VERIFIED) | Release plan (FEAT-1000, MVP) |
-| IP-3010 | FS-102 (code) | `08-code-implementation` | **COMPLETE** (2026-08-22) | IP-0010, IP-1010 | Release plan (FEAT-3000, MVP) |
+| IP-3010 | FS-102 (code) | `08-code-implementation` | **VERIFIED** (2026-08-22, VR-3010) | IP-0010, IP-1010 (both VERIFIED) | Release plan (FEAT-3000, MVP) |
 | IP-3011 | FS-102 (content) | `08-content-authoring` | **COMPLETE** (2026-08-22) | IP-3010 | Release plan (FEAT-3000, MVP) |
 | IP-2010 | FS-103 | `08-code-implementation` | **COMPLETE** (2026-08-22) | IP-0010, IP-1010, IP-3010, IP-3011 | Release plan (FEAT-2000, MVP) |
-| IP-5010 | FS-104 | `08-code-implementation` | BLOCKED | IP-0010, IP-1010, IP-3010, IP-3011 | Release plan (FEAT-5000, MVP) |
+| IP-5010 | FS-104 | `08-code-implementation` | **COMPLETE** (2026-08-22) | IP-0010, IP-1010, IP-3010, IP-3011 | Release plan (FEAT-5000, MVP) |
 | IP-6010 | FS-106 | `08-code-implementation` | BLOCKED | IP-0010, IP-2010 | Release plan (FEAT-6000, MVP) |
 | IP-4010 | FS-105 (code) | `08-code-implementation` | BLOCKED | IP-0010, IP-2010, IP-6010 | Release plan (FEAT-4000, MVP) |
 | IP-4011 | FS-105 (content) | `08-content-authoring` | BLOCKED | IP-4010 | Release plan (FEAT-4000, MVP) |
@@ -41,6 +41,34 @@ corrective section rather than editing the original sentence in place). No packa
 next-in-line packages for `09-package-verification`; IP-2010/IP-5010/IP-6010/IP-4010/IP-7010/
 IP-8010 remain `BLOCKED` on those and further downstream dependencies.
 
+**IP-3010 is now `VERIFIED`** (2026-08-22 — see
+[VR-3010](verification/VR-3010-asset-roster-lifecycle.md)). Independent audit confirmed the deploy
+action's AP-cost deduction, the ground/space `deployState.turnsUntilOnline` lifecycle, and
+`assertOnline` pre-online blocking all against the code directly, cross-checked against a real
+second consumer (IP-2010's `taskAction.ts`, which already lands on this branch). Both disclosed
+deviations — reuse of GDS-07's existing `turnsUntilOnline` field instead of a new `onlineAt` field,
+and the additive `TurnManager.registerTurnEndHook` extension (BL-0022) — were independently
+confirmed accurate and judged reasonable, the same way VR-1010 judged BL-0021: `TurnManager.ts`'s
+diff is purely additive (its pre-existing methods are behavior-identical; `TurnManager.test.ts`
+still passes unmodified) and `shared/src/types.ts` was untouched by IP-3010's commit. The package's
+own once-open checklist item (does the schema match IP-3011's eventual data) is now independently
+confirmed true, since IP-3011's real content templates load and validate cleanly. Build clean; full
+suite green (38 tests). One new Low, non-blocking finding: `tickDeployStates` isn't yet wired to
+`registerTurnEndHook` in any production bootstrap — this matches the identical, currently-unwired
+state of every other handler/hook in the tree (no server bootstrap exists yet for any of them), so
+it's a project-wide gap deferred to the future transport/bootstrap package, not an IP-3010 defect.
+**No package flips to `READY` from this VR alone**: IP-3011's sole blocking dependency (IP-3010) is
+now met, making it the next checkable package for its own verification, but IP-2010 and IP-5010 —
+both already `COMPLETE` — still also name IP-3011 as a blocking dependency, and IP-3011 remains
+`COMPLETE`, not yet `VERIFIED`, so neither flips to `READY`.
+
+**Note (observed mid-session):** IP-5010 (`Propagator`) has since landed as `COMPLETE` on this
+branch — implemented concurrently with this verification pass, ahead of the sequencing this plan's
+"Parallel opportunities" section anticipated (it expected IP-5010 to start only once IP-1010/
+IP-3010/IP-3011 were all `VERIFIED`). This is recorded here as an observation for
+`07-implementation-planning`/the pipeline journal; this VR pass verified IP-3010 only and did not
+audit IP-5010's own implementation.
+
 ## Dependency graph
 
 ```
@@ -67,7 +95,7 @@ IP-2010/IP-6010's own sequence, converging only at IP-8010.
 
 ## Next action
 
-`09-package-verification` on **IP-3010** (and/or IP-3011) — both are `COMPLETE` and now have their
-sole currently-checkable dependency (IP-1010) `VERIFIED`; IP-3010 also still needs IP-0010
-(already `VERIFIED`). Once IP-3010 is `VERIFIED`, IP-2010 and IP-5010 become checkable against
-their remaining dependencies (IP-3011).
+`09-package-verification` on **IP-3011** next — its sole blocking dependency, IP-3010, is now
+`VERIFIED`. IP-2010 and IP-5010 (both `COMPLETE`) remain gated on IP-3011's own `VERIFIED` status
+before either can flip to `READY`; IP-6010/IP-4010/IP-4011/IP-7010/IP-8010 remain `BLOCKED` on
+further downstream dependencies regardless.
