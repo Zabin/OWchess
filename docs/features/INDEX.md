@@ -9,5 +9,7 @@
 | [FS-102](FS-102-asset-roster-mission-sets.md) | Asset Roster & Mission Sets | FEAT-3000 | EP-1000 | ✅ Authored | Template registration, deploy cost/time-to-online lifecycle, pre-online use blocking. One new Open Question: whether per-template deploy limits exist (currently unbounded, AP-scarcity-only brake). |
 | [FS-103](FS-103-sensing-f2t2e-chain.md) | Sensing & the F2T2E Chain | FEAT-2000 | EP-1000 | ✅ Authored | Sensor tasking, capability-gated precision advancement, staleness decay (5-turn window, `'find'`-level entries removed when stale — resolved 2026-08-22). No open questions remaining. |
 
-Remaining FEAT-4000–8000 not yet specified — next per the release plan's build sequence:
-FEAT-5000, then FEAT-4000/FEAT-6000, then FEAT-7000, then FEAT-8000.
+| [FS-104](FS-104-orbital-mechanics-propagator.md) | Orbital Mechanics & the `Propagator` Boundary | FEAT-5000 | EP-1000 | ✅ Authored | Continuous two-body propagation, maneuver planning/completion, regime classification. CR-03 (fuel/transfer-time table) remains open, owned by `02-research-orbital-and-tooling` first. |
+
+Remaining FEAT-4000, FEAT-6000–8000 not yet specified — next per the release plan's build
+sequence: FEAT-4000/FEAT-6000 in parallel, then FEAT-7000, then FEAT-8000.

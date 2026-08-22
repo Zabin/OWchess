@@ -140,6 +140,7 @@ follow it directly rather than re-deriving new ones. Every FR/NFR is owned by ex
 
 ### FEAT-5000 — Orbital Mechanics & the `Propagator` Boundary
 
+- **Specified by:** [FS-104](../features/FS-104-orbital-mechanics-propagator.md) (2026-08-22)
 - **Purpose:** Give every asset a real, physically-grounded position, presented to players as a
   discrete regime, isolated behind a swappable interface.
 - **Description:** Two-body Keplerian propagation (v1 baseline per MSTR-001 C4 v0.3 — J2 deferred,
