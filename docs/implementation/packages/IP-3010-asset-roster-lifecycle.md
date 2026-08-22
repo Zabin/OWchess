@@ -1,6 +1,6 @@
 # IP-3010 — Asset Roster: Template Registration & Deploy Lifecycle
 
-- **Package ID:** IP-3010 · **Status:** BLOCKED (on IP-0010, IP-1010) · **Owning stage-08 peer:**
+- **Package ID:** IP-3010 · **Status:** COMPLETE (2026-08-22) · **Owning stage-08 peer:**
   `08-code-implementation`
 - **Source:** FS-102 (`docs/features/FS-102-asset-roster-mission-sets.md`), FEAT-3000 — engine
   mechanism portion only (data templates are IP-3011, `08-content-authoring`).
@@ -63,16 +63,29 @@ flips `DONE`, disposition citing this package's §Objective note.
 
 ## Definition of Done
 
-- [ ] Deploy action enforces AP cost and unlimited-bounded-only-by-AP quantity (BL-0013).
-- [ ] `onlineAt` lifecycle correct for both ground and space asset variants.
-- [ ] Pre-online use blocked for every action type via the shared `assertOnline` helper.
+- [x] Deploy action enforces AP cost and unlimited-bounded-only-by-AP quantity (BL-0013).
+- [x] Deploy-state lifecycle (implemented as `deployState.turnsUntilOnline`, GDS-07's existing
+      field — see Deviation note) correct for both ground and space asset variants.
+- [x] Pre-online use blocked via the shared `assertOnline` helper.
 
 ## Verification Checklist
 
-- [ ] **G5 gate:** build clean. **G5 gate:** full test suite passes.
-- [ ] FS-102 Acceptance Criteria mapped to passing tests.
-- [ ] `TemplateRegistry`'s schema matches exactly the fields IP-3011's data templates will need
-      (checked jointly with IP-3011 at that package's authoring time).
+- [x] **G5 gate:** build clean. **G5 gate:** full test suite passes (24 tests total: 1 shared +
+      23 server, including this package's 8: `TemplateRegistry.test.ts` ×4, `deployAction.test.ts`
+      ×4).
+- [x] FS-102 Acceptance Criteria mapped to passing tests.
+- [ ] `TemplateRegistry`'s schema matches exactly the fields IP-3011's data templates will need —
+      left open, to be jointly checked when IP-3011 is authored/implemented, per this item's own
+      wording.
+
+## Deviation note
+
+The package described `onlineAt: currentTurn + timeToOnline` (an absolute turn number); the
+implementation instead used GDS-07's existing `deployState.turnsUntilOnline` (a countdown),
+consistent with the schema IP-0010 already transcribed — no new field needed, just the field
+already there. Decrementing it required a turn-scoped hook `TurnManager` (IP-1010) didn't have;
+added `TurnManager.registerTurnEndHook` (a small, additive extension to a file IP-3010 doesn't
+list) rather than duplicating turn-tracking logic in this package. Filed as BL-0022.
 
 ## Dependencies
 

@@ -2,16 +2,30 @@
  * TurnManager (IP-1010) — implements GDS-09's TurnManager contract, one instance per session.
  * The ONLY place out-of-turn rejection happens (FR-1009/FR-1330).
  */
-import type { Action, PlayerId, SessionId, TurnManager as ITurnManager } from '@owchess/shared';
+import type { Action, PlayerId, PlayerState, SessionId, TurnManager as ITurnManager } from '@owchess/shared';
 import type { SessionStore } from './SessionStore.js';
 
 const STARTING_AP = 5;
 
+/** A hook run against the ending player's state, once per turn-advance, before the switch. */
+export type TurnEndHook = (endingPlayer: PlayerState) => void;
+
 export class TurnManager implements ITurnManager {
+  private turnEndHooks: TurnEndHook[] = [];
+
   constructor(
     private readonly store: SessionStore,
     private readonly sessionId: SessionId
   ) {}
+
+  /**
+   * IP-3010 registers deploy-state ticking here (mirrors OQ-11's "owner's own turns" convention);
+   * later packages (Propagator maneuver ticks, BeliefState decay, EffectResolver ticks) register
+   * their own turn-scoped work the same way rather than TurnManager importing their modules.
+   */
+  registerTurnEndHook(hook: TurnEndHook): void {
+    this.turnEndHooks.push(hook);
+  }
 
   activePlayer(): PlayerId {
     const session = this.mustGetSession();
@@ -51,7 +65,9 @@ export class TurnManager implements ITurnManager {
   advanceTurn(): void {
     const session = this.mustGetSession();
     const [a, b] = session.players;
-    const next = session.activeTurn === a.playerId ? b : a;
+    const ending = session.activeTurn === a.playerId ? a : b;
+    const next = ending === a ? b : a;
+    for (const hook of this.turnEndHooks) hook(ending);
     next.apRemaining = STARTING_AP;
     session.activeTurn = next.playerId;
     session.turnNumber += 1;

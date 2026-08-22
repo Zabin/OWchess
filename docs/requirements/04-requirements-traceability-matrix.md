@@ -27,11 +27,11 @@ candidate module the requirement will land in once `05`/`06`/`07` assign real wo
 | FR-2200 | Precision gated by asset capability | — | GDS-04, GDS-09 | — | BeliefState | UNASSIGNED | UNASSIGNED | UNASSIGNED |
 | FR-2300 | Belief-state staleness/decay | — | GDS-07, FS-103 §W3 | — | BeliefState | FS-103 | UNASSIGNED | UNASSIGNED |
 | FR-2400 | Reflect precision/staleness to UI | — | GDS-08 | — | client UI | UNASSIGNED | UNASSIGNED | UNASSIGNED |
-| FR-3100 | Data-driven asset templates | — | GDS-04 | — | content templates | UNASSIGNED | UNASSIGNED | UNASSIGNED |
-| FR-3200 | v1 roster support | R-203 | GDS-04 | — | content templates | UNASSIGNED | UNASSIGNED | UNASSIGNED |
-| FR-3300 | Ground/space cost-time asymmetry | — | GDS-04 (this doc's tuning table) | — | content templates | UNASSIGNED | UNASSIGNED | UNASSIGNED |
-| FR-3400 | Deploy with cost deduction | — | GDS-07 | — | GameEngine | UNASSIGNED | UNASSIGNED | UNASSIGNED |
-| FR-3500 | Block pre-online use | — | GDS-07 | — | GameEngine | UNASSIGNED | UNASSIGNED | UNASSIGNED |
+| FR-3100 | Data-driven asset templates | — | GDS-04 | — | content templates | FS-102 | IP-3010 (schema)/IP-3011 (content, pending) | TemplateRegistry.test.ts |
+| FR-3200 | v1 roster support | R-203 | GDS-04 | — | content templates | FS-102 | IP-3011 (pending) | UNASSIGNED |
+| FR-3300 | Ground/space cost-time asymmetry | — | GDS-04 (this doc's tuning table) | — | content templates | FS-102 | IP-3010 (mechanism) | deployAction.test.ts (ground-vs-space onlineAt case) |
+| FR-3400 | Deploy with cost deduction | — | GDS-07 | — | GameEngine | FS-102 | IP-3010 | deployAction.test.ts |
+| FR-3500 | Block pre-online use | — | GDS-07 | — | GameEngine | FS-102 | IP-3010 | deployAction.test.ts (assertOnline case) |
 | FR-4100 | Require targeting-quality data | — | GDS-09 | — | EffectResolver | UNASSIGNED | UNASSIGNED | UNASSIGNED |
 | FR-4200 | Apply the correct effect | — | GDS-04, GDS-07, GDS-09 | — | EffectResolver | UNASSIGNED | UNASSIGNED | UNASSIGNED |
 | FR-4300 | Cumulative Degrade | — | GDS-07 | — | EffectResolver | UNASSIGNED | UNASSIGNED | UNASSIGNED |
@@ -62,7 +62,7 @@ candidate module the requirement will land in once `05`/`06`/`07` assign real wo
 | NFR-3200 | Unguessable session identifiers | — | GDS-02, GDS-06 | — | GameEngine | UNASSIGNED | UNASSIGNED | UNASSIGNED |
 | NFR-4100 | UI as rules reference | — | GDS-06 | — | client UI | UNASSIGNED | UNASSIGNED | UNASSIGNED |
 | NFR-4200 | No post-hoc rejection under normal play | — | GDS-06, GDS-08 | — | client UI | UNASSIGNED | UNASSIGNED | UNASSIGNED |
-| NFR-5100 | Data-driven content, no code changes | — | GDS-04 | — | content templates | UNASSIGNED | UNASSIGNED | UNASSIGNED |
+| NFR-5100 | Data-driven content, no code changes | — | GDS-04 | — | content templates | FS-102 | IP-3010 (schema)/IP-3011 (content, pending) | TemplateRegistry.test.ts |
 | NFR-5200 | Pipeline compliance | — | — | — | — | UNASSIGNED | UNASSIGNED | UNASSIGNED |
 | NFR-5300 | `Propagator` isolation protects fidelity upgrades | — | GDS-03 | — | Propagator | UNASSIGNED | UNASSIGNED | UNASSIGNED |
 | NFR-6100 | Server-authoritative state | — | GDS-02, GDS-09 | — | GameEngine | UNASSIGNED | UNASSIGNED | UNASSIGNED |
@@ -70,7 +70,7 @@ candidate module the requirement will land in once `05`/`06`/`07` assign real wo
 | NFR-7200 | Graceful WebSocket degradation | — | GDS-02 | — | client UI, WS transport | UNASSIGNED | UNASSIGNED | UNASSIGNED |
 | NFR-8100 | Deterministic-core test coverage | — | GDS-06 | — | — | UNASSIGNED | UNASSIGNED | UNASSIGNED |
 | NFR-9100 | Reproducible build | — | — | ADR-0001 | — | UNASSIGNED | UNASSIGNED | UNASSIGNED |
-| NFR-9200 | Roster expansion readiness | — | GDS-04 | — | content templates | UNASSIGNED | UNASSIGNED | UNASSIGNED |
+| NFR-9200 | Roster expansion readiness | — | GDS-04 | — | content templates | FS-102 | IP-3010 (schema) | TemplateRegistry.test.ts |
 
 ## Coverage confirmation
 
