@@ -2,25 +2,19 @@
 
 ## Position
 
-- **Updated:** 2026-08-22 (run #17)
-- **Increment:** Bootstrap increment continues — vision amendment (run #16) cascaded; **first
-  Feature Specification (FS-101, FEAT-1000) authored** this run. Nothing has shipped yet.
-- **Pipeline state:** `00` — manager, iteration halted at a gate this run (see below). `01`–`05` —
-  complete (05 last touched by run #16's amendment cascade, not new decomposition). `06` — **in
-  progress.** FS-101 (Session & Turn Lifecycle) authored, all 15 FR/4 NFR fields populated. 7
+- **Updated:** 2026-08-22 (run #18)
+- **Increment:** Bootstrap increment continues — BL-0010 (disconnect/reconnect policy) answered by
+  the owner and propagated through FS-101/FR-7300/RTM/feature catalog/release plan/assumptions
+  register. Gate cleared; nothing has shipped yet.
+- **Pipeline state:** `00` — manager, resuming iteration. `01`–`05` — complete. `06` — **in
+  progress.** FS-101 (Session & Turn Lifecycle) fully authored, no open blocking questions. 7
   Features remain unspecified. `07`–`11` — not started.
-- **Backlog:** 7 open — BL-0005 (`DEFERRED`), BL-0006/0007 (`DEFERRED`, Low), BL-0008
-  (`SCHEDULED`), BL-0009 (`SCHEDULED` for `06`), **BL-0010 (`NEEDS-USER`, ripened this run — see
-  Open gates)**, BL-0011 (`SCHEDULED`), BL-0012 (`SCHEDULED` for `07`, new this run — win-condition
-  check ordering, low-stakes default already assigned in FS-101).
-- **Next step:** put BL-0010 (disconnect/reconnect policy) to the owner — the only ripe
-  `NEEDS-USER` entry this run, and per tier precedence the sole reason iteration stopped. Once
-  answered, resume `06-feature-specification` for the next unspecified Feature (FEAT-3000, Asset
-  Roster & Mission Sets, per the release plan's build sequence) — BL-0010's answer does not block
-  that Feature's own spec, so either order is fine once the owner responds.
-- **Open gates:** **BL-0010** — disconnect/reconnect grace-period and forfeit policy. FS-101
-  could not complete its Error Handling field without a real answer; this is the reason iterate
-  mode stopped rather than continuing to spec further Features.
+- **Backlog:** 6 open — BL-0005 (`DEFERRED`), BL-0006/0007 (`DEFERRED`, Low), BL-0008
+  (`SCHEDULED`), BL-0009 (`SCHEDULED` for `06`), BL-0011 (`SCHEDULED`), BL-0012 (`SCHEDULED` for
+  `07`). BL-0010 flipped `DONE` this run.
+- **Next step:** `06-feature-specification` again — FEAT-3000 (Asset Roster & Mission Sets), the
+  release plan's next recommended Feature after the foundation (FEAT-1000).
+- **Open gates:** none currently blocking.
 - **Next step:** `03-architecture-design-synthesis` again — GDS-07 (Data Model), now grounded by
   R-203's 9-regime recommendation.
 - **Open gates:** none currently blocking.
@@ -46,3 +40,4 @@
 | 15 | 2026-08-22 | iterate (`00-pipeline-manager`, user requested "iterate until release plan ready") | `05-feature-decomposition` | `docs/feature-planning/01-05*.md`, `docs/feature-planning/INDEX.md` | Decomposed the FR/NFR baseline into 8 Features/3 Epics, built the dependency graph (acyclic, 6-node critical path), wrote the Release Plan (all 8 Features → MVP, justified), ran the Feature Review (3 Low findings, all self-resolved). No new backlog items. | `06-feature-specification` — first FS-### for FEAT-1000 (Session & Turn Lifecycle). |
 | 16 | 2026-08-22 | manual (owner-directed vision amendment, not manager iteration) | `01-vision` | `docs/master/MSTR-001-program-vision.md` (v0.3), `docs/architecture/00-vision.md`, `docs/architecture/strategic-assumptions-register.md` (A8), plus cascade edits to `docs/architecture/04-domain-model.md` (OQ-14), `docs/research/R-203-*.md`, `docs/requirements/01-functional-requirements.md` (FR-5100), `docs/feature-planning/03-feature-catalog.md` (FEAT-5000), `docs/feature-planning/01-release-plan.md` (Highest Risk reassigned) | Owner decided, after a design discussion on `Propagator` risk, to make the v1 baseline two-body-only (not Kepler+J2), with J2/SGP4 as an explicit later call behind the existing `Propagator` seam, gated on playtesting impact (specifically the polar/sun-synchronous plane class's legibility). Amended MSTR-001 C4 and cascaded the change through every downstream artifact it invalidated. BL-0005 marked moot for v1; BL-0011 rescoped to two-body delta-v figures. | `06-feature-specification` — resume at FEAT-1000, unaffected in sequence by this amendment. |
 | 17 | 2026-08-22 | iterate (`00-pipeline-manager`, user requested "iterate pipeline") | `06-feature-specification` | `docs/features/FS-101-session-turn-lifecycle.md`, `docs/features/INDEX.md` | Authored FS-101 for FEAT-1000, all 20 fields. Surfaced BL-0010 (CR-02, disconnect policy) as genuinely ripe — the spec's own Error Handling field couldn't be completed without it — and BL-0012 (win-condition ordering, low-stakes, self-resolved with a stated default). **Iteration halted at BL-0010, the run's one ripe `NEEDS-USER` gate.** | Put BL-0010 to the owner (gate). Once answered: `06-feature-specification` again for FEAT-3000. |
+| 18 | 2026-08-22 | manual (owner answered the gate; user then said "continue from where you left off") | — (no stage skill; propagation of an owner decision across existing docs) | FS-101 (§W7 added), `docs/requirements/01-functional-requirements.md` (FR-7300), `docs/requirements/04-requirements-traceability-matrix.md`, `docs/feature-planning/03-feature-catalog.md` (FEAT-1000/7000), `docs/feature-planning/01-release-plan.md`, `docs/architecture/strategic-assumptions-register.md` | Owner resolved BL-0010: no grace period/timeout; on disconnect, notify the still-connected player and let them choose to wait indefinitely or cancel (no winner recorded). Propagated to every artifact that carried CR-02/BL-0010 as open. BL-0010 flipped `DONE`. | `06-feature-specification` — FEAT-3000 (Asset Roster & Mission Sets). |
