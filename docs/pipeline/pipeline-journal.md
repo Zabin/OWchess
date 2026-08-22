@@ -2,16 +2,16 @@
 
 ## Position
 
-- **Updated:** 2026-08-22 (run #23)
-- **Increment:** Bootstrap increment continues — FS-105 (FEAT-4000) authored. Nothing has shipped
+- **Updated:** 2026-08-22 (run #24)
+- **Increment:** Bootstrap increment continues — FS-106 (FEAT-6000) authored. Nothing has shipped
   yet.
 - **Pipeline state:** `00` — manager iterating. `01`–`05` — complete. `06` — **in progress.**
-  FS-101–105 authored (5 of 8 Features). 3 Features remain unspecified. `07`–`11` — not started.
+  FS-101–106 authored (6 of 8 Features). 2 Features remain unspecified (FEAT-7000, FEAT-8000).
+  `07`–`11` — not started.
 - **Backlog:** 9 open — BL-0005 (`DEFERRED`), BL-0006/0007 (`DEFERRED`, Low), BL-0008
   (`SCHEDULED`), BL-0011 (`SCHEDULED`, needs `02` research first), BL-0012/BL-0013/BL-0014/BL-0015
   (`SCHEDULED`, all low stakes, no rush).
-- **Next step:** `06-feature-specification` again — FEAT-6000 (Fog-of-War Enforcement), the
-  project's single highest-priority test surface.
+- **Next step:** `06-feature-specification` again — FEAT-7000 (Server-Authoritative Transport).
 - **Open gates:** none currently blocking.
 - **Next step:** `03-architecture-design-synthesis` again — GDS-07 (Data Model), now grounded by
   R-203's 9-regime recommendation.
@@ -44,3 +44,4 @@
 | 21 | 2026-08-22 | manual (owner answered the gate) | — (propagation) | FS-103 (§W3), `docs/requirements/01-functional-requirements.md` (FR-2300), RTM, `docs/feature-planning/03-feature-catalog.md` (FEAT-2000) | Owner resolved BL-0009: 5-turn decay window; `'find'`-level entries removed (not floored) when stale. Propagated to every artifact carrying CR-01/BL-0009 as open. BL-0009 flipped `DONE`. | `06-feature-specification` — FEAT-5000 (Orbital Mechanics/`Propagator`). |
 | 22 | 2026-08-22 | iterate (`00-pipeline-manager`, user requested "continue from where you left off") | `06-feature-specification` | `docs/features/FS-104-orbital-mechanics-propagator.md`, `docs/features/INDEX.md` | Authored FS-104 for FEAT-5000: continuous propagation, maneuver planning/completion, regime classification. CR-03 correctly left open (needs `02` research, not an owner call). Filed BL-0014 (concurrent maneuver handling, low stakes). | `06-feature-specification` again — FEAT-4000 (Effect Resolution). |
 | 23 | 2026-08-22 | iterate (`00-pipeline-manager`) | `06-feature-specification` | `docs/features/FS-105-effect-resolution.md`, `docs/features/INDEX.md` | Authored FS-105 for FEAT-4000: engagement gating, Deceive/Destroy dispatch, cumulative Degrade, denial-streak tracker. Pinned effect durations as this stage's own numeric refinement (Disrupt/Deny 3 turns, Degrade 4 turns). Filed BL-0015 (denial-streak storage, low stakes). | `06-feature-specification` again — FEAT-6000 (Fog-of-War Enforcement). |
+| 24 | 2026-08-22 | iterate (`00-pipeline-manager`) | `06-feature-specification` | `docs/features/FS-106-fog-of-war-enforcement.md`, `docs/features/INDEX.md` | Authored FS-106 for FEAT-6000: single-construction-point discipline, structural type distinction, centrally-run test-suite verification plan. No open questions. | `06-feature-specification` again — FEAT-7000 (Server-Authoritative Transport). |
