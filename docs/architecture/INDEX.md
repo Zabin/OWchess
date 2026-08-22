@@ -13,7 +13,7 @@ owned by `01-vision`).
 | GDS-04 | Domain Model — [`04-domain-model.md`](04-domain-model.md) | `03-architecture-design-synthesis` | ✅ Authored 2026-08-21 — gate closed; raised OQ-13 (non-blocking for GDS-05/06) |
 | GDS-05 | Functional Requirements level — [`05-functional-requirements.md`](05-functional-requirements.md) | `03-architecture-design-synthesis` | ✅ Authored 2026-08-21 — gate closed |
 | GDS-06 | Non-Functional Requirements level — [`06-non-functional-requirements.md`](06-non-functional-requirements.md) | `03-architecture-design-synthesis` | ✅ Authored 2026-08-21 — gate closed; flagged NFR-4002/server-authority tension for GDS-08/09 |
-| GDS-07 | Data Model | `03-architecture-design-synthesis` | ⛔ Planned |
+| GDS-07 | Data Model — [`07-data-model.md`](07-data-model.md) | `03-architecture-design-synthesis` | ✅ Authored 2026-08-21 — gate closed |
 | GDS-08 | Presentation Architecture | `03-architecture-design-synthesis` | ⛔ Planned — grounded in the ZabOW `ORBITAL COMMAND` reference, see MSTR-001 §4 |
 | GDS-09 | Interface Specification | `03-architecture-design-synthesis` | ⛔ Planned |
 | GDS-10 | Requirements Traceability Matrix level | `03-architecture-design-synthesis` | ⛔ Planned |
