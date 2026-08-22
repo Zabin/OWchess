@@ -2,20 +2,21 @@
 
 ## Position
 
-- **Updated:** 2026-08-22 (run #14)
-- **Increment:** Bootstrap increment continues — the full GDS-00–10 ladder, ADR-0001, R-203, and
-  now the **full v1 requirements baseline** (FR/NFR/Review/RTM) are authored. Nothing has shipped
-  yet.
-- **Pipeline state:** `00` — manager iterating. `01`/`03` — complete. `02` — R-203 authored;
-  R-201/202/204-207 `PLANNED`. `04` — **complete.** 43 FRs, 17 NFRs, 3 Candidate Requirements;
-  Review found 4 issues (1 closed inline, 3 open Low); resolved OQ-05/06/07/10 with first-guess
-  numeric values (5 AP/turn, flat 1-AP action costs, per-asset deploy table, 6-turn denial
-  threshold, 60-turn cap + tiebreak). `05`–`11` — not started.
-- **Backlog:** 6 open — BL-0005 (`DEFERRED`), BL-0006/0007 (`DEFERRED`, Low), BL-0008 (`SCHEDULED`
-  for `06`/`07`), BL-0009/0010 (`SCHEDULED` for `06`, design questions on decay rate and
-  disconnect policy), BL-0011 (`SCHEDULED` for `02` then `06`, maneuver fuel/transfer table).
-- **Next step:** `05-feature-decomposition` — turn the FR/NFR baseline into a Release Plan, Epic
-  Catalog, Feature Catalog, and Feature Dependency Graph.
+- **Updated:** 2026-08-22 (run #15)
+- **Increment:** Bootstrap increment continues — vision, architecture (GDS-00–10 + ADR-0001),
+  requirements (FR/NFR/Review/RTM), and now **feature decomposition** (Release Plan, Epic Catalog,
+  Feature Catalog, Dependency Graph, Feature Review) are all authored. Nothing has shipped yet.
+- **Pipeline state:** `00` — manager iterating. `01`/`03`/`04` — complete. `02` — R-203 authored;
+  R-201/202/204-207 `PLANNED`. `05` — **complete.** 8 Features (FEAT-1000–8000) in 3 Epics; all
+  43 FR/17 NFR assigned exactly once; dependency graph confirmed acyclic, 6-node critical path;
+  Release Plan buckets all 8 Features as MVP (justified — see the plan's own reasoning); Feature
+  Review found 3 Low findings, all self-resolved. `06`–`11` — not started.
+- **Backlog:** 6 open — BL-0005 (`DEFERRED`), BL-0006/0007 (`DEFERRED`, Low), BL-0008
+  (`SCHEDULED` for `06`/`07`), BL-0009/0010 (`SCHEDULED` for `06`), BL-0011 (`SCHEDULED` for `02`
+  then `06`). No new backlog items from this run (Feature Review's 3 findings were self-resolved,
+  not carried forward as open items).
+- **Next step:** `06-feature-specification` — write the first `FS-###` spec, starting with
+  FEAT-1000 (Session & Turn Lifecycle), per the release plan's own recommended build sequence.
 - **Open gates:** none currently blocking.
 - **Next step:** `03-architecture-design-synthesis` again — GDS-07 (Data Model), now grounded by
   R-203's 9-regime recommendation.
@@ -39,3 +40,4 @@
 | 12 | 2026-08-21 | iterate (`00-pipeline-manager`) | `03-architecture-design-synthesis` | `docs/architecture/09-interface-specification.md` (GDS-09) | Wrote concrete contracts for all five GDS-03 modules and the WebSocket message schema. No new findings. | `03-architecture-design-synthesis` again — GDS-10 (RTM level, final ladder level). |
 | 13 | 2026-08-21 | iterate (`00-pipeline-manager`) | `03-architecture-design-synthesis` | `docs/architecture/10-requirements-traceability-matrix.md` (GDS-10) | Confirmed the traceability chain end-to-end with a spot-check table; no orphaned SOR requirements found. **Full GDS-00-10 ladder now complete, every gate closed.** No new findings. | `04-requirements-engineering` — formalize FR-####/NFR-#### and resolve OQ-05/06/07/10. |
 | 14 | 2026-08-22 | iterate (`00-pipeline-manager`) | `04-requirements-engineering` | `docs/requirements/01-04*.md`, `docs/requirements/INDEX.md` | Formalized 43 FRs/17 NFRs from GDS-05/06, resolved OQ-05/06/07/10 with cited first-guess numeric values, ran the Review (4 findings, 1 closed inline), built the RTM. Harvested BL-0006–0011. | `05-feature-decomposition` — Release Plan, Epic/Feature Catalog, Feature Dependency Graph. |
+| 15 | 2026-08-22 | iterate (`00-pipeline-manager`, user requested "iterate until release plan ready") | `05-feature-decomposition` | `docs/feature-planning/01-05*.md`, `docs/feature-planning/INDEX.md` | Decomposed the FR/NFR baseline into 8 Features/3 Epics, built the dependency graph (acyclic, 6-node critical path), wrote the Release Plan (all 8 Features → MVP, justified), ran the Feature Review (3 Low findings, all self-resolved). No new backlog items. | `06-feature-specification` — first FS-### for FEAT-1000 (Session & Turn Lifecycle). |
