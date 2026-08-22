@@ -9,7 +9,7 @@
 | [FS-102](FS-102-asset-roster-mission-sets.md) | Asset Roster & Mission Sets | FEAT-3000 | EP-1000 | ✅ Authored | Template registration, deploy cost/time-to-online lifecycle, pre-online use blocking. One new Open Question: whether per-template deploy limits exist (currently unbounded, AP-scarcity-only brake). |
 | [FS-103](FS-103-sensing-f2t2e-chain.md) | Sensing & the F2T2E Chain | FEAT-2000 | EP-1000 | ✅ Authored | Sensor tasking, capability-gated precision advancement, staleness decay (5-turn window, `'find'`-level entries removed when stale — resolved 2026-08-22). No open questions remaining. |
 
-| [FS-104](FS-104-orbital-mechanics-propagator.md) | Orbital Mechanics & the `Propagator` Boundary | FEAT-5000 | EP-1000 | ✅ Authored | Continuous two-body propagation, maneuver planning/completion, regime classification. CR-03 (fuel/transfer-time table) remains open, owned by `02-research-orbital-and-tooling` first. |
+| [FS-104](FS-104-orbital-mechanics-propagator.md) | Orbital Mechanics & the `Propagator` Boundary | FEAT-5000 | EP-1000 | ✅ Authored | Continuous two-body propagation, maneuver planning/completion, regime classification. CR-03 resolved 2026-08-22 via the Maneuver Cost Table (grounded in R-201's two-body Δv/time figures). One low-stakes Open Question remains (concurrent-maneuver handling). |
 
 | [FS-105](FS-105-effect-resolution.md) | Effect Resolution (the Five D's) | FEAT-4000 | EP-1000 | ✅ Authored | Engagement gating, Deceive/Destroy dispatch, cumulative Degrade, King denial-streak tracker. Pinned effect durations (Disrupt/Deny 3 turns, Degrade 4 turns) as this stage's own numeric refinement. |
 

@@ -53,7 +53,7 @@ candidate module the requirement will land in once `05`/`06`/`07` assign real wo
 | FR-8500 | Visible event log | — | GDS-07, GDS-08 | — | client UI | UNASSIGNED | UNASSIGNED | UNASSIGNED |
 | ~~CR-01~~ | ~~Belief-state decay rate~~ | — | — | — | — | **Resolved into FR-2300, 2026-08-22 — no longer a candidate.** | — | — |
 | ~~CR-02~~ | ~~Disconnect/reconnect grace period~~ | — | — | — | — | **Resolved into FR-7300, 2026-08-22 — no longer a candidate.** | — | — |
-| CR-03 | Maneuver fuel-budget/transfer-time table | — | GDS-03/09 (mechanism only) | — | — | CANDIDATE — NOT BASELINED, pending R-201/202 | — | — |
+| ~~CR-03~~ | Maneuver fuel-budget/transfer-time table | FR-5300/5400 | GDS-03/09 | R-201 | FS-104 | **RESOLVED 2026-08-22** — R-201 grounded the Δv/time shape; FS-104's Maneuver Cost Table adopted it. | — | — |
 | NFR-1100 | Turn-notification latency budget | — | GDS-06 | ADR-0001 | WS transport | UNASSIGNED | UNASSIGNED | UNASSIGNED |
 | NFR-1200 | Propagation efficiency | — | GDS-06 | — | Propagator | UNASSIGNED | UNASSIGNED | UNASSIGNED |
 | NFR-2100 | Deterministic resolution | — | GDS-06 | — | GameEngine | UNASSIGNED | UNASSIGNED | UNASSIGNED |

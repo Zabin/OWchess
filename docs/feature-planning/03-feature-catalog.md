@@ -174,9 +174,10 @@ follow it directly rather than re-deriving new ones. Every FR/NFR is owned by ex
 - **Suggested Verification Strategy:** Test (deterministic given fixed elements) + Analysis
   (cross-check against a primary astrodynamics reference, e.g. Vallado — no longer gated on
   R-201/202 the way the J2 formula was).
-- **Open Questions:** CR-03 (per-regime-pair fuel/transfer-time table) — owned by `02` then `06`.
-  **OQ-14** (new, 2026-08-22) — whether the polar/sun-synchronous plane class ships label-only or
-  gets J2 added before this Feature ships, decided after playtesting/implementation experience.
+- **Open Questions:** ~~CR-03~~ resolved 2026-08-22 — FS-104's Maneuver Cost Table, grounded in
+  R-201. **OQ-14** (new, 2026-08-22) — whether the polar/sun-synchronous plane class ships
+  label-only or gets J2 added before this Feature ships, decided after playtesting/implementation
+  experience.
 
 ### FEAT-6000 — Fog-of-War Enforcement
 

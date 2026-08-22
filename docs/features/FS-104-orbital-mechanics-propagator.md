@@ -1,7 +1,8 @@
 # FS-104 — Orbital Mechanics & the `Propagator` Boundary
 
 - **Feature ID:** FS-104 (from **FEAT-5000**, `docs/feature-planning/03-feature-catalog.md`)
-- **Status:** ✅ Authored, 2026-08-22 · **Owned by:** `06-feature-specification` · **Epic:** EP-1000 (Core Game Engine)
+- **Status:** ✅ Authored, 2026-08-22 (revised 2026-08-22 — Maneuver Cost Table added, resolving
+  CR-03) · **Owned by:** `06-feature-specification` · **Epic:** EP-1000 (Core Game Engine)
 
 ## Purpose
 
@@ -33,8 +34,8 @@ FR-5100, FR-5200, FR-5300, FR-5400, FR-5500, NFR-1200, NFR-5300.
 1. During an active turn, the player selects an owned, online asset and a target regime (one of
    R-203's 9 values).
 2. Server checks: 1 AP available (flat cost, per the requirements tuning table), and the asset's
-   remaining fuel-analog budget covers the maneuver (exact per-regime-pair cost: **Open Question**,
-   below — CR-03).
+   remaining fuel-analog budget covers the maneuver (exact per-regime-pair cost: the Maneuver Cost
+   Table below, resolving CR-03).
 3. `Propagator.planManeuver` returns `turnsRequired`; 1 AP is deducted; `Asset.maneuverState` is
    set to `{targetRegime, turnsRemaining: turnsRequired}`.
 
@@ -56,6 +57,49 @@ FR-5100, FR-5200, FR-5300, FR-5400, FR-5500, NFR-1200, NFR-5300.
 | W2 | AP deducted, maneuver begins, `turnsRequired` set. | Insufficient AP or fuel budget: rejected before mutation (same all-or-nothing discipline as FS-102/103's own gated actions). Maneuvering an offline asset: rejected (FR-3500, cross-Feature dependency on FS-102). |
 | W3 | Maneuver completes on schedule, regime updates. | The owner's session ends before completion: same non-issue as FS-102 W3 — a concluded session has no further turns to decrement on. A second maneuver requested while one is already in progress: this spec assumes it is rejected (an asset can only have one `maneuverState` at a time, per GDS-07's schema — a single `maneuverState` field, not an array) — flagged in Risks as an assumption worth confirming, since no FR explicitly forbids queuing a second maneuver. |
 | W4 | Returns exactly one of R-203's 9 labels. | N/A — `currentRegime` has no failure mode; it is a pure function of `Propagator`'s internal state. |
+
+## Maneuver Cost Table (resolves CR-03)
+
+Derived from R-201's real two-body Δv/time-of-flight figures (`docs/research/R-201-keplerian-
+elements-two-body-propagation.md`), decomposed into an altitude component and a plane-class
+component so the 9×9 regime-pair matrix (72 ordered transitions) doesn't need to be tabulated by
+hand — `Propagator.planManeuver` computes a transition's cost/turns from these two components plus
+the combined-maneuver discount R-201 §4/§5 calls for.
+
+**Altitude component** (fuel units / turns), independent of plane class, following R-201 §3.2's
+relative Δv/time ordering:
+
+| Altitude change | Fuel | Turns |
+|---|---|---|
+| Same band | 0 | 0 |
+| LEO ↔ MEO | 3 | 2 |
+| MEO ↔ GEO | 1 | 3 |
+| LEO ↔ GEO | 4 | 4 |
+
+**Plane-class component** (fuel units / turns), evaluated **at the asset's current altitude band**
+— cheaper the higher the starting altitude, per R-201 §3.3's `Δv = 2v·sin(Δi/2)` figures:
+
+| Plane-class change | at LEO | at MEO | at GEO |
+|---|---|---|---|
+| Same plane | 0 / 0 | 0 / 0 | 0 / 0 |
+| Equatorial ↔ Prograde, or Prograde ↔ Polar | 6 / 2 | 3 / 1 | 2 / 1 |
+| Equatorial ↔ Polar | 11 / 3 | 5 / 2 | 4 / 1 |
+
+**Combined maneuver** (both altitude and plane class change in one `planManeuver` call — the
+common case, e.g. `LEO-EQUATORIAL → GEO-POLAR`): fuel cost = altitude component + plane component
+(plane component priced at the *starting*, lower altitude, before any benefit from the altitude
+change) − 25% combined-maneuver discount, rounded down (per R-201 §4's note that a real combined
+burn costs less than two sequential burns); turns required = the larger of the two components'
+turn counts, +1 (reflecting one combined maneuver, not two sequential ones, while still costing
+more turns than either alone). Example: `LEO-EQUATORIAL → GEO-POLAR` = altitude (4/4) + plane at
+LEO (11/3) = 15 fuel before discount → 11 fuel (⌊15×0.75⌋) / max(4,3)+1 = 5 turns.
+
+These are this stage's own numeric refinement of CR-03, per this skill's authority to pin
+feature-level tuning values the requirements baseline deferred — the *relative* shape (plane
+changes cost far more than altitude changes; cheaper at higher altitude; combined maneuvers are
+discounted) is R-201's real physics, not invented; the specific fuel-unit/turn scale chosen here
+is a game-tuning translation of that shape, open to `07`/`08`'s own balance-pass adjustment without
+needing to revisit the underlying physical ordering.
 
 ## Module Responsibilities
 
@@ -118,10 +162,12 @@ orbital elements" requirement is enforced, not merely stated.
 
 ## Verification Plan
 
-Test (deterministic given fixed initial elements — NFR-2100) + Analysis (cross-check the two-body
-position update against a primary astrodynamics reference, e.g. Vallado, once the numerical
-implementation exists — no longer gated on R-201/202 the way a J2 implementation would have been,
-per MSTR-001 C4 v0.3's own consequence).
+Test (deterministic given fixed initial elements — NFR-2100; the Maneuver Cost Table's
+altitude/plane/combined arithmetic is a pure function, directly unit-testable against the worked
+example above) + Analysis (cross-check the two-body position update against a primary
+astrodynamics reference, e.g. Vallado/Curtis, once the numerical implementation exists — no longer
+gated on R-201/202 the way a J2 implementation would have been, per MSTR-001 C4 v0.3's own
+consequence).
 
 ## Dependencies
 
@@ -140,13 +186,6 @@ FS-102 (asset online state, per-template maneuver budget).
 
 ## Open Questions
 
-- **CR-03** (carried from `04-requirements-engineering`, updated for two-body scope per MSTR-001
-  C4 v0.3): the per-regime-pair fuel-analog budget and transfer-time-in-turns table. Matters
-  because W2/W3 cannot be assigned concrete numbers without it. Resolved by:
-  `02-research-orbital-and-tooling` (R-201/R-202, two-body vis-viva-equation delta-v figures)
-  first, then this stage adopts them — **not** recommended for immediate owner resolution the way
-  CR-01/CR-02 were, since this one genuinely needs the research grounding first, not just a
-  product judgment call.
 - **Concurrent maneuver rejection** (new, this spec): whether a second maneuver request while one
   is in-progress is rejected outright, queued, or replaces the first. Matters because it's a real
   player-facing behavior no FR currently states. Resolved by: confirm at `07-implementation-
