@@ -2,21 +2,21 @@
 
 ## Position
 
-- **Updated:** 2026-08-22 (run #27)
+- **Updated:** 2026-08-22 (run #28)
 - **Increment:** Iterating toward MVP release readiness (owner requested "iterate to MVP").
   Nothing has shipped yet.
-- **Pipeline state:** `00` — manager iterating. `01`–`06` — **complete** except FS-104's CR-03
-  numeric adoption (below). `02` — R-201 authored this run, closing the research gap CR-03 needed.
-  `07`–`11` — not started.
-- **Backlog:** 8 open — BL-0005 (`DEFERRED`), BL-0006/0007 (`DEFERRED`, Low), BL-0011
-  (`SCHEDULED` — research done, `06` to adopt into FS-104 next), BL-0012/BL-0013/BL-0014/BL-0015
-  (`SCHEDULED`, all low stakes).
-- **Next step:** `06-feature-specification` — revise FS-104 to adopt R-201's Δv/time-of-flight
-  figures, closing CR-03/BL-0011. Then `07-implementation-planning` (Technical Work Breakdown +
-  IP-#### packages from all 8 FS-### specs). **G3 note:** package authorization still requires the
-  owner's explicit go-ahead before any `08-*` code-writing stage begins.
-- **Open gates:** none currently blocking; G3 (code-writing authorization) remains a gate ahead of
-  `08`.
+- **Pipeline state:** `00` — manager iterating. `01`–`06` — **complete**, including FS-104's
+  CR-03 numeric adoption. `02` — R-201 authored (this increment); R-202/204-207 remain planned,
+  to be authored as `07` needs them. `07`–`11` — not started.
+- **Backlog:** 7 open — BL-0005 (`DEFERRED`), BL-0006/0007 (`DEFERRED`, Low), BL-0012/BL-0013/
+  BL-0014/BL-0015 (`SCHEDULED`, all low stakes, ride with `07-implementation-planning`).
+- **Next step:** `07-implementation-planning` — build the Technical Work Breakdown and IP-####
+  Implementation Packages from all 8 FS-### specs, folding in BL-0012/13/14/15's low-stakes
+  defaults. **G3 note:** package authorization still requires the owner's explicit go-ahead before
+  any `08-*` code-writing stage begins — release-plan coverage alone does not satisfy G3 for a
+  package outside/diverging from what the plan describes.
+- **Open gates:** none currently blocking `07`; G3 (code-writing authorization) remains a gate
+  ahead of `08`.
 
 ## Run log
 
@@ -49,3 +49,4 @@
 | 25 | 2026-08-22 | iterate (`00-pipeline-manager`) | `06-feature-specification` | `docs/features/FS-107-server-authoritative-transport.md`, `docs/features/INDEX.md`, `docs/architecture/09-interface-specification.md` (new `DisconnectNotification`/`DisconnectResponse` messages) | Authored FS-107 for FEAT-7000: WebSocket push, optimistic-render override, disconnect notify/choice/reconnect. Extended GDS-09's message schema. No open questions. | `06-feature-specification` again — FEAT-8000 (Presentation/UI), the last unspecified Feature. |
 | 26 | 2026-08-22 | iterate (`00-pipeline-manager`, user requested "continue from where you left off") | `06-feature-specification` | `docs/features/FS-108-presentation-ui.md`, `docs/features/INDEX.md`, `docs/feature-planning/03-feature-catalog.md` (FEAT-8000 cross-reference), `docs/pipeline/backlog.md` (BL-0008) | Authored FS-108 for FEAT-8000: six-panel render, client-side legality pre-filter (W2), fog-of-war-safe rendering boundary. Verification Plan resolves BL-0008 (Demonstration/Test split). No open questions. **All 8 Features now specified — `06-feature-specification` is complete.** | `07-implementation-planning` — Technical Work Breakdown and IP-#### packages from the 8 FS-### specs. G3 (owner go-ahead) still gates `08-*` code-writing. |
 | 27 | 2026-08-22 | iterate (`00-pipeline-manager`, user requested "iterate to MVP") | `02-research-orbital-and-tooling` | `docs/research/R-201-keplerian-elements-two-body-propagation.md`, `docs/research/INDEX.md` | Authored R-201: two-body vis-viva/Hohmann-transfer Δv and time-of-flight between LEO/MEO/GEO, plus plane-class-change Δv at each altitude. Resolves the research gap CR-03/BL-0011 needed — real physical figures, not invented ones. R-202 (J2) confirmed out of scope for v1, left `PLANNED`/deferred. | `06-feature-specification` — revise FS-104 to adopt R-201's figures, closing CR-03. |
+| 28 | 2026-08-22 | iterate (`00-pipeline-manager`, user requested "iterate to MVP") | `06-feature-specification` | `docs/features/FS-104-orbital-mechanics-propagator.md` (Maneuver Cost Table added), `docs/features/INDEX.md`, `docs/requirements/01-functional-requirements.md` (CR-03 struck), `docs/requirements/04-requirements-traceability-matrix.md`, `docs/feature-planning/03-feature-catalog.md` (FEAT-5000) | Revised FS-104 with a concrete altitude/plane/combined-maneuver cost-and-turns formula derived from R-201, closing CR-03/BL-0011. Propagated to the FR baseline, RTM, and feature catalog. **All 8 Feature Specifications now fully closed — no numeric placeholders remain in `06`.** | `07-implementation-planning` — Technical Work Breakdown + IP-#### packages from all 8 FS-### specs, folding in BL-0012/13/14/15's low-stakes defaults. |
