@@ -41,8 +41,8 @@ candidate module the requirement will land in once `05`/`06`/`07` assign real wo
 | FR-5300 | Maneuver within budget | R-201 | GDS-09 (this doc's tuning table) | — | Propagator | FS-104 | IP-5010 | Propagator.maneuverCost.test.ts |
 | FR-5400 | Turn-scale maneuver completion (mover's-own-turns) | — | GDS-03 (OQ-11 resolution) | — | Propagator | FS-104 | IP-5010 | Propagator.maneuverCost.test.ts / createGameEngine.wiring.test.ts |
 | FR-5500 | `Propagator` interface isolation | — | GDS-03, GDS-09 | — | Propagator | FS-104 | IP-5010 | (Inspection — see IP-5010's Verification Checklist) |
-| FR-6100 | Server-only ground truth | — | GDS-02, GDS-08 | — | client UI (negative req.) | UNASSIGNED | UNASSIGNED | UNASSIGNED |
-| FR-6200 | Belief-filtered outbound messages only | — | GDS-06, GDS-09 | — | BeliefState, GameEngine | UNASSIGNED | UNASSIGNED | UNASSIGNED |
+| FR-6100 | Server-only ground truth | — | GDS-02, GDS-08 | — | client UI (negative req.) | FS-106 | IP-6010 | BeliefState.fogOfWar.test.ts |
+| FR-6200 | Belief-filtered outbound messages only | — | GDS-06, GDS-09 | — | BeliefState, GameEngine | FS-106 | IP-6010 | BeliefState.fogOfWar.test.ts |
 | FR-7100 | WebSocket push notifications | — | GDS-02 | ADR-0001 | WS transport | UNASSIGNED | UNASSIGNED | UNASSIGNED |
 | FR-7200 | Server sole authority | — | GDS-02, GDS-08 | — | GameEngine | UNASSIGNED | UNASSIGNED | UNASSIGNED |
 | FR-7300 | Disconnect/reconnect handling | — | GDS-01, FS-101 §W7 | — | GameEngine, WS transport | FS-101 | UNASSIGNED | UNASSIGNED |
@@ -58,7 +58,7 @@ candidate module the requirement will land in once `05`/`06`/`07` assign real wo
 | NFR-1200 | Propagation efficiency | — | GDS-06 | — | Propagator | FS-104 | IP-5010 | (structural — closed-form per-asset update, no iterative terms; no dedicated perf test yet) |
 | NFR-2100 | Deterministic resolution | — | GDS-06 | — | GameEngine | FS-101 | IP-1010 | (structural — pure functions of stored state, no randomness/wall-clock; no dedicated test, per VR-1010 F2) |
 | NFR-2200 | Session isolation | — | GDS-02, GDS-06 | — | GameEngine | FS-101 | IP-1010 | (structural — `SessionStore` keyed by `SessionId` in a `Map`, each `SessionRecord` independent; no dedicated test, per VR-1010 F2) |
-| NFR-3100 | Fog-of-war non-leakage | — | GDS-06 | — | BeliefState | UNASSIGNED | UNASSIGNED | UNASSIGNED |
+| NFR-3100 | Fog-of-war non-leakage | — | GDS-06 | — | BeliefState | FS-106 | IP-6010 | BeliefState.fogOfWar.test.ts (+ supersession sweep, Inspection) |
 | NFR-3200 | Unguessable session identifiers | — | GDS-02, GDS-06 | — | GameEngine | FS-101 | IP-1010 | SessionStore.test.ts (entropy/non-sequential test, fixed post-VR-1010 F1) |
 | NFR-4100 | UI as rules reference | — | GDS-06 | — | client UI | UNASSIGNED | UNASSIGNED | UNASSIGNED |
 | NFR-4200 | No post-hoc rejection under normal play | — | GDS-06, GDS-08 | — | client UI | UNASSIGNED | UNASSIGNED | UNASSIGNED |

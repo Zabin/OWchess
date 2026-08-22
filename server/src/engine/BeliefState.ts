@@ -5,9 +5,11 @@
  */
 import type {
   Asset,
+  AssetId,
   BeliefPrecision,
   BeliefStateEntry,
   ChainRole,
+  OpponentView,
   OrbitalRegimeLabel,
   PlayerId,
   PlayerState,
@@ -98,5 +100,47 @@ export class BeliefState {
       };
       observerState.beliefOfOpponent.set(key, downgraded);
     }
+  }
+
+  /**
+   * FR-6100/NFR-3100 (IP-6010): the SOLE function permitted to construct client-bound opponent
+   * data. Reads only observerState.beliefOfOpponent (what observer has earned) — never reads
+   * trueOpponentState's assets/king/activeEffects directly, which is what makes an accidental
+   * full-object leak structurally impossible rather than merely a missed filter.
+   */
+  computeOpponentView(
+    observer: PlayerId,
+    observerState: PlayerState,
+    trueOpponentState: PlayerState,
+    _turnNumber: number
+  ): OpponentView {
+    return {
+      playerId: trueOpponentState.playerId,
+      beliefEntries: Array.from(observerState.beliefOfOpponent.values()),
+    };
+  }
+
+  /**
+   * FR-4003 (Deceive path, GDS-04/07's structural distinction): corrupts observer's own belief
+   * entry for subject — never touches subject's true Asset record. Distinct code path from
+   * Destroy (which removes/flags the true Asset itself, EffectResolver's job, not BeliefState's).
+   */
+  applyDeception(
+    observerState: PlayerState,
+    subject: AssetId,
+    falseRegime: OrbitalRegimeLabel,
+    turnNumber: number,
+    sourceAssetId: AssetId
+  ): void {
+    const existing = observerState.beliefOfOpponent.get(subject);
+    const entry: BeliefStateEntry = {
+      subject,
+      precision: existing?.precision ?? 'fix',
+      lastUpdatedTurn: turnNumber,
+      sourceAssetId: existing?.sourceAssetId ?? sourceAssetId,
+      deceived: true,
+      apparentRegime: falseRegime,
+    };
+    observerState.beliefOfOpponent.set(subject, entry);
   }
 }

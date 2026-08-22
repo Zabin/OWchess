@@ -1,6 +1,6 @@
 # IP-6010 — Fog-of-War Enforcement
 
-- **Package ID:** IP-6010 · **Status:** BLOCKED (on IP-0010, IP-2010) · **Owning stage-08 peer:**
+- **Package ID:** IP-6010 · **Status:** COMPLETE (2026-08-22) · **Owning stage-08 peer:**
   `08-code-implementation`
 - **Source:** FS-106 (`docs/features/FS-106-fog-of-war-enforcement.md`), FEAT-6000
 - **Authorization (G3):** Covered by the release plan.
@@ -64,17 +64,40 @@ home is IP-6010 (cross-reference, since FS-105 consumes it).
 
 ## Definition of Done
 
-- [ ] `computeOpponentView` is the only function in the codebase constructing opponent-facing data
-      (supersession sweep passed).
-- [ ] `applyDeception` never mutates true state (test-verified).
+- [x] `computeOpponentView` is the only function in the codebase constructing opponent-facing data
+      (supersession sweep — see below — found no other construction site; `grep` for
+      `OpponentView`/`beliefOfOpponent` across `server/src` confirms it).
+- [x] `applyDeception` never mutates true state (test-verified: `BeliefState.fogOfWar.test.ts`
+      asserts the subject `Asset` object's `trueRegime`/`destroyed` fields are unchanged after
+      deception, only the observer's own belief-map entry is corrupted).
+
+## Supersession sweep (Implementation Task 3)
+
+`grep -rn "OpponentView\|beliefOfOpponent\|opponentTrueState" server/src` (excluding tests):
+the only other reader of `opponentTrueState`'s raw assets is `applyTasking` in this same file
+(IP-2010, legitimate — it's server-internal belief-map construction, never client-facing).
+`GameEngine.ts`, `deployAction.ts`, `taskAction.ts`, `maneuverAction.ts`, `Propagator.ts` hold no
+independent opponent-data-construction logic. **Found nothing else — confirmed clean.**
 
 ## Verification Checklist
 
-- [ ] **G5 gate:** build clean. **G5 gate:** full test suite passes.
-- [ ] FS-106 Acceptance Criteria mapped to passing tests.
-- [ ] **Centrally-run test suite** (per FS-106's own Verification Plan) — this package's tests are
-      the canonical fog-of-war regression suite `10-integration-review` re-checks whenever any
-      later package touches `BeliefState`/transport.
+- [x] **G5 gate:** build clean. **G5 gate:** full test suite passes (57 total: 1 shared + 56
+      server, incl. this package's 3 in `BeliefState.fogOfWar.test.ts`).
+- [x] FS-106 Acceptance Criteria mapped to passing tests.
+- [x] **Centrally-run test suite**: `BeliefState.fogOfWar.test.ts` is the canonical fog-of-war
+      regression suite — flagged in this doc for `10-integration-review` to re-check whenever any
+      later package (IP-4010, IP-7010) touches `BeliefState`/transport.
+
+## Deviation note
+
+GDS-09's `computeOpponentView(observer, trueOpponentState, turnNumber)` and
+`applyDeception(observer, subject, falseRegime)` both lack a parameter for the observer's own
+`PlayerState` (needed to read/write `beliefOfOpponent` — the same gap BL-0028 found in
+`applyTasking`). Implemented with an added `observerState: PlayerState` parameter on both, plus
+`sourceAssetId` on `applyDeception` (which effector asset is doing the deceiving, for the belief
+entry's existing field). Filed as BL-0033 for `07-implementation-planning`/GDS-09 to reconcile
+alongside BL-0028 — the same root cause (GDS-09's pseudocode omitted the state-access parameters
+every one of `BeliefState`'s methods actually needs).
 
 ## Dependencies
 
