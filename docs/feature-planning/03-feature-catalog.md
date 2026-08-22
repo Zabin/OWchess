@@ -83,6 +83,7 @@ follow it directly rather than re-deriving new ones. Every FR/NFR is owned by ex
 
 ### FEAT-3000 — Asset Roster & Mission Sets
 
+- **Specified by:** [FS-102](../features/FS-102-asset-roster-mission-sets.md) (2026-08-22)
 - **Purpose:** Provide the data-driven content (mission sets, asset types) every other Feature
   operates on, and enforce the ground/space cost-time asymmetry.
 - **Description:** Schema-validated templates for SATCOM/ISR/PNT-lite and the six v1 asset types;
