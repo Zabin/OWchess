@@ -11,5 +11,7 @@
 
 | [FS-104](FS-104-orbital-mechanics-propagator.md) | Orbital Mechanics & the `Propagator` Boundary | FEAT-5000 | EP-1000 | ✅ Authored | Continuous two-body propagation, maneuver planning/completion, regime classification. CR-03 (fuel/transfer-time table) remains open, owned by `02-research-orbital-and-tooling` first. |
 
-Remaining FEAT-4000, FEAT-6000–8000 not yet specified — next per the release plan's build
-sequence: FEAT-4000/FEAT-6000 in parallel, then FEAT-7000, then FEAT-8000.
+| [FS-105](FS-105-effect-resolution.md) | Effect Resolution (the Five D's) | FEAT-4000 | EP-1000 | ✅ Authored | Engagement gating, Deceive/Destroy dispatch, cumulative Degrade, King denial-streak tracker. Pinned effect durations (Disrupt/Deny 3 turns, Degrade 4 turns) as this stage's own numeric refinement. |
+
+Remaining FEAT-6000–8000 not yet specified — next per the release plan's build sequence:
+FEAT-6000, then FEAT-7000, then FEAT-8000.

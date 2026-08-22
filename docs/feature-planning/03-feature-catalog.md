@@ -111,6 +111,7 @@ follow it directly rather than re-deriving new ones. Every FR/NFR is owned by ex
 
 ### FEAT-4000 — Effect Resolution (the Five D's)
 
+- **Specified by:** [FS-105](../features/FS-105-effect-resolution.md) (2026-08-22)
 - **Purpose:** Resolve an engagement into one of the Five D's, correctly, including cumulative
   Degrade and the mission-denial duration tracker.
 - **Description:** Gate engagement on targeting-quality data; apply Deceive/Disrupt/Deny/
