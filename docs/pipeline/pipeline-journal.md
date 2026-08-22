@@ -2,27 +2,32 @@
 
 ## Position
 
-- **Updated:** 2026-08-22 (run #33)
+- **Updated:** 2026-08-22 (run #34)
 - **Increment:** Iterating toward MVP release readiness. G3 go-ahead covers the whole 11-package
   tranche. `09-package-verification` runs in a fresh spawned Agent per package (owner's
   direction); `08-*` implementation continues inline in this session.
-- **Pipeline state:** `00` — manager iterating. `01`–`07` — complete. `08`/`09` — **6 of 11
-  packages implemented, 4 independently verified:**
+- **Pipeline state:** `00` — manager iterating. `01`–`07` — complete. `08`/`09` — **7 of 11
+  packages implemented, 5 independently verified:**
   - IP-0010 (scaffold) — `VERIFIED` (VR-0010).
   - IP-1010 (session/turn) — `VERIFIED` (VR-1010 initially RETURNED for a Critical NFR-3200 gap —
     sequential/guessable session IDs — fixed same day; VR-1010-v2 confirmed `VERIFIED`).
   - IP-3010 (asset roster engine) — `VERIFIED` (VR-3010, 1 Low finding).
-  - IP-3011 (asset/mission content) — `COMPLETE`, verification agent running now.
-  - IP-2010 (sensing/F2T2E) — `COMPLETE`, awaiting verification.
-  - IP-5010 (Propagator) — `COMPLETE`, awaiting verification. Added `createGameEngine.ts`
-    (BL-0030), the first real composition root wiring every package's turn-end hooks together —
-    proven by a new end-to-end wiring test.
-  - IP-6010/IP-4010/IP-4011/IP-7010/IP-8010 — not yet started.
-  - Real code exists for the first time this project: 52 tests passing, build clean across all 3
-    workspaces, every G5 gate green at every step.
-- **Backlog:** ~20 open items, all `SCHEDULED`/`DEFERRED`, none blocking — mostly disclosed
-  implementation-time deviations (BL-0021/0022/0028/0030/0031) each independently judged
-  reasonable by verification passes, plus a few low-stakes doc/RTM lag items.
+  - IP-3011 (asset/mission content) — `VERIFIED` (VR-3011, 3 Low findings, numeric values honestly
+    labeled provisional).
+  - IP-2010 (sensing/F2T2E) — VR-2010 initially **RETURNED** for a High finding (tasking with an
+    effector-only asset silently succeeded instead of rejecting) — fixed same day
+    (`hasSensorCapability` pre-check); re-verification (VR-2010-v2) dispatched, result pending.
+  - IP-5010 (Propagator) — `VERIFIED` (VR-5010) — the verifier independently hand-re-derived all
+    24 Maneuver Cost Table cells against FS-104's raw formula (not just the one regression test),
+    confirming no table-wide error; 2 Low findings.
+  - IP-6010 (fog-of-war enforcement) — `COMPLETE`, awaiting verification. Supersession sweep found
+    no other opponent-data-construction site — clean.
+  - IP-4010/IP-4011/IP-7010/IP-8010 — not yet started.
+  - 57 tests passing, build clean across all 3 workspaces, every G5 gate green at every step.
+- **Backlog:** ~24 open items, all `SCHEDULED`/`DEFERRED`, none blocking — mostly disclosed
+  implementation-time deviations (BL-0021/0022/0028/0030/0031/0033), two real bugs caught and
+  fixed by independent verification (BL-0023 Critical session-ID entropy; BL-0032 High
+  task-rejection gap), plus a few low-stakes doc/RTM lag items.
 - **Next step:** once IP-3011 verifies, `08-code-implementation` on IP-6010 (Fog-of-War
   Enforcement) — the next critical-path package, needing only IP-2010 `VERIFIED` (pending) beyond
   already-`VERIFIED` IP-0010.
