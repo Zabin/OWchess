@@ -2,17 +2,17 @@
 
 ## Position
 
-- **Updated:** 2026-08-21 (run #6)
-- **Increment:** Bootstrap increment continues — GDS-01 through GDS-04 authored and gate-closed;
+- **Updated:** 2026-08-21 (run #7)
+- **Increment:** Bootstrap increment continues — GDS-01 through GDS-05 authored and gate-closed;
   ADR-0001 (tech stack) accepted. Nothing has shipped yet.
 - **Pipeline state:** `00` — manager iterating (this run). `01` — complete, gate closed. `03` —
-  **in progress.** GDS-01–04 authored and gate-closed. GDS-04 raised OQ-13 (regime/plane-class
-  taxonomy), routed to `02-research-orbital-and-tooling`, non-blocking for GDS-05/06. GDS-05–10
-  not yet authored. `02`, `04`–`11` — not started.
+  **in progress.** GDS-01–05 authored and gate-closed. GDS-05 grouped capability into eight areas
+  cleanly mapping the seed SOR's FR-1xxx-8xxx numbering, no new findings. GDS-06–10 not yet
+  authored. `02`, `04`–`11` — not started.
 - **Backlog:** 1 open — BL-0003 (`SCHEDULED` for `02-research-orbital-and-tooling`, before GDS-07
-  needs it; does not block GDS-05/06).
-- **Next step:** `03-architecture-design-synthesis` again — GDS-05 (Functional Requirements
-  level), which does not depend on OQ-13/BL-0003.
+  needs it; does not block GDS-06).
+- **Next step:** `03-architecture-design-synthesis` again — GDS-06 (Non-Functional Requirements
+  level).
 - **Open gates:** none currently blocking.
 
 ## Run log
@@ -25,3 +25,4 @@
 | 4 | 2026-08-21 | iterate (`00-pipeline-manager`) | `03-architecture-design-synthesis` | `docs/architecture/02-system-context.md` (GDS-02) | Authored client/server/session-process boundary, the two crossing channels, and external constraints, stack-agnostically per OQ-02. Gate closed. No new findings; confirmed BL-0001/BL-0002 correctly belong to GDS-03, not this level. | `03-architecture-design-synthesis` again — the tech-stack ADR, then GDS-03 (Architecture), resolving BL-0001/BL-0002. |
 | 5 | 2026-08-21 | iterate (`00-pipeline-manager`) | `03-architecture-design-synthesis` | `docs/architecture/adr/ADR-0001-tech-stack.md`, `docs/architecture/03-architecture.md` (GDS-03) | ADR-0001 confirmed the tech stack via genuine comparison (TypeScript full-stack vs. Python/Go/Rust), resolving OQ-02. GDS-03 decomposed the system into modules and resolved BL-0001 (transfer-time counts in mover's own turns) and BL-0002 (passive detection is human inference only). Both backlog entries flipped `DONE`. | `03-architecture-design-synthesis` again — GDS-04 (Domain Model). |
 | 6 | 2026-08-21 | iterate (`00-pipeline-manager`) | `03-architecture-design-synthesis` | `docs/architecture/04-domain-model.md` (GDS-04) | Defined core entities (King, Asset, MissionSet, roster, OrbitalRegime, BeliefStateEntry, effect state) and relationships, keeping content data-driven per FR-2001/NFR-5001. Raised OQ-13 (regime taxonomy), harvested as BL-0003, scheduled for `02-research-orbital-and-tooling`, non-blocking for GDS-05/06. | `03-architecture-design-synthesis` again — GDS-05 (Functional Requirements level). |
+| 7 | 2026-08-21 | iterate (`00-pipeline-manager`) | `03-architecture-design-synthesis` | `docs/architecture/05-functional-requirements.md` (GDS-05) | Grouped capability into eight areas, each traced to GDS-01-04, cleanly mapping the seed SOR's FR numbering. No new findings. | `03-architecture-design-synthesis` again — GDS-06 (Non-Functional Requirements level). |
