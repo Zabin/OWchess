@@ -2,19 +2,31 @@
 
 ## Position
 
-- **Updated:** 2026-08-22 (run #32)
+- **Updated:** 2026-08-22 (run #33)
 - **Increment:** Iterating toward MVP release readiness. G3 go-ahead covers the whole 11-package
-  tranche. Owner directed that `09-package-verification` runs in a fresh spawned Agent per
-  package (for genuine same-session independence), while `08-*` implementation continues inline
-  in this session.
-- **Pipeline state:** `00` — manager iterating. `01`–`07` — complete. `08` — IP-0010 `VERIFIED`
-  (VR-0010, 3 non-blocking findings). IP-1010 now `READY`. `10`–`11` — not started.
-- **Backlog:** 11 open — BL-0005 (`DEFERRED`), BL-0006/0007 (`DEFERRED`, Low), BL-0017/0018/0019/
-  0020 (`SCHEDULED`/`DEFERRED`, all non-blocking, from IP-0010's own authoring/verification pass).
-- **Next step:** `08-code-implementation` on IP-1010 (Session & Turn Lifecycle, FS-101) — the
-  critical-path package, now unblocked.
-- **Open gates:** none — G3 cleared for this tranche; verification independence handled by
-  spawning a fresh Agent per package, per the owner's direction.
+  tranche. `09-package-verification` runs in a fresh spawned Agent per package (owner's
+  direction); `08-*` implementation continues inline in this session.
+- **Pipeline state:** `00` — manager iterating. `01`–`07` — complete. `08`/`09` — **6 of 11
+  packages implemented, 4 independently verified:**
+  - IP-0010 (scaffold) — `VERIFIED` (VR-0010).
+  - IP-1010 (session/turn) — `VERIFIED` (VR-1010 initially RETURNED for a Critical NFR-3200 gap —
+    sequential/guessable session IDs — fixed same day; VR-1010-v2 confirmed `VERIFIED`).
+  - IP-3010 (asset roster engine) — `VERIFIED` (VR-3010, 1 Low finding).
+  - IP-3011 (asset/mission content) — `COMPLETE`, verification agent running now.
+  - IP-2010 (sensing/F2T2E) — `COMPLETE`, awaiting verification.
+  - IP-5010 (Propagator) — `COMPLETE`, awaiting verification. Added `createGameEngine.ts`
+    (BL-0030), the first real composition root wiring every package's turn-end hooks together —
+    proven by a new end-to-end wiring test.
+  - IP-6010/IP-4010/IP-4011/IP-7010/IP-8010 — not yet started.
+  - Real code exists for the first time this project: 52 tests passing, build clean across all 3
+    workspaces, every G5 gate green at every step.
+- **Backlog:** ~20 open items, all `SCHEDULED`/`DEFERRED`, none blocking — mostly disclosed
+  implementation-time deviations (BL-0021/0022/0028/0030/0031) each independently judged
+  reasonable by verification passes, plus a few low-stakes doc/RTM lag items.
+- **Next step:** once IP-3011 verifies, `08-code-implementation` on IP-6010 (Fog-of-War
+  Enforcement) — the next critical-path package, needing only IP-2010 `VERIFIED` (pending) beyond
+  already-`VERIFIED` IP-0010.
+- **Open gates:** none — G3 cleared for this tranche.
 
 ## Run log
 
@@ -52,3 +64,8 @@
 | 30 | 2026-08-22 | manual (owner answered the G3 gate: "Continue") | — (gate recorded, no skill invoked yet this row) | `docs/pipeline/pipeline-journal.md` | Owner's go-ahead recorded, covering the full 11-package MVP tranche with no per-package re-confirmation needed. | `08-code-implementation` on IP-0010, then continue through the Master Build Plan. |
 | 31 | 2026-08-22 | iterate (`00-pipeline-manager`) | `08-code-implementation` | IP-0010 — `package.json`/`tsconfig.base.json` (root), `shared/` (types.ts/interfaces.ts/messages.ts/index.ts, transcribed from GDS-07/09), `server/src/index.ts`, `client/src/main.tsx`, plus each workspace's own package.json/tsconfig/vitest config | Implemented the npm-workspaces monorepo scaffold. G5 gates verified: `npm run build` clean (3 workspaces), `npm test` passes (1 smoke test in `shared`; `server`/`client` pass with no tests yet), `npm run dev` starts cleanly (client HTTP 200, server entry runs under `tsx`). Package set `COMPLETE`. | `09-package-verification` on IP-0010. |
 | 32 | 2026-08-22 | iterate (`00-pipeline-manager`; owner directed fresh-Agent verification via `AskUserQuestion`) | `09-package-verification` (via spawned Agent, genuinely independent session) | IP-0010 | Independently re-derived every DoD/checklist item against the tree (clean `npm install` + rebuild, not trusting the Implementation Summary); confirmed 1:1 field/type matches against GDS-07/09; **VERIFIED**. 3 non-blocking findings harvested (BL-0018/0019/0020). Wrote VR-0010 + created `docs/implementation/verification/INDEX.md`; flipped IP-0010 `VERIFIED` and IP-1010 `BLOCKED`→`READY` on the Master Build Plan/index. | `08-code-implementation` on IP-1010 (now `READY`). |
+| 33 | 2026-08-22 | iterate (`00-pipeline-manager`) | `08-code-implementation` then `09-package-verification` (spawned Agent) | IP-1010 | Implemented SessionStore/TurnManager/GameEngine (session lifecycle, AP turn loop, all 4 win-condition paths incl. BL-0012 ordering). First verification pass (VR-1010) **RETURNED** it: Critical finding — `SessionStore` used a sequential counter, guessable, violating NFR-3200; plus a Medium RTM gap. Fixed same day (`crypto.randomBytes(16)` base64url IDs + regression test; RTM rows filled). Fresh independent re-verification (VR-1010-v2) confirmed **VERIFIED**. | `08-code-implementation` on IP-3010. |
+| 34 | 2026-08-22 | iterate (`00-pipeline-manager`) | `08-code-implementation` then `09-package-verification` (spawned Agent) | IP-3010 | Implemented TemplateRegistry (schema) + deployAction (AP-cost deduction, `deployState.turnsUntilOnline` lifecycle, `assertOnline` pre-online blocking; BL-0013's no-cap default). Added `TurnManager.registerTurnEndHook` (BL-0022, disclosed additive extension). Verified: **VERIFIED** (VR-3010), 1 Low non-blocking finding (deploy-tick hook never wired to a real bootstrap — a project-wide gap, not IP-3010-specific). | `08-content-authoring` on IP-3011, then `08-code-implementation` on IP-2010. |
+| 35 | 2026-08-22 | iterate (`00-pipeline-manager`) | `08-content-authoring` | IP-3011 | Authored 7 asset-type + 3 mission-set JSON templates, a loader (`loadContent.ts`), and cross-reference/schema tests. AP-cost/timing values labeled provisional pending `02-research-domain` (BL-0017). Filed BL-0027 (loader doesn't copy JSON into `dist/` yet, non-blocking). Package `COMPLETE`; verification agent dispatched (result pending as of this row). | `08-code-implementation` on IP-2010 (proceeded in parallel, per this run's own judgment, since IP-3010's schema — its real dependency — was already `VERIFIED`). |
+| 36 | 2026-08-22 | iterate (`00-pipeline-manager`) | `08-code-implementation` | IP-2010 | Implemented `BeliefState`'s content-producing half: `applyTasking` (precision advancement capped at sensor `chainRoles` ceiling), `decayStaleEntries` (BL-0009's 5-turn window, `'find'`-removal). Deviation (BL-0028): `applyTasking` takes `observerState`/`opponentTrueState` params GDS-09's signature lacks, needed to resolve tasking meaningfully. Also fixed BL-0029 (VR-1010-v2's F5: reworded the actual sentence, not just appended a fix section). Package `COMPLETE`. | `08-code-implementation` on IP-5010 (parallel branch). |
+| 37 | 2026-08-22 | iterate (`00-pipeline-manager`) | `08-code-implementation` | IP-5010 | Implemented `Propagator`: two-body `advance` (deterministic, no J2), `currentRegime` (R-203 classification), `planManeuver`/`maneuverComplete` (FS-104's Maneuver Cost Table — worked example `LEO-EQUATORIAL→GEO-POLAR` = 11 fuel/5 turns reproduced exactly; BL-0014 rejection). Added `createGameEngine.ts` (BL-0030): the first composition root actually wiring deploy/task/maneuver turn-end hooks to `TurnManager.advanceTurn()`, proven by a new end-to-end wiring test — this closes VR-3010's own Low finding, independently. Filed BL-0031 (fuel-budget field not yet modeled). Package `COMPLETE`. 52 tests passing project-wide. | `09-package-verification` on IP-3011 (dispatched, result pending); then `08-code-implementation` on IP-6010 once IP-2010 verifies. |
