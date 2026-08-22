@@ -3,6 +3,7 @@
 - **Feature ID:** FS-104 (from **FEAT-5000**, `docs/feature-planning/03-feature-catalog.md`)
 - **Status:** ✅ Authored, 2026-08-22 (revised 2026-08-22 — Maneuver Cost Table added, resolving
   CR-03) · **Owned by:** `06-feature-specification` · **Epic:** EP-1000 (Core Game Engine)
+- **Implemented by:** [IP-5010](../implementation/packages/IP-5010-propagator.md)
 
 ## Purpose
 

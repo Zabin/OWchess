@@ -2,6 +2,7 @@
 
 - **Feature ID:** FS-108 (from **FEAT-8000**, `docs/feature-planning/03-feature-catalog.md`)
 - **Status:** ✅ Authored, 2026-08-22 · **Owned by:** `06-feature-specification` · **Epic:** EP-3000 (Player Experience)
+- **Implemented by:** [IP-8010](../implementation/packages/IP-8010-presentation-ui.md)
 
 ## Purpose
 

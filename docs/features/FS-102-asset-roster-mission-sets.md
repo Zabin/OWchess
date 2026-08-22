@@ -2,6 +2,7 @@
 
 - **Feature ID:** FS-102 (from **FEAT-3000**, `docs/feature-planning/03-feature-catalog.md`)
 - **Status:** ✅ Authored, 2026-08-22 · **Owned by:** `06-feature-specification` · **Epic:** EP-1000 (Core Game Engine)
+- **Implemented by:** [IP-3010](../implementation/packages/IP-3010-asset-roster-lifecycle.md) (engine), [IP-3011](../implementation/packages/IP-3011-asset-mission-content.md) (content)
 
 ## Purpose
 

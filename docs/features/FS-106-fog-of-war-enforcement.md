@@ -2,6 +2,7 @@
 
 - **Feature ID:** FS-106 (from **FEAT-6000**, `docs/feature-planning/03-feature-catalog.md`)
 - **Status:** ✅ Authored, 2026-08-22 · **Owned by:** `06-feature-specification` · **Epic:** EP-2000 (Trust Boundary & Transport)
+- **Implemented by:** [IP-6010](../implementation/packages/IP-6010-fog-of-war-enforcement.md)
 
 ## Purpose
 
