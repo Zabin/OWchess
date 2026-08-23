@@ -16,8 +16,8 @@
 | [IP-6010](IP-6010-fog-of-war-enforcement.md) | Fog-of-War Enforcement | FS-106 | `08-code-implementation` | VERIFIED |
 | [IP-7010](IP-7010-transport.md) | Server-Authoritative WebSocket Transport | FS-107 | `08-code-implementation` | **VERIFIED** (VR-7010-v2, 2026-08-23) |
 | [IP-8010](IP-8010-presentation-ui.md) | Presentation / UI | FS-108 | `08-code-implementation` | **VERIFIED** (VR-8010-v2, 2026-08-23) |
-| [IP-9038](IP-9038-server-bootstrap.md) | Real Server Bootstrap (Session HTTP API + WebSocket + Static Serving) | — (bug remediation: BL-0038/BL-0027) | `08-code-implementation` | **COMPLETE** (2026-08-23 — surfaced BL-0056) |
-| [IP-9056](IP-9056-king-deployment-wiring.md) | King-Deployment Wire Exposure | — (bug remediation: BL-0056) | `08-code-implementation` | **BLOCKED** (on IP-9038 → VERIFIED) |
+| [IP-9038](IP-9038-server-bootstrap.md) | Real Server Bootstrap (Session HTTP API + WebSocket + Static Serving) | — (bug remediation: BL-0038/BL-0027) | `08-code-implementation` | **VERIFIED** (2026-08-23 — [VR-9038](../verification/VR-9038-server-bootstrap.md); surfaced BL-0056) |
+| [IP-9056](IP-9056-king-deployment-wiring.md) | King-Deployment Wire Exposure | — (bug remediation: BL-0056) | `08-code-implementation` | **READY** (all dependencies VERIFIED, 2026-08-23) |
 
 The 11 MVP packages above are authorized under the current release plan's MVP-bucketing (G3 satisfied by
 release-plan coverage — see each package's own Authorization line). See
@@ -238,7 +238,22 @@ any real client from ever reaching an active game — a separate, pre-existing g
 could not and did not fix (out of its own scope), now the sole remaining blocker before the
 training corpus's first-full-game walkthrough (FR-9420) is possible.
 
+**`09-package-verification` independently verified IP-9038** (2026-08-23, see
+[VR-9038](../verification/VR-9038-server-bootstrap.md)): every DoD/Checklist claim re-derived from
+a genuinely clean rebuild — BL-0027's 15=15 content-file match, the full 105-test suite, and a
+freshly-written, independently-run live smoke test (real HTTP create/join + two real `ws` clients,
+both receiving a genuine `TemplateCatalogMessage`; static `GET /` confirmed serving the real built
+`index.html`) — all reproduced exactly as claimed. **BL-0056 independently confirmed accurate at
+the code level** (no `ActionType` member, no non-test caller of `submitKingDeployment`,
+`GameEngine.handleAction`'s phase-gate and `SessionStore.getSession()`'s pre-deployment `undefined`
+both read directly, no client UI beyond read-only display). Scope confirmed to match the declared
+file set exactly, no server-authority/fog-of-war boundary crossed. Two Low, non-blocking findings
+(WS-upgrade validates only presence not store-validity, deviating from — but functionally
+superseding — the package's own task prose; FR-9410/FR-9420 RTM rows correctly left `UNASSIGNED`
+pending real training-corpus content). **IP-9038 flips `COMPLETE` → `VERIFIED`.**
+
 **`07-implementation-planning` authored IP-9056** to close BL-0056 (see
 `01-technical-work-breakdown.md` §7): a `DeployKingMessage`/`DeploymentStatusMessage` wire pair,
 transport branching on connect, an extended `TemplateCatalogMessage`, and a new client
-`KingDeploymentPicker`. `BLOCKED` on IP-9038 reaching `VERIFIED` first.
+`KingDeploymentPicker`. Was `BLOCKED` on IP-9038 reaching `VERIFIED` first — now `READY` (IP-9038
+verified above, IP-9056's other named dependencies IP-1010/IP-3011/IP-8010 already `VERIFIED`).
