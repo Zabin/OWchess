@@ -2,29 +2,24 @@
 
 ## Position
 
-- **Updated:** 2026-08-23 (run #52)
-- **Increment:** At the G4 gate, **the owner deferred the MVP GO/NO-GO decision** pending a real
-  human playtest, and directed a vision amendment (v0.4, C10): the operator-facing training corpus
-  is now a co-equal product with the code, modeled on the sibling `ZabSpaceExercise` project's own
-  proven pattern. `docs/reviews/release-assessment-mvp.md`'s advisory GO recommendation stands,
-  unactioned — this is a deferral, not a NO-GO.
-- **Pipeline state:** `00` — manager iterating. `01` — **just amended (v0.4)**, see below. `02`–`10`
-  — complete for the MVP tranche. `11` — assessment written, G4 decision now deferred pending new
-  work rather than pending an answer.
-- **Milestone:** 98 tests passing, build clean, integration-reviewed clean, Release Assessment
-  written — the MVP tranche has passed every gate this pipeline had *before* this vision amendment
-  added a new one (a clean training review, MSTR-001 §6).
-- **Backlog:** ~53 open items. BL-0051 (never run end-to-end as a real process) and BL-0039 (no
-  visual styling) are now directly on the critical path to revisiting G4, not just residual risks.
-- **Next step:** `04-requirements-engineering` to add a new FR/NFR family for the training corpus
-  (C10's trigger). Then: author two new pipeline skills (stage-08 training-corpus-authoring peer,
-  stage-09 independent-review peer); `07`→`08`→`09` to close BL-0038/BL-0027 (real server
-  bootstrap); the new stage-08 skill to write `docs/training/`+`docs/manual/` against the real
-  running result (real screenshots via the environment's pre-installed Playwright); the new
-  stage-09 skill to review it; then revisit the G4 gate armed with both a clean code-side
-  Release Assessment and a clean training review.
-- **Open gates:** G4 remains open, but is now **blocked on new work**, not merely awaiting an
-  owner answer — the next several runs address that work before G4 is revisited.
+- **Updated:** 2026-08-23 (run #53)
+- **Increment:** Following the owner's deferral of the MVP G4 decision (v0.4, C10 — the training
+  corpus is a co-equal product), `04-requirements-engineering` authored the FR-9000/NFR-10000
+  training-corpus requirement family. BL-0053 closed.
+- **Pipeline state:** `00` — manager iterating. `01`–`04` — complete for this delta (vision v0.4,
+  requirements FR-9000/NFR-10000). `05`–`10` — complete for the MVP tranche (unaffected by this
+  delta). `11` — assessment written, G4 still deferred pending the work below.
+- **Milestone:** 98 tests passing, build clean, integration-reviewed clean for the code side;
+  FR-9000/NFR-10000 now ground the two new pipeline skills still to be authored.
+- **Backlog:** ~54 open items. BL-0054 (author the two new skills) is now due; BL-0051/BL-0038/
+  BL-0027 (real server bootstrap) remain on the critical path after that.
+- **Next step:** author two new pipeline skills (BL-0054): a stage-08 training-corpus-authoring
+  peer and a stage-09 independent-review peer, mirroring `ZabSpaceExercise`'s
+  `08-training-manual-authoring`/`09-training-manual-review`, grounded in FR-9000/NFR-10000. Then
+  `07`→`08`→`09` to close BL-0038/BL-0027 (real server bootstrap) before real screenshots are
+  possible. Then the new stage-08 skill writes the corpus against the real running result; the new
+  stage-09 skill reviews it; then revisit the G4 gate.
+- **Open gates:** G4 remains open, blocked on the work above, not on an owner answer.
 
 ## Run log
 
@@ -82,3 +77,4 @@
 | 50 | 2026-08-23 | iterate (`00-pipeline-manager`) | `10-integration-review` | Full MVP package set (all 11 packages) | **Clean — no Critical/High findings.** Reviewed all five dimensions against the live tree (fresh `npm install`, full rebuild, full suite re-run: 98 tests green). Confirmed the fog-of-war chain's types line up across `BeliefState`→transport→client with no widening at any hop; confirmed the composition root (`createGameEngine.ts`) genuinely wires every handler/turn-end hook; confirmed no ID-namespace collisions (7 asset types, 3 mission sets, 5 effects); confirmed the 5 accumulated GDS-09 interface deviations (BL-0028/33/36/45/48) are mutually consistent, not just individually reasonable. 4 findings harvested: BL-0050 (Medium, 6/8 FS docs' `Implemented by` metadata stale), BL-0051 (Medium, BL-0038+BL-0027 compound into "MVP never run end-to-end as a real process" — flagged for `11`'s explicit weighing), BL-0049 re-confirmed live (Low, already tracked), BL-0052 (Low, GDS-09 batch-reconciliation debt). Report: `docs/reviews/integration-review-mvp-tranche.md`. | `11-release-readiness` for the owner's GO/NO-GO call on the MVP release bucket — no Critical/High findings block it, but its Release Assessment should explicitly weigh BL-0051 (playability) as a residual risk. |
 | 51 | 2026-08-23 | iterate (`00-pipeline-manager`) | `11-release-readiness` | MVP release bucket (all 8 Features / 11 packages) | Release Assessment written (`docs/reviews/release-assessment-mvp.md`): all 8 planned Features delivered, independently VERIFIED (4 genuine bugs caught and fixed along the way), integration-reviewed clean. **Advisory recommendation: GO**, with two residual risks flagged explicitly for the owner — BL-0051 (never run end-to-end as a real deployed process) and BL-0039 (no visual styling yet, pre-existing). Baseline NOT flipped — that step is reserved for the owner's explicit GO per this skill's own rule and the pipeline's G4 gate. | **GATE: G4** — put the GO/NO-GO decision to the owner. On GO: flip the release-plan bucket state and any other baseline records, then start the next increment (`00-pipeline-manager` survey). On NO-GO or deferred: hold at this gate, or route a named blocking item back through `07`→`08`→`09` per the owner's direction. |
 | 52 | 2026-08-23 | manual (owner-directed vision amendment at the G4 gate, not a manager iteration) | `01-vision` | `docs/master/MSTR-001-program-vision.md` (v0.4), `docs/architecture/00-vision.md`, `docs/architecture/strategic-assumptions-register.md` (A9) | At the MVP release's G4 gate, the owner deferred the GO/NO-GO decision pending a real human playtest, pointing to the sibling `ZabSpaceExercise` project's own training-corpus-as-co-equal-product pattern as the model to follow. Added C10 to MSTR-001 (training corpus is a co-equal product with the code, requirements-backed, built/kept current by dedicated stage-08/09 pipeline skills, scoped to one shared player-facing corpus — no per-role manuals, unlike the source pattern's White/Blue/Red scoping). Companion GDS-00 section and assumption A9 added. | `04-requirements-engineering` to add a new FR/NFR family for the training corpus; then author two new pipeline skills (a stage-08 training-corpus-authoring peer, a stage-09 independent-review peer); then `07-implementation-planning`/`08-code-implementation`/`09-package-verification` to close BL-0038/BL-0027 (real server bootstrap) before real screenshots are possible; then the new stage-08 skill writes the corpus against the real running result. The G4 gate on `docs/reviews/release-assessment-mvp.md` remains open (deferred, not NO-GO) until that's done. |
+| 53 | 2026-08-23 | iterate (`00-pipeline-manager`) | `04-requirements-engineering` | FR-9000/NFR-10000 (delta) | Authored the training-corpus requirement family per MSTR-001 C10: FR-9110/9120 (coverage), FR-9210 (bidirectional index), FR-9310/9320 (currency), FR-9410/9420 (zero-experience install walkthrough; first full-game walkthrough with real screenshots — the two leaves this whole vision amendment exists to satisfy), plus NFR-10100/10200 (module-size/audience fit; screenshot fidelity) — modeled on `ZabSpaceExercise`'s FR-11000 family, scoped to one shared corpus. Delta review found 2 new Low findings (RF-05/06, both non-blocking), recorded in a new `requirements-change-log.md` per this project's own delta-update convention. RTM/INDEX updated with honest `UNASSIGNED` forward columns. BL-0053 closed. | Author two new pipeline skills (BL-0054): a stage-08 training-corpus-authoring peer and a stage-09 independent-review peer, mirroring `ZabSpaceExercise`'s `08-training-manual-authoring`/`09-training-manual-review` but scoped to OW Chess's single shared corpus. Then `07`→`08`→`09` to close BL-0038/BL-0027 (real server bootstrap) before real screenshots are possible. |
