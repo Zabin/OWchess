@@ -1,7 +1,7 @@
 # GDS-00 — Vision (design-facing restatement)
 
-- **Owned by:** `01-vision` · **Status:** 🟢 Gate-confirmed, same gate state as MSTR-001 v0.4 ·
-  **Source:** `docs/master/MSTR-001-program-vision.md` v0.4
+- **Owned by:** `01-vision` · **Status:** 🟢 Gate-confirmed, same gate state as MSTR-001 v0.5 ·
+  **Source:** `docs/master/MSTR-001-program-vision.md` v0.5
 
 This is the design-facing restatement of MSTR-001, in the vocabulary the GDS ladder builds on.
 MSTR-001 is authoritative for purpose-level statements; this document translates its commitments
@@ -55,15 +55,45 @@ things are deliberately left undecided for `03-architecture-design-synthesis`/
   signature.
 - The **disconnect/reconnect grace-period behavior** (FR-6003).
 
-## Visual/presentation grounding — resolved, not open
+## Visual/presentation grounding — resolved, not open *(reference changed v0.5)*
 
 Unlike the items above, GDS-08 (presentation architecture) is **not** starting from a blank
-placeholder: MSTR-001 §4 documents a real, directly-inspected style precedent (`ZabOW`'s
-`ORBITAL COMMAND`, now on its `main` branch) — a radial LEO/MEO/GEO band layout, corner-anchored
-HUD panels, and a dark cyan/red "ops console" palette that maps closely onto this project's own
-SOR §9.2 panel inventory. `03-architecture-design-synthesis` should treat this as the concrete
-starting point for GDS-08, adapting it for a turn-based (not touch-drag real-time) interaction
-model and a 2-player (not single-player campaign) information structure.
+placeholder. **As of MSTR-001 v0.5 the reference is `ZabSpaceExercise`'s canvas globe viewer
+(C9a, §4a), superseding `ZabOW`'s radial band layout (C9).**
+
+In system terms, that means GDS-08's orbital board is a **geographic globe**: an orthographic
+azimuthal projection of Earth drawn on a **Canvas 2D** context (the reference uses no 3D engine
+and no external libraries), carrying coastlines and a graticule, a day/night terminator,
+propagated ground tracks, APP-6-adapted symbology markers, and — most significantly for this
+project — **belief contacts drawn with an uncertainty ring encoding confidence**, which is a
+direct visual analogue of this project's own F2T2E precision ladder. Panel chrome is dark, austere
+and technical rather than arcade-vivid. `03-architecture-design-synthesis` should treat this as
+the concrete starting point for GDS-08, adapting it for a turn-based (not real-time) interaction
+model and a 2-player hidden-information structure.
+
+**Two consequences this level must hand to `03`, not decide itself:**
+
+1. **A rendering ADR is owed.** Adopting a specific rendering approach is an architecture
+   decision. ADR-0001 covers language/stack only; SOR §8.1's rendering row was flagged
+   `[ASSUMPTION — OQ-02]` and never locked (and recommended Canvas2D, which this reference uses).
+2. **A globe needs positions, and the `Propagator` currently exposes only a discrete regime
+   label.** GDS-03's own module table already names a `computePosition(asset, atTurn)` surface
+   that the shipped interface (GDS-09) dropped in favour of `currentRegime`. Whether position
+   crosses that boundary — and how it stays consistent with the fog-of-war rule that a client is
+   only ever sent what it has earned — is `03`'s call. The reference itself demonstrates a
+   fog-safe pattern: its server filters per-viewer before serialising, so the client cannot leak
+   what it was never sent.
+
+## Release certification bar (added v0.5, MSTR-001 C11)
+
+Per MSTR-001 C11 and §6: a release is certified on evidence the game can actually be **played**,
+not only on green tests. A clean `09-content-review` pass against the built, running application
+is part of every release's "done" bar, and a `Verification: Demonstration` acceptance criterion is
+**not** discharged by a passing unit test or a `09-package-verification` ledger audit. In system
+terms this adds a standing obligation the GDS ladder must respect: **a module is not delivered
+until it is demonstrably reachable in the running application.** Automated evidence proves a
+mechanism works in isolation; it cannot prove reachability, that a game can reach a terminal
+state, or that anything is legible on screen.
 
 ## Testability requirement carried down from MSTR-001 §6
 
