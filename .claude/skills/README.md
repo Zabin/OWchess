@@ -46,8 +46,8 @@ afterward via `00-intake`, exactly as it would for any later increment.
 | 05 | `05-feature-decomposition` | Release Plan, Epic Catalog, Feature Catalog (FEAT-#### rows), Feature Dependency Graph, Feature Review | `docs/feature-planning/` |
 | 06 | `06-feature-specification` | Feature Specifications (FS-###, 20-field template) | `docs/features/` |
 | 07 | `07-implementation-planning` | Technical Work Breakdown, Implementation Packages (IP-####, 14-field template), Master Build Plan | `docs/implementation/` |
-| 08 | `08-code-implementation` · `08-content-authoring` · `08-refactoring` | Code: server/client source + tests + docs + traceability for exactly one package (status → `COMPLETE`). Content peer: mission-set/asset-type/effect-definition data templates (JSON/YAML) + their verification tests. Refactoring peer: behavior-preserving code restructuring / meaning-preserving doc restructuring with equivalence evidence, via `IP-8xx0` packages only. | repo source tree, `docs/`, ledgers |
-| 09 | `09-package-verification` · `09-content-review` | Verification Report (VR-####); the **only** skill that writes `VERIFIED`. Content peer: Content Review report (mission-set/asset/effect-data correctness vs. spec) under `docs/reviews/`. | `docs/implementation/verification/`, `docs/reviews/` |
+| 08 | `08-code-implementation` · `08-content-authoring` · `08-refactoring` · `08-training-manual-authoring` | Code: server/client source + tests + docs + traceability for exactly one package (status → `COMPLETE`). Content peer: mission-set/asset-type/effect-definition data templates (JSON/YAML) + their verification tests. Refactoring peer: behavior-preserving code restructuring / meaning-preserving doc restructuring with equivalence evidence, via `IP-8xx0` packages only. Training-manual peer (added 2026-08-23, MSTR-001 C10): the player-facing training corpus + its screenshots. | repo source tree, `docs/`, `docs/training/`, `docs/manual/`, ledgers |
+| 09 | `09-package-verification` · `09-content-review` · `09-training-manual-review` | Verification Report (VR-####); the **only** skill that writes `VERIFIED`. Content peer: Content Review report (mission-set/asset/effect-data correctness vs. spec) under `docs/reviews/`. Training-manual peer (added 2026-08-23): Training Review report (corpus accuracy/traceability/coverage/pedagogy vs. shipped behavior) under `docs/reviews/`. | `docs/implementation/verification/`, `docs/reviews/` |
 | 10 | `10-integration-review` | Integration Report for an epic/release's verified package set | `docs/reviews/` |
 | 11 | `11-release-readiness` | Release Assessment (GO/NO-GO) + baseline update on GO | `docs/reviews/`, trackers |
 
@@ -59,6 +59,9 @@ and flows forward from there:
 - **Per feature:** 06 → 07 → (08 → 09 per package) — repeated for each feature in a release bucket.
 - **Per package:** 08 → 09; a `RETURNED` verification loops back to 08 on the same package.
 - **Per content artifact:** `08-content-authoring` → `09-content-review`; findings loop back to 08.
+- **Per training-corpus change:** `08-training-manual-authoring` → `09-training-manual-review`;
+  findings loop back to 08. A release's `11-release-readiness` gate requires a clean training
+  review alongside the usual verification/integration evidence (MSTR-001 C10, §6).
 - **Per refactor:** a `refactor`-type backlog entry (via `00-intake` or manager harvest) → 07
   authors an `IP-8xx0` with an equivalence contract → `08-refactoring` → `09-package-verification`.
   Refactoring runs only under the explicit conditions in `00-pipeline-manager` (quiescent tree,
