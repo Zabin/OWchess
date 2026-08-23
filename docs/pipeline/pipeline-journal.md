@@ -2,25 +2,27 @@
 
 ## Position
 
-- **Updated:** 2026-08-23 (run #58)
-- **Increment:** **IP-9038 confirmed `VERIFIED`** (VR-9038) — a fresh independent session
-  reproduced the live end-to-end smoke test itself and re-confirmed BL-0056's claim from scratch.
-  **IP-9056 flipped `BLOCKED` → `READY`.**
+- **Updated:** 2026-08-23 (run #59)
+- **Increment:** **IP-9056 implemented and live end-to-end tested; status `COMPLETE`** (not yet
+  `VERIFIED`) — closes BL-0056. A real client can now create a session, join it, have both
+  players deploy their King, and reach a genuine `phase: 'active'` game with a real
+  `StateDeltaMessage` — the first time this has ever been true in this project's history.
 - **Pipeline state:** `00` — manager iterating. `01`–`07` — complete for this delta. `08` —
-  IP-9038 `VERIFIED`; IP-9056 `READY`, not yet started. `09`–`11` — unaffected for the MVP tranche
-  proper; `11`'s G4 still deferred.
-- **Milestone:** 105 tests passing, all still green. Two more Low findings harvested (BL-0057/58,
-  both non-blocking). The real-bootstrap half of the playtest blocker is now fully closed and
-  independently proven; only King-deployment wiring stands between here and a playable game.
-- **Backlog:** ~58 open items. IP-9056 is the sole due item.
-- **Next step:** `08-code-implementation` on IP-9056 — the package that actually closes BL-0056
-  and makes the game genuinely playable by a real client for the first time. Then
-  `09-package-verification` (including the same live end-to-end discipline that caught BL-0056 in
-  the first place). Once a real game is genuinely playable start to finish,
-  `08-training-manual-authoring` writes the corpus with real screenshots; `09-training-manual-
-  review` reviews it; then the G4 gate is revisited.
-- **Open gates:** G4 remains open, blocked on IP-9056 + the training corpus, not on an owner
-  answer.
+  IP-9038 `VERIFIED`; IP-9056 `COMPLETE`, awaiting independent verification. `09`–`11` —
+  unaffected for the MVP tranche proper; `11`'s G4 still deferred.
+- **Milestone:** 113 tests passing (up from 105), all green, including live end-to-end proof (two
+  real `ws` clients, real HTTP create/join, both King deployments accepted, both received a real
+  `state-delta`). Both halves of the original playtest blocker (BL-0038/BL-0027 bootstrap, BL-0056
+  King-deployment wiring) are now implemented; only IP-9056's independent verification remains
+  before the training corpus can be authored against a provably playable game.
+- **Backlog:** ~58 open items. `09-package-verification` on IP-9056 is the sole due item.
+- **Next step:** `09-package-verification` on IP-9056 — ideally a fresh, independent session,
+  reproducing the live create→join→deploy-king×2→state-delta sequence with its own script and
+  independently confirming `DeploymentStatusMessage` never leaks `missionSetId`/`regime`. Once
+  `VERIFIED`, `08-training-manual-authoring` writes the training corpus with real screenshots;
+  `09-training-manual-review` reviews it; then the G4 gate is revisited.
+- **Open gates:** G4 remains open, blocked on IP-9056's verification + the training corpus, not on
+  an owner answer.
 
 ## Run log
 
@@ -84,3 +86,4 @@
 | 56 | 2026-08-23 | iterate (`00-pipeline-manager`) | `08-code-implementation` | IP-9038 | Implemented: real `http.Server` (session create/join routes, static client serving), `ws.WebSocketServer` upgrade handler wired to the already-VERIFIED transport, and a build-script content-copy fix (BL-0027 closed — `server/dist/content/` now holds all 15 JSON files matching source). Live end-to-end tested with real HTTP calls and two real `ws` clients (not just committed tests) — confirmed both received a genuine `TemplateCatalogMessage`. Full suite green (105 tests, up from 98). **This same live test surfaced BL-0056 (Critical)**: King deployment (FR-1210/1220) has no wire-level exposure anywhere — no action type, no message, no client UI ever calls `SessionStore.submitKingDeployment` outside test setup, so no real client can reach an active game today. Pre-existing, out of IP-9038's own scope; IP-9038 itself is `COMPLETE`. | `07-implementation-planning` to package BL-0056's fix (a deploy-king action type/message, `GameEngine` dispatch for the pre-`'active'` phase, client UI picker) — the sole remaining blocker before `08-training-manual-authoring` can produce FR-9420's first-full-game walkthrough. |
 | 57 | 2026-08-23 | iterate (`00-pipeline-manager`) | `07-implementation-planning` | IP-9056 (new, bug-remediation) | Authored IP-9056 to close BL-0056: a `DeployKingMessage`/`DeploymentStatusMessage` wire pair, transport branching in `handleConnection` (no-session vs. deploying vs. active), `TemplateCatalogMessage` extended with mission-set data, and a new `KingDeploymentPicker` client component. Deliberately `BLOCKED` on IP-9038 reaching `VERIFIED` (currently `COMPLETE`, independent verification dispatched in the background) rather than building on an unverified base. | Await IP-9038's verification result. If `VERIFIED`, IP-9056 flips `READY` and `08-code-implementation` executes it; then `09-package-verification` (including the same live end-to-end discipline that caught BL-0056). Once a real game is genuinely playable start to finish, `08-training-manual-authoring` writes the corpus with real screenshots. |
 | 58 | 2026-08-23 | iterate (`00-pipeline-manager`) | `09-package-verification` (spawned Agent, result landed) | IP-9038 | **VERIFIED** (VR-9038). Independently rebuilt clean, ran the full suite (105 tests, exact match), re-confirmed BL-0027's fix (15=15 content files) by counting directly, and independently reproduced the live end-to-end smoke test with its own separately-written script (real HTTP create/join, two real `ws` clients both receiving a genuine `TemplateCatalogMessage`, plus new probes of invalid-session and missing-params WS connects). Independently re-confirmed BL-0056's claim from scratch (grepped every `submitKingDeployment` call site — all in `__tests__`; read `GameEngine.handleAction`'s phase gate and `SessionStore.getSession`'s undefined-until-resolved behavior directly) — accurate, not overstated or understated. 2 Low findings (BL-0057/58, both non-blocking). **IP-9056 flipped `BLOCKED` → `READY`** (its sole blocking dependency now `VERIFIED`). | `08-code-implementation` on IP-9056 — the package that actually closes BL-0056 and makes the game genuinely playable by a real client for the first time. |
+| 59 | 2026-08-23 | iterate (`00-pipeline-manager`) | `08-code-implementation` | IP-9056 | Implemented: `DeployKingMessage`/`DeploymentStatusMessage` wire pair, `handleConnection`'s three-way branching (no-session/deploying/active), `TemplateCatalogMessage` extended with `missionSets`, `SessionStore.hasSessionRecord`/`getDeploymentStatus`/`getJoinedPlayerIds` (additive), `TemplateRegistry.listMissionSetTemplates`, and the new `KingDeploymentPicker` client component. Live end-to-end tested: real HTTP create/join, two real `ws` clients, both submitted King deployments (`satcom`/`GEO-EQUATORIAL`, `isr`/`LEO-POLAR`), both received a real `state-delta` once the session reached `phase: 'active'`. Full suite green (113 tests, up from 105). **BL-0056 closed** — a real client can now reach a playable game for the first time in this project's history. | `09-package-verification` on IP-9056, ideally a fresh independent session, including the same live end-to-end discipline. Once `VERIFIED`, `08-training-manual-authoring` can finally write the training corpus with real screenshots of an actually-playable game. |
