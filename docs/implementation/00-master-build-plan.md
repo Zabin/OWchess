@@ -15,9 +15,9 @@
 | IP-5010 | FS-104 | `08-code-implementation` | **VERIFIED** (2026-08-22, VR-5010) | IP-0010, IP-1010, IP-3010, IP-3011 (all VERIFIED) | Release plan (FEAT-5000, MVP) |
 | IP-6010 | FS-106 | `08-code-implementation` | **VERIFIED** (2026-08-22, VR-6010) | IP-0010, IP-2010 (both VERIFIED) | Release plan (FEAT-6000, MVP) |
 | IP-4010 | FS-105 (code) | `08-code-implementation` | **VERIFIED** (2026-08-22, VR-4010) | IP-0010, IP-2010, IP-6010 (all VERIFIED) | Release plan (FEAT-4000, MVP) |
-| IP-4011 | FS-105 (content) | `08-content-authoring` | **COMPLETE** (2026-08-22) | IP-4010 (VERIFIED) | Release plan (FEAT-4000, MVP) |
+| IP-4011 | FS-105 (content) | `08-content-authoring` | **VERIFIED** (2026-08-23, VR-4011) | IP-4010 (VERIFIED) | Release plan (FEAT-4000, MVP) |
 | IP-7010 | FS-107 | `08-code-implementation` | **COMPLETE** (2026-08-22) | IP-0010, IP-1010, IP-6010 (all VERIFIED) | Release plan (FEAT-7000, MVP) |
-| IP-8010 | FS-108 | `08-code-implementation` | **COMPLETE** (2026-08-23 — IP-4011/IP-7010 still awaiting their own verification) | all 10 above | Release plan (FEAT-8000, MVP) |
+| IP-8010 | FS-108 | `08-code-implementation` | **COMPLETE** (2026-08-23 — IP-7010 still awaiting its own verification) | all 10 above | Release plan (FEAT-8000, MVP) |
 
 **IP-0010 is `VERIFIED`** (implemented 2026-08-22; independently verified 2026-08-22 by
 `09-package-verification` — see
@@ -212,6 +212,24 @@ packages). Build clean; full suite green (66 tests, exactly matching the package
 **IP-4011 (names IP-4010 as its sole blocking dependency, already `COMPLETE`) is now the next
 package eligible for its own `09-package-verification` pass.**
 
+**IP-4011 is now `VERIFIED`** (2026-08-23 — see [VR-4011](verification/VR-4011-effect-content.md)).
+All five effect-definition files were hand-verified against FS-105's prose and against
+`EffectResolver.ts`'s real `DISRUPT_DENY_DURATION`/`DEGRADE_DURATION` constants directly, not just
+against the package's own tests. A live re-exercise beyond the committed "BL-0037 cross-check"
+test (which only round-trips `disrupt`/`degrade` through the real resolver) independently confirmed
+the **Deny** duration, a non-default 7-turn multi-stack Degrade tick past the 6-turn mission-denial
+threshold (correct expiry/reset/total arithmetic), and that Deceive's content-declared
+`"until-cleared"` duration is never written into a real `EffectStateEntry`. The effector-to-effect
+doctrine mapping was independently cross-checked cell-by-cell against IP-3011's real asset-type
+`_effectAffinity` content — fully consistent today, though (Low finding) the committed test that
+checks `allowedEffectorTemplateIds` only verifies referential existence, not this doctrine
+cross-check the package's own "Tests to Add" section promises. Two further Low, non-blocking
+findings: Task 2's "IP-4010's `EffectDefinition` schema" wording is imprecise since the schema is
+authored entirely within this package (already substantively disclosed by BL-0037); the package's
+"70 tests" claim is stale (94 today) purely from concurrent IP-7010/IP-8010 landing. Build clean;
+full suite green. No package flips to `READY` from this VR alone: IP-8010 (the only package naming
+IP-4011) also still needs IP-7010 `VERIFIED`.
+
 ## Dependency graph
 
 ```
@@ -238,9 +256,9 @@ IP-2010/IP-6010's own sequence, converging only at IP-8010.
 
 ## Next action
 
-**IP-5010, IP-2010, IP-6010, and IP-4010 are all `VERIFIED`** (see VR-5010, VR-2010-v2, VR-6010,
-and VR-4010 above) — no further action needed on any of them. **IP-7010 is `READY`** (all three
-named blocking dependencies — IP-0010, IP-1010, IP-6010 — are `VERIFIED`): a package due for
-`08-code-implementation`. **IP-4011** (already `COMPLETE`; its sole named blocking dependency,
-IP-4010, is now `VERIFIED`) is the next package eligible for its own `09-package-verification`
-pass. IP-8010 (depends on all 10 other packages) remains `BLOCKED`/not yet eligible.
+**IP-5010, IP-2010, IP-6010, IP-4010, and IP-4011 are all `VERIFIED`** (see VR-5010, VR-2010-v2,
+VR-6010, VR-4010, and VR-4011 above) — no further action needed on any of them. **IP-7010 is
+`COMPLETE`** (all three named blocking dependencies — IP-0010, IP-1010, IP-6010 — are `VERIFIED`)
+and is the next package eligible for its own `09-package-verification` pass. **IP-8010** is also
+`COMPLETE` but remains blocked from any further ledger advancement until IP-7010 (the last of its
+ten named dependencies) is itself `VERIFIED`.

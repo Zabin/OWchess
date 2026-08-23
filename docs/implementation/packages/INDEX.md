@@ -12,7 +12,7 @@
 | [IP-2010](IP-2010-sensing-f2t2e.md) | Sensing & the F2T2E Chain | FS-103 | `08-code-implementation` | VERIFIED |
 | [IP-5010](IP-5010-propagator.md) | `Propagator` (Two-Body Orbital Mechanics) | FS-104 | `08-code-implementation` | VERIFIED |
 | [IP-4010](IP-4010-effect-resolver.md) | `EffectResolver` (the Five D's Mechanism) | FS-105 (code) | `08-code-implementation` | VERIFIED |
-| [IP-4011](IP-4011-effect-content.md) | Five D's Effect-Definition Content | FS-105 (content) | `08-content-authoring` | COMPLETE |
+| [IP-4011](IP-4011-effect-content.md) | Five D's Effect-Definition Content | FS-105 (content) | `08-content-authoring` | VERIFIED |
 | [IP-6010](IP-6010-fog-of-war-enforcement.md) | Fog-of-War Enforcement | FS-106 | `08-code-implementation` | VERIFIED |
 | [IP-7010](IP-7010-transport.md) | Server-Authoritative WebSocket Transport | FS-107 | `08-code-implementation` | COMPLETE |
 | [IP-8010](IP-8010-presentation-ui.md) | Presentation / UI | FS-108 | `08-code-implementation` | COMPLETE |
@@ -107,3 +107,40 @@ describes a "`handleAction` switch" that doesn't literally exist (the real mecha
 claim exactly). **IP-4011** (its sole named blocking dependency, IP-4010, is now `VERIFIED`) is
 the next package eligible for its own `09-package-verification` pass. IP-8010 (depends on all 10
 others) remains `BLOCKED`.
+
+**IP-4011 was independently verified 2026-08-23 and confirmed VERIFIED** — see
+[VR-4011](../verification/VR-4011-effect-content.md): all five effect-definition files were hand-
+verified against FS-105's prose and against `EffectResolver.ts`'s real duration constants directly
+(not just against the package's own `effectDefinitions.test.ts` assertions). A live re-exercise
+beyond that committed test (which only round-trips `disrupt`/`degrade` through the real resolver)
+independently confirmed the **Deny** duration, a non-default 7-turn multi-stack Degrade tick past
+the 6-turn mission-denial threshold (correct expiry/reset/total arithmetic), and that Deceive's
+content-declared `"until-cleared"` duration is never written into a real `EffectStateEntry`. The
+effector-to-effect doctrine mapping was independently cross-checked cell-by-cell against IP-3011's
+real asset-type `_effectAffinity` content — fully consistent today. Three Low, non-blocking
+findings: the committed "references a real asset-type template" test only checks referential
+existence, not the doctrine cross-check the package's "Tests to Add" section promises (data is
+correct, coverage is thinner than claimed); Task 2's "IP-4010's `EffectDefinition` schema" wording
+is imprecise since the schema is authored entirely within this package (already substantively
+disclosed by BL-0037); the package's "70 tests" claim is stale (94 today) purely from concurrent
+IP-7010/IP-8010 landing. Build clean; full suite green. No package flips to `READY` from this VR
+alone — IP-8010 (the only package naming IP-4011) also still needs IP-7010 `VERIFIED`.
+
+**IP-7010 was independently verified 2026-08-23 and RETURNED** — see
+[VR-7010](../verification/VR-7010-transport.md): the fog-of-war non-leak claim at the network edge
+was live-exercised (not just re-read) and holds — `broadcastStateDelta` genuinely computes two
+independent per-player `StateDeltaMessage`s via IP-6010's already-`VERIFIED`
+`computeOpponentView`, and `SessionStore`'s `crypto.randomBytes(16)` session-ID generation
+(VR-1010-v2's fix) is unchanged and not bypassed by `connectionRegistry.ts`. Two High findings
+block `VERIFIED`: (F1) `handleConnection`'s reconnect path silently drops a connection presenting
+a nonexistent `sessionId` (sends nothing) rather than the "clear 'session no longer exists'
+response" FS-107's own W4 edge case and NFR-7200 require — live-reproduced, uncaught by either
+committed test file; (F2) the package's own DoD claim that a cancelled session gets
+`outcome: 'cancelled'` is not implemented — `SessionState` has no `outcome` field at all, only
+`phase`, so a cancellation is not durably distinguishable from other `'ended'` states as FS-101
+§W7 requires, and live-reproducing a cancel past the 60-turn timeout cap shows
+`checkWinConditions` actively mislabels it `{winner: null, reason: 'timeout-tiebreak'}`. Build
+clean; full suite green (79 shared+server tests, matching the package's own claim exactly). IP-7010
+stays `COMPLETE`, routed back to `08-code-implementation` (F1) and `07-implementation-planning`
+(F2's `SessionState` schema gap). IP-8010 remains `BLOCKED` pending IP-7010's (and IP-4011's
+already-`VERIFIED`) fix-and-reverify cycle.
