@@ -2,32 +2,30 @@
 
 ## Position
 
-- **Updated:** 2026-08-23 (run #43)
-- **Increment:** Iterating toward MVP release readiness. **All 11 MVP packages are now
-  implemented (`COMPLETE`) — the full engine, transport, and client exist for the first time.**
-  8 of 11 are independently `VERIFIED`; BL-0040's session-limit gate has cleared, and fresh
-  independent verification agents for IP-4011 and IP-7010 are dispatched and running now.
+- **Updated:** 2026-08-23 (run #44)
+- **Increment:** Iterating toward MVP release readiness. All 11 MVP packages are implemented
+  (`COMPLETE`). 9 of 11 now independently `VERIFIED`; IP-7010 was `RETURNED` with 2 High findings
+  and needs a fix-and-reverify cycle; IP-8010 remains blocked on IP-7010.
 - **Pipeline state:** `00` — manager iterating. `01`–`07` — complete. `08` — **11 of 11 packages
-  COMPLETE.** `09` — **8 of 11 VERIFIED**: IP-0010, IP-1010 (RETURNED once for a Critical NFR-3200
-  gap — guessable session IDs — fixed same day, then VERIFIED), IP-3010, IP-3011, IP-2010
-  (RETURNED once for a High finding — tasking an effector-only asset silently succeeded — fixed
-  same day, then VERIFIED), IP-5010 (verifier independently hand-re-derived all 24 Maneuver Cost
-  Table cells, not just the regression test), IP-6010, IP-4010. **Awaiting verification:** IP-4011,
-  IP-7010, IP-8010 (all `COMPLETE`, dependencies satisfied, agents dispatched but hit the session
-  limit mid-run — BL-0040).
+  COMPLETE.** `09` — **9 of 11 VERIFIED**: IP-0010, IP-1010, IP-3010, IP-3011, IP-2010, IP-5010,
+  IP-6010, IP-4010, IP-4011 (each with its own RETURNED→fixed→VERIFIED history noted in earlier
+  rows, or clean on the first pass). **RETURNED, needs fix:** IP-7010 (VR-7010, 2 High: F1 silent
+  reconnect-to-nonexistent-session drop; F2 missing `SessionState.outcome` field, live-reproduced
+  mislabeling a cancelled-past-timeout session as `timeout-tiebreak`). **Still blocked:** IP-8010
+  (needs IP-7010 `VERIFIED`).
 - **Milestone:** 94 tests passing (1 shared + 78 server + 15 client), build clean across all 3
-  workspaces, at every step of this run. Two genuine bugs were caught by independent verification
-  and fixed same-day (Critical: guessable session IDs; High: a task-rejection gap) — the
-  verification discipline is doing real work, not rubber-stamping.
-- **Backlog:** ~30 open items, nearly all `SCHEDULED`/`DEFERRED`/`DONE`, none blocking further
-  implementation — disclosed deviations (BL-0021/22/28/30/31/33/36/37/38), two real bugs caught
-  and fixed (BL-0023 Critical; BL-0032 High), a known missing visual-styling pass (BL-0039), and
-  the current session-limit gate (BL-0040).
-- **Next step:** await IP-4011/IP-7010 verification results (dispatched run #43); harvest findings
-  and update ledgers on each completion; then dispatch IP-8010 verification once both land (its
-  remaining blocking dependencies). Once all 11 are `VERIFIED`: `10-integration-review` on the full
-  MVP package set, then `11-release-readiness`'s GO/NO-GO call (G4, the owner's).
-- **Open gates:** none. BL-0040 resolved (session-limit cleared); no gate currently blocks `09`.
+  workspaces. Three genuine bugs now caught by independent verification (Critical: guessable
+  session IDs; High: task-rejection gap; High x2: IP-7010's reconnect/outcome gaps, fix pending) —
+  the verification discipline continues to do real work, not rubber-stamping.
+- **Backlog:** ~45 open items, nearly all `SCHEDULED`/`DEFERRED`/`DONE`. Live and due now: BL-0044
+  (IP-7010 F1, reconnect rejection message) and BL-0045 (IP-7010 F2, `SessionState.outcome` field
+  — needs a small `07`-level data-model touch before `08` wires it).
+- **Next step:** `07-implementation-planning` to add an `outcome`-distinguishing field to
+  `SessionState` (BL-0045's schema gap), then `08-code-implementation` to fix IP-7010's F1/F2 and
+  re-submit for a fresh `09-package-verification` pass. Once IP-7010 is `VERIFIED`, dispatch
+  IP-8010 verification (its last blocking dependency). Then `10-integration-review` on the full
+  MVP set, then `11-release-readiness`'s GO/NO-GO call (G4, the owner's).
+- **Open gates:** none blocking the fix — BL-0044/0045 are `SCHEDULED`, not owner decisions.
 
 ## Run log
 
