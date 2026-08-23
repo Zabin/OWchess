@@ -2,26 +2,26 @@
 
 ## Position
 
-- **Updated:** 2026-08-23 (run #45)
+- **Updated:** 2026-08-23 (run #46)
 - **Increment:** Iterating toward MVP release readiness. All 11 MVP packages are implemented
-  (`COMPLETE`). 9 of 11 independently `VERIFIED`; IP-7010's fix for VR-7010's 2 High findings is
-  implemented and a fresh independent re-verification is dispatched and running; IP-8010 remains
-  blocked on IP-7010's re-verification landing.
+  (`COMPLETE`). **10 of 11 now independently `VERIFIED`** — only IP-8010 remains, its verification
+  dispatched and running now (the last of all 11 MVP packages to reach this stage).
 - **Pipeline state:** `00` — manager iterating. `01`–`07` — complete. `08` — **11 of 11 packages
-  COMPLETE.** `09` — **9 of 11 VERIFIED** (IP-0010, IP-1010, IP-3010, IP-3011, IP-2010, IP-5010,
-  IP-6010, IP-4010, IP-4011). **Fixed, awaiting re-verification:** IP-7010 (F1/F2 both implemented
-  per its Remediation section; regression tests reproduce VR-7010's exact scenarios; full suite
-  green at 96 tests). **Still blocked:** IP-8010 (needs IP-7010 `VERIFIED`).
+  COMPLETE.** `09` — **10 of 11 VERIFIED** (IP-0010, IP-1010, IP-3010, IP-3011, IP-2010, IP-5010,
+  IP-6010, IP-4010, IP-4011, IP-7010 — IP-7010 confirmed VERIFIED this run via VR-7010-v2, both
+  High findings independently re-derived as genuinely fixed). **Awaiting verification:** IP-8010
+  (all 10 of its dependencies now `VERIFIED`).
 - **Milestone:** 96 tests passing (1 shared + 80 server + 15 client), build clean across all 3
   workspaces. Three genuine bugs caught by independent verification and fixed (Critical: guessable
   session IDs; High: task-rejection gap; High x2: IP-7010's reconnect/cancellation-outcome gaps) —
-  the verification discipline continues to do real work, not rubber-stamping.
-- **Backlog:** ~45 open items, nearly all `SCHEDULED`/`DEFERRED`/`DONE`. BL-0044/0045 now `IN
-  PIPELINE` pending VR-7010-v2's confirmation.
-- **Next step:** await VR-7010-v2's result. If `VERIFIED`, dispatch IP-8010 verification (its last
-  blocking dependency), then `10-integration-review` on the full MVP set, then
-  `11-release-readiness`'s GO/NO-GO call (G4, the owner's). If `RETURNED` again, route back to
-  `08-code-implementation` with the new findings.
+  the verification discipline continues to do real work, not rubber-stamping, through the entire
+  11-package tranche.
+- **Backlog:** ~47 open items, nearly all `SCHEDULED`/`DEFERRED`/`DONE`. Nothing currently due that
+  isn't already riding with a dispatched step.
+- **Next step:** await IP-8010's verification result. If `VERIFIED`, all 11 MVP packages are
+  independently verified for the first time — advance to `10-integration-review` on the full MVP
+  package set, then `11-release-readiness`'s GO/NO-GO call (G4, the owner's). If `RETURNED`, route
+  back to `08-code-implementation` with the new findings.
 - **Open gates:** none — no owner decision currently pending.
 
 ## Run log
@@ -73,3 +73,4 @@
 | 43 | 2026-08-23 | iterate (`00-pipeline-manager`, user requested "Continue") | `09-package-verification` (two spawned Agents, independent, dispatched in parallel) | IP-4011 and IP-7010 | The BL-0040 session-limit gate is time-based (resets ~2:20am UTC) and has now cleared. Re-dispatched fresh independent verification agents for both packages (IP-4011 depends only on IP-4010, already VERIFIED; IP-7010 depends on IP-0010/IP-1010/IP-6010, all already VERIFIED — genuinely parallel, non-overlapping files). Both dispatched, results pending as of this row. | Await both agents' completion notifications; harvest findings and update ledgers on each; once both land, dispatch IP-8010 verification (its last two blocking dependencies will then be satisfied). |
 | 44 | 2026-08-23 | iterate (`00-pipeline-manager`) | `09-package-verification` (two spawned Agents, results landed) | IP-4011 and IP-7010 | **IP-4011 confirmed VERIFIED** (VR-4011): hand-checked all 5 effect-definition JSON files and the registry against FS-105's prose and `EffectResolver.ts`'s real duration constants, plus a live-exercised Deny-duration/multi-stack-Degrade/Deceive-immutability scratch test beyond the committed suite. 3 Low, non-blocking findings (BL-0041/42/43). **IP-7010 RETURNED** (VR-7010): 2 High findings, both live-reproduced — F1 (BL-0044) reconnect to a nonexistent `sessionId` silently drops the connection instead of the "session no longer exists" response FS-107/NFR-7200 name explicitly; F2 (BL-0045) `SessionState` has no `outcome`/cancellation field at all despite IP-7010's own DoD claiming `outcome: 'cancelled'` exists, with a live-reproduced mislabeling consequence (a cancelled-past-timeout-cap session reads as `timeout-tiebreak`). The transport's fog-of-war non-leak claim and session-ID entropy were independently re-confirmed intact (no regression). | `08-code-implementation` to fix IP-7010's F1/F2 (F2 needs a small upstream `SessionState.outcome` field, a `07`-level data-model touch, before IP-7010's own wiring); re-submit for a fresh `09-package-verification` pass. IP-8010 remains blocked until IP-7010 re-verifies. |
 | 45 | 2026-08-23 | iterate (`00-pipeline-manager`) | `07-implementation-planning` then `08-code-implementation` then `09-package-verification` (spawned Agent, dispatched) | IP-7010 | Planned (Remediation section added to IP-7010's package) and implemented the fix for VR-7010's 2 High findings: F1 — `broadcastToOne` now sends an explicit `action-rejected`/`'session no longer exists'` message instead of silently dropping a reconnect to a nonexistent session; F2 — added an additive `SessionState.cancelled` field and a `'cancelled'` `WinReason`, wired through `handleDisconnectResponse` and checked first (ahead of resignation) in `GameEngine.checkWinConditions`, verified with a regression test reproducing VR-7010's exact past-timeout-cap scenario. Full suite green (96 tests, up from 94). Package `COMPLETE`; fresh independent verification agent dispatched, result pending. | Await VR-7010-v2's result; once IP-7010 is `VERIFIED`, dispatch IP-8010 verification (its last blocking dependency); then `10-integration-review` on the full MVP set, then `11-release-readiness`'s GO/NO-GO call. |
+| 46 | 2026-08-23 | iterate (`00-pipeline-manager`) | `09-package-verification` (spawned Agent, results landed; then a new pass dispatched) | IP-7010 confirmed VERIFIED; IP-8010 dispatched | **IP-7010 confirmed VERIFIED** (VR-7010-v2): both High findings independently re-derived as genuinely fixed — F1 live-exercised with a hand-constructed nonexistent-session reconnect (received the correct rejection); F2 re-derived from scratch (session past the 60-turn cap, deliberately imbalanced tiebreak fields, cancelled) — `checkWinConditions` correctly returned `{winner: null, reason: 'cancelled'}`, with a control case proving the old mislabeling path was genuinely reachable before the fix. 2 new Low, non-blocking findings (BL-0046/47). All 10/10 of **IP-8010's** dependencies are now `VERIFIED` — dispatched its verification, the last of all 11 MVP packages. | Await IP-8010's verification result. If `VERIFIED`, all 11 MVP packages are independently verified — advance to `10-integration-review` on the full MVP set, then `11-release-readiness`'s GO/NO-GO call (G4, the owner's). If `RETURNED`, route back to `08-code-implementation`. |
