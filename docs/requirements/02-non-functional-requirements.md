@@ -68,8 +68,29 @@
 - **NFR-9200** — **Roster expansion readiness.** Adding a new mission set, asset type, or effector (candidate later-phase content per SOR §5.3/R1) shall require only a new template file plus registration, no engine-module change.
   - *Priority:* Should. *Acceptance Criteria:* per FR-3100 (same mechanism; this NFR names the forward-looking quality attribute FR-3100's mechanism exists to satisfy). *Verification:* Inspection. *Source:* SOR §5.3, G-4; GDS-04.
 
+## Training Corpus Usability *(new 2026-08-23, MSTR-001 C10 / v0.4)*
+
+- **NFR-10100** — **Module size and audience fit.** Each training-corpus module shall be
+  single-topic and sized for a non-technical player audience (no more than ~300 lines before it
+  must be split), written in plain language with no unexplained jargon — any doctrinal/technical
+  term used (F2T2E, AP, regime, belief-state) shall be defined on first use or linked to a
+  glossary entry.
+  - *Priority:* Must. *Acceptance Criteria:* Given any training-corpus module, when its length and
+    first use of each domain term are checked, then it is ≤300 lines (or split) and every term is
+    defined/linked at first use. *Verification:* Inspection. *Source:* MSTR-001 C10; mirrors
+    `ZabSpaceExercise`'s own NFR §16 module-size/audience convention, scoped down for a
+    single-audience (not multi-role) corpus.
+- **NFR-10200** — **Screenshot fidelity.** Every screenshot embedded in the training corpus shall
+  be a genuine capture of the actual running application at the documented step, never a mockup,
+  wireframe, or hand-edited image.
+  - *Priority:* Must. *Acceptance Criteria:* Given any screenshot under `docs/manual/`, when its
+    provenance is checked, then it was captured from a real running instance of the application
+    (e.g. via Playwright) at the exact step its caption names. *Verification:* Inspection.
+    *Source:* MSTR-001 C10; FR-9420.
+
 ## Candidate Requirements (NOT baselined)
 
 None — every SOR §11 NFR category (Performance, Security, Reliability, Usability, Maintainability,
 Compatibility) traced to a baselined NFR above; no gap found requiring a Candidate entry at the
-NFR tier.
+NFR tier. The new Training Corpus Usability category (NFR-10100/10200) is fully traced to
+MSTR-001 C10, not a gap either.

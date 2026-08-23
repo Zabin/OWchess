@@ -71,6 +71,15 @@ candidate module the requirement will land in once `05`/`06`/`07` assign real wo
 | NFR-8100 | Deterministic-core test coverage | — | GDS-06 | — | — | UNASSIGNED | UNASSIGNED | UNASSIGNED |
 | NFR-9100 | Reproducible build | — | — | ADR-0001 | — | UNASSIGNED | UNASSIGNED | UNASSIGNED |
 | NFR-9200 | Roster expansion readiness | — | GDS-04 | — | content templates | FS-102 | IP-3010 (schema) | TemplateRegistry.test.ts |
+| FR-9110 | Coverage of every operator-visible capability | — | GDS-00 (training-corpus section) | — | training corpus | UNASSIGNED | UNASSIGNED | UNASSIGNED |
+| FR-9120 | Section-level source anchoring | — | GDS-00 | — | training corpus | UNASSIGNED | UNASSIGNED | UNASSIGNED |
+| FR-9210 | Feature ⇄ manual bidirectional index | — | GDS-00 | — | training corpus | UNASSIGNED | UNASSIGNED | UNASSIGNED |
+| FR-9310 | As-built content only | — | GDS-00 | — | training corpus | UNASSIGNED | UNASSIGNED | UNASSIGNED |
+| FR-9320 | Currency on change | — | GDS-00 | — | training corpus | UNASSIGNED | UNASSIGNED | UNASSIGNED |
+| FR-9410 | Zero-prior-experience install walkthrough | — | GDS-00 | — | training corpus | UNASSIGNED | UNASSIGNED | UNASSIGNED |
+| FR-9420 | First full-game walkthrough with real screenshots | — | GDS-00 | — | training corpus | UNASSIGNED | UNASSIGNED | UNASSIGNED |
+| NFR-10100 | Module size and audience fit | — | GDS-00 | — | training corpus | UNASSIGNED | UNASSIGNED | UNASSIGNED |
+| NFR-10200 | Screenshot fidelity | — | GDS-00 | — | training corpus | UNASSIGNED | UNASSIGNED | UNASSIGNED |
 
 ## Coverage confirmation
 

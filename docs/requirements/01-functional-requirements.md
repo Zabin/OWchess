@@ -148,6 +148,110 @@ mistaken for final balance.
 - **FR-8500** — **Visible event log.** The system shall log resolved actions and effects to a human-readable, visible event log.
   - *Rationale:* FR-7005. *Priority:* Must. *Acceptance Criteria:* Given any resolved action, when the event log panel renders, then a human-readable entry for it is present, in order. *Dependencies:* FR-8100. *Verification:* Demonstration. *Source:* SOR FR-7005; GDS-07 §EventRecord.
 
+## FR-9000 — Training Corpus & Onboarding *(new 2026-08-23, MSTR-001 C10 / v0.4 training-corpus elevation)*
+
+> **Nature of this family.** Unlike FR-1000–FR-8500, whose objects are game behaviors, this
+> family's objects are **training artifacts** — the operator-facing manual under `docs/training/`
+> and its screenshots under `docs/manual/` — elevated to requirement-bearing status by the owner
+> decision recorded in MSTR-001 C10 (v0.4) and its GDS-00 companion section. Modeled on the
+> sibling `ZabSpaceExercise` project's own FR-11000 family, scoped down for OW Chess's much
+> simpler shape: **one shared player-facing corpus**, not per-role manuals — this game has no
+> facilitator/multi-cell structure. Verification is Inspection-heavy (the corpus is prose, not
+> code), with one Demonstration-verified leaf (FR-9420, the actual playtest this family exists to
+> enable) and one Analysis leaf (FR-9320, currency-on-change, checked per-package at stage 09/10
+> the same way a code package's own Documentation Updates are checked).
+
+### FR-9100 — Coverage
+
+- **FR-9110** — **Coverage of every operator-visible capability.** The training corpus shall
+  provide manual content covering every operator-visible capability the shipped game exposes —
+  every action a player can take, every panel they see, and the install/run process itself — such
+  that a first-time reader with zero prior TypeScript/Node.js experience is never left without an
+  instruction for something the UI expects them to do.
+  - *Rationale:* MSTR-001 C10; GDS-00's training-corpus section. *Priority:* Must. *Inputs:*
+    shipped, `VERIFIED` operator-visible behavior. *Outputs:* manual content under
+    `docs/training/`. *Preconditions:* the capability being documented is shipped (the corpus
+    documents as-built behavior, never aspirations — FR-9310). *Postconditions:* every capability
+    row in the bidirectional index (FR-9210) names at least one manual location. *Acceptance
+    Criteria:* Given the feature→manual index, when every operator-visible capability in the
+    shipped game is checked against it, then none reads "—". *Dependencies:* FR-9210.
+    *Verification:* Inspection. *Source:* MSTR-001 C10; GDS-00.
+- **FR-9120** — **Section-level source anchoring.** Every manual section shall carry a
+  machine-greppable `> Sources:` footer naming the code module(s) and/or requirement ID(s) whose
+  behavior it documents.
+  - *Rationale:* the ground truth the bidirectional index (FR-9210) is derived from — without it,
+    staleness detection degenerates to re-reading everything, the same reasoning
+    `ZabSpaceExercise`'s FR-11120 already proved out. *Priority:* Must. *Acceptance Criteria:*
+    Given any manual section, its footer names at least one backing source, and any file path it
+    names exists in the tree. *Dependencies:* none. *Verification:* Inspection. *Source:*
+    MSTR-001 C10 (the convention, promoted here to a requirement, mirroring
+    `ZabSpaceExercise`'s FR-11120).
+
+### FR-9200 — Bidirectional traceability
+
+- **FR-9210** — **Feature ⇄ manual bidirectional index.** The training corpus shall maintain a
+  single index providing both directions of lookup — feature/code-area → every manual location
+  documenting it, and manual section → every feature/code-area backing it — updated together in
+  any change affecting either.
+  - *Rationale:* the efficiency mechanism of the whole elevation: a feature change routes to
+    exactly the manual sections that must move with it. *Priority:* Must. *Inputs:* section
+    source anchors (FR-9120); the shipped feature set. *Outputs:* a traceability matrix under
+    `docs/training/`. *Acceptance Criteria:* Given any (feature → section) pair in the forward
+    index, the reverse index lists that feature under that section, and vice versa; given any
+    code path shipped as player-facing, it appears in at least one forward-index row.
+    *Dependencies:* FR-9120. *Verification:* Inspection. *Source:* MSTR-001 C10.
+
+### FR-9300 — Currency
+
+- **FR-9310** — **As-built content only.** The training corpus shall document only shipped,
+  `VERIFIED` behavior — it shall never describe a capability that has not yet passed
+  `09-package-verification`, and shall never present a design intention as if it were already
+  true of the running game.
+  - *Rationale:* MSTR-001 §6's existing quality bar ("done means the app builds and passes G5")
+    extended to documentation — a manual describing unshipped behavior actively mis-trains.
+    *Priority:* Must. *Acceptance Criteria:* Given any manual claim about interactive behavior,
+    when checked against the shipped code or a live drive of the running app, the claim holds.
+    *Dependencies:* none. *Verification:* Inspection (spot-checked live where the claim describes
+    an interactive flow). *Source:* MSTR-001 C10, §6.
+- **FR-9320** — **Currency on change.** Any change to operator-visible behavior shall update, in
+  the same change set, every training artifact the bidirectional index (FR-9210) maps to the
+  changed code — or shall record explicitly why no artifact was affected.
+  - *Rationale:* a stale manual actively mis-trains; this is the procedural enforcement point,
+    checked the same way a code package's own Documentation Updates field is checked at stage
+    09/10. *Priority:* Must. *Acceptance Criteria:* Given a merged feature-changing package, its
+    Implementation Summary names the training artifacts updated or states no-impact with the
+    FR-9210 lookup that supports it. *Dependencies:* FR-9210. *Verification:* Analysis (per-package,
+    at stages 09/10). *Source:* MSTR-001 C10.
+
+### FR-9400 — Onboarding completeness
+
+- **FR-9410** — **Zero-prior-experience install walkthrough.** The training corpus shall walk a
+  reader who has never used TypeScript, Node.js, npm, or git before through cloning the
+  repository, installing dependencies, building, and running the application, on Windows, macOS,
+  and Linux, with every command given verbatim and every likely failure mode (wrong Node version,
+  a ZIP-extracted nested folder, a port already in use) named with its fix.
+  - *Rationale:* the owner's explicit instruction, 2026-08-23 — the specific gap this vision
+    amendment exists to close; modeled on `ZabSpaceExercise`'s own §1 install module. *Priority:*
+    Must. *Acceptance Criteria:* Given a machine with nothing but a browser and no prior
+    Node.js/TypeScript exposure, when the reader follows the install module verbatim, then the
+    application runs locally with no step requiring outside knowledge. *Dependencies:* BL-0038's
+    real server bootstrap must exist first (there is nothing to walk through installing/running
+    otherwise). *Verification:* Demonstration (a real, unaided walkthrough). *Source:* MSTR-001
+    C10; owner instruction 2026-08-23.
+- **FR-9420** — **First full-game walkthrough with real screenshots.** The training corpus shall
+  walk a reader through one complete example game — session creation, King deployment, at least
+  one full F2T2E cycle (task → advance precision → engage), and a win condition firing — with
+  screenshots taken from the actual running application at each step, not mockups or
+  descriptions.
+  - *Rationale:* the owner's explicit instruction, 2026-08-23 — proves the game is genuinely
+    playable, not merely test-verified; the specific purpose of the human playtest the owner
+    deferred the MVP release's G4 gate to obtain. *Priority:* Must. *Acceptance Criteria:* Given
+    the walkthrough module, when a reader follows it against the real running application, then
+    every screenshot matches what they see on their own screen at that step, and the walkthrough
+    concludes with a win condition actually firing. *Dependencies:* FR-9410; BL-0038's real server
+    bootstrap. *Verification:* Demonstration. *Source:* MSTR-001 C10; owner instruction
+    2026-08-23.
+
 ## Candidate Requirements (untraceable to a fixed number, or genuinely deferred — NOT baselined)
 
 | ID | Statement | Why not baselined |
