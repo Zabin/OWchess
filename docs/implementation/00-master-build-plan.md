@@ -16,8 +16,8 @@
 | IP-6010 | FS-106 | `08-code-implementation` | **VERIFIED** (2026-08-22, VR-6010) | IP-0010, IP-2010 (both VERIFIED) | Release plan (FEAT-6000, MVP) |
 | IP-4010 | FS-105 (code) | `08-code-implementation` | **VERIFIED** (2026-08-22, VR-4010) | IP-0010, IP-2010, IP-6010 (all VERIFIED) | Release plan (FEAT-4000, MVP) |
 | IP-4011 | FS-105 (content) | `08-content-authoring` | **VERIFIED** (2026-08-23, VR-4011) | IP-4010 (VERIFIED) | Release plan (FEAT-4000, MVP) |
-| IP-7010 | FS-107 | `08-code-implementation` | **COMPLETE** (2026-08-23 — remediation for VR-7010's 2 High findings implemented, ready for re-verification) | IP-0010, IP-1010, IP-6010 (all VERIFIED) | Release plan (FEAT-7000, MVP) |
-| IP-8010 | FS-108 | `08-code-implementation` | **COMPLETE** (2026-08-23 — IP-7010 still awaiting its own verification) | all 10 above | Release plan (FEAT-8000, MVP) |
+| IP-7010 | FS-107 | `08-code-implementation` | **VERIFIED** (2026-08-23, VR-7010-v2) | IP-0010, IP-1010, IP-6010 (all VERIFIED) | Release plan (FEAT-7000, MVP) |
+| IP-8010 | FS-108 | `08-code-implementation` | **COMPLETE** (2026-08-23 — all 10 dependencies now VERIFIED; next for `09-package-verification`) | all 10 above | Release plan (FEAT-8000, MVP) |
 
 **IP-0010 is `VERIFIED`** (implemented 2026-08-22; independently verified 2026-08-22 by
 `09-package-verification` — see
@@ -294,7 +294,17 @@ of silently dropping a reconnect to a nonexistent session; F2 fixed — `Session
 (additive field), `WinReason` gained `'cancelled'`, `handleDisconnectResponse`'s `'cancel'` branch
 sets it, and `GameEngine.checkWinConditions` checks it first (ahead of resignation), verified
 against VR-7010's exact hand-reproduced past-timeout-cap scenario in a new regression test. Build
-clean; full suite green (96 tests: 1 shared + 80 server + 15 client, up from 94). IP-7010 is
-`COMPLETE` and ready for a fresh, independent `09-package-verification` pass. **IP-8010** is also
-`COMPLETE` but remains blocked from any further ledger advancement until IP-7010 is itself
-`VERIFIED`.
+clean; full suite green (96 tests: 1 shared + 80 server + 15 client, up from 94). IP-7010 was then
+**independently re-verified 2026-08-23 and VERIFIED** (see
+[VR-7010-v2](verification/VR-7010-transport-v2.md)) — both High findings genuinely fixed,
+re-derived from a hand-constructed reconnect-to-nonexistent-session case and VR-7010's exact
+past-timeout-cap cancellation scenario (plus a control case proving the timeout-tiebreak branch
+really would have fired otherwise), not just from re-running the committed regression tests. Fog-
+of-war non-leak and `SessionStore` ID entropy re-confirmed unaffected; scope audit confirmed the
+fix commit touched exactly the Remediation section's named files. Two Low, informational,
+non-blocking findings (a pre-existing, unreachable "deploying-phase connect" message-labeling
+quirk predating this fix; an RTM cell that's incomplete but not wrong). Rebuilt from a genuinely
+clean `node_modules`; full suite green (96 tests, matching exactly). **IP-7010 is now `VERIFIED`.**
+**IP-8010** (all 10 named dependencies now `VERIFIED`) is the next package eligible for its own
+`09-package-verification` pass — it remains `COMPLETE`, no further implementation work needed,
+just awaiting that verification pass.

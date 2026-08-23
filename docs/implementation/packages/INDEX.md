@@ -14,7 +14,7 @@
 | [IP-4010](IP-4010-effect-resolver.md) | `EffectResolver` (the Five D's Mechanism) | FS-105 (code) | `08-code-implementation` | VERIFIED |
 | [IP-4011](IP-4011-effect-content.md) | Five D's Effect-Definition Content | FS-105 (content) | `08-content-authoring` | VERIFIED |
 | [IP-6010](IP-6010-fog-of-war-enforcement.md) | Fog-of-War Enforcement | FS-106 | `08-code-implementation` | VERIFIED |
-| [IP-7010](IP-7010-transport.md) | Server-Authoritative WebSocket Transport | FS-107 | `08-code-implementation` | COMPLETE (remediation implemented, ready for re-verification) |
+| [IP-7010](IP-7010-transport.md) | Server-Authoritative WebSocket Transport | FS-107 | `08-code-implementation` | **VERIFIED** (VR-7010-v2, 2026-08-23) |
 | [IP-8010](IP-8010-presentation-ui.md) | Presentation / UI | FS-108 | `08-code-implementation` | COMPLETE |
 
 All 11 packages authorized under the current release plan's MVP-bucketing (G3 satisfied by
@@ -153,3 +153,16 @@ reconnect to a nonexistent session (`websocketServer.test.ts` regression test). 
 verified against VR-7010's exact past-timeout-cap scenario in a new `disconnectFlow.test.ts`
 regression test. Build clean; full suite green (96 tests, up from 94). IP-7010 is `COMPLETE` and
 ready for a fresh, independent `09-package-verification` pass.
+
+**IP-7010 was independently re-verified 2026-08-23 and VERIFIED** — see
+[VR-7010-v2](../verification/VR-7010-transport-v2.md). Both High findings genuinely fixed and
+independently re-derived beyond the committed tests (a fresh hand-constructed reconnect-to-
+nonexistent-session case; VR-7010's exact past-timeout-cap cancellation scenario re-derived from
+scratch, plus a control case proving the timeout-tiebreak branch really would have fired otherwise).
+Fog-of-war non-leak and `SessionStore` ID entropy re-confirmed unaffected (diff touches neither
+file). Scope audit: the fix commit's diff matches the Remediation section's named file set exactly.
+Rebuilt from a genuinely clean `node_modules`; full suite green (96 tests, matching exactly). Two
+Low, informational, non-blocking findings (pre-existing "deploying-phase connect" quirk, unaffected
+by this fix; RTM NFR-7200 cell incomplete but not wrong). **IP-7010 flips `COMPLETE` → `VERIFIED`.**
+IP-8010 (names all 10 other packages, all now `VERIFIED`) is the next package eligible for its own
+`09-package-verification` pass.
