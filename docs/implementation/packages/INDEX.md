@@ -16,8 +16,9 @@
 | [IP-6010](IP-6010-fog-of-war-enforcement.md) | Fog-of-War Enforcement | FS-106 | `08-code-implementation` | VERIFIED |
 | [IP-7010](IP-7010-transport.md) | Server-Authoritative WebSocket Transport | FS-107 | `08-code-implementation` | **VERIFIED** (VR-7010-v2, 2026-08-23) |
 | [IP-8010](IP-8010-presentation-ui.md) | Presentation / UI | FS-108 | `08-code-implementation` | **VERIFIED** (VR-8010-v2, 2026-08-23) |
+| [IP-9038](IP-9038-server-bootstrap.md) | Real Server Bootstrap (Session HTTP API + WebSocket + Static Serving) | — (bug remediation: BL-0038/BL-0027) | `08-code-implementation` | **READY** (2026-08-23) |
 
-All 11 packages authorized under the current release plan's MVP-bucketing (G3 satisfied by
+The 11 MVP packages above are authorized under the current release plan's MVP-bucketing (G3 satisfied by
 release-plan coverage — see each package's own Authorization line). See
 `docs/implementation/00-master-build-plan.md` for the dependency graph, critical path, and next
 action. IP-0010 independently verified 2026-08-22 — see
@@ -219,3 +220,10 @@ per connection, identical to both connections, and never re-sent on a later `sta
 behavior, not papered-over assertions. Build clean; full suite green (98 tests, matching exactly).
 No findings. **All 11 MVP Implementation Packages now stand `VERIFIED`**, with the other 10
 re-confirmed with no drift — the tranche is ready for `10-integration-review`.
+
+**`10-integration-review` came back clean; `11-release-readiness` recommended GO, but the owner
+deferred the G4 decision** (MSTR-001 v0.4, C10) pending a real human playtest.
+**`07-implementation-planning` authored IP-9038** (2026-08-23, see `01-technical-work-breakdown.md`
+§6) to close the blocker: BL-0038 (no real bootstrap), BL-0027 (dist content-copy gap), and a
+disclosed session-creation/join gap (BL-0055). All its dependencies are `VERIFIED`; it is `READY`
+for `08-code-implementation` now.

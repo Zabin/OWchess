@@ -100,3 +100,37 @@ exactly the shape their source FS describes — release-plan coverage is each pa
 owner go-ahead is required for any of these 11 packages on that basis. **This does not waive G3
 generally** — a future package outside the release plan, or diverging from its FS in shape, still
 needs its own explicit go-ahead.
+
+## 6. Remediation tranche — real server bootstrap (2026-08-23, BL-0038/BL-0027)
+
+Not a feature — a bug-remediation package with no owning FS, per this skill's `IP-9xx0` ID
+convention. Triggered by the owner's MSTR-001 v0.4 (C10) decision to require a real human
+playtest before the MVP release's G4 gate: the game has never run end-to-end as a real process
+(`server/src/index.ts` remains a scaffold, `export {}`), which `10-integration-review`'s own
+`integration-review-mvp-tranche.md` (F2) and the Release Assessment (BL-0051) already flagged as
+a residual risk. One package, not split, because the three pieces (WebSocket bootstrap, HTTP
+session create/join, dist-content-copy fix) are only separately meaningful when combined — a
+WebSocket bootstrap with no way to create a session first, or a session-creation endpoint with no
+transport to connect to afterward, is not independently useful, and none of the three has a
+separate verification story worth its own package.
+
+**Verb inventory for "run the game for real":** *bootstrap* (accept real socket connections —
+`IP-9038`), *create/join* (produce a session over the network at all — a genuine gap: `IP-1010`
+built `SessionStore.createSession`/`joinSession` as pure functions, but no package ever exposed
+them over HTTP or gave the client any UI to call them; FS-101's own W1 workflow assumed a
+"shareable join link" exists without any package ever being assigned to produce one — `IP-9038`
+closes this too, disclosed as a deviation beyond BL-0038/BL-0027's literal text), *serve* (the
+built client needs to reach a browser at all — `IP-9038`, static-file serving from the same
+process, chosen over a two-process dev-server+API split specifically because FR-9410 requires a
+zero-prior-experience install walkthrough, and "start one process, open one URL" is a
+meaningfully simpler instruction than "run two processes and configure a proxy"), *persist
+content into `dist/`* (`IP-9038`, a build-script fix, no application-logic change).
+
+**Authorization (G3):** BL-0038/BL-0027 are pre-existing, disclosed deviations from packages
+already covered by the release plan (IP-7010's own Deviation note named BL-0038 explicitly;
+IP-3011's named BL-0027). Closing a disclosed gap in an already-authorized package's own stated
+scope is covered by that same release-plan authorization — no fresh owner go-ahead needed. The
+session-creation/join HTTP+UI addition, while not literally named by BL-0038/BL-0027's text, is
+necessary to make FS-101's own already-approved W1 workflow ("two players join a session via a
+shareable link") actually functional, and FR-9410/9420 (owner-authorized, MSTR-001 C10) require
+the game to actually run — this is completing already-approved scope, not new scope.

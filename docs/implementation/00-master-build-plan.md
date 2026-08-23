@@ -18,6 +18,13 @@
 | IP-4011 | FS-105 (content) | `08-content-authoring` | **VERIFIED** (2026-08-23, VR-4011) | IP-4010 (VERIFIED) | Release plan (FEAT-4000, MVP) |
 | IP-7010 | FS-107 | `08-code-implementation` | **VERIFIED** (2026-08-23, VR-7010-v2) | IP-0010, IP-1010, IP-6010 (all VERIFIED) | Release plan (FEAT-7000, MVP) |
 | IP-8010 | FS-108 | `08-code-implementation` | **VERIFIED** (2026-08-23, VR-8010-v2) | all 10 above (all VERIFIED) | Release plan (FEAT-8000, MVP) |
+| IP-9038 | — (bug remediation: BL-0038/BL-0027) | `08-code-implementation` | **READY** (2026-08-23) | IP-1010, IP-5010, IP-6010, IP-7010, IP-8010 (all VERIFIED) | Closes disclosed deviations in already-authorized packages (IP-7010, IP-3011) + completes FS-101's already-approved W1 workflow — see TWBS §6 |
+
+**IP-9038** is the sole package not tied to an MVP Feature — it is the real server bootstrap
+(BL-0038/BL-0027) that MSTR-001 v0.4 (C10) put on the critical path to the deferred G4 gate: all
+11 MVP packages are `VERIFIED` and the game's logic is fully proven by tests, but nothing has
+ever run it as a real process a human can connect to. All of IP-9038's dependencies are
+`VERIFIED`, so it is immediately `READY`.
 
 **IP-0010 is `VERIFIED`** (implemented 2026-08-22; independently verified 2026-08-22 by
 `09-package-verification` — see
@@ -372,3 +379,12 @@ behavior, not a loosened assertion. Build clean; full suite green (98 tests, mat
 own claim exactly). No findings. **All 11 MVP Implementation Packages now stand `VERIFIED`** — all
 10 other packages re-confirmed still `VERIFIED` with no drift. The MVP tranche is ready for
 `10-integration-review`.
+
+**`10-integration-review` came back clean** (`docs/reviews/integration-review-mvp-tranche.md`, no
+Critical/High findings) and **`11-release-readiness` produced an advisory-GO Release Assessment**
+(`docs/reviews/release-assessment-mvp.md`) — but at the G4 gate, the owner deferred the GO/NO-GO
+decision pending a real human playtest (MSTR-001 v0.4, C10). **`07-implementation-planning`
+authored IP-9038** (2026-08-23) to close the blocker that decision surfaced: BL-0038 (no real
+`WebSocketServer` bootstrap), BL-0027 (dist doesn't copy content JSON), and a disclosed
+session-creation/join gap (BL-0055) FS-101's own W1 workflow assumed but no package ever built.
+All of IP-9038's dependencies are `VERIFIED`; it is `READY` now.
