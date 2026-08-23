@@ -17,7 +17,7 @@
 | IP-4010 | FS-105 (code) | `08-code-implementation` | **VERIFIED** (2026-08-22, VR-4010) | IP-0010, IP-2010, IP-6010 (all VERIFIED) | Release plan (FEAT-4000, MVP) |
 | IP-4011 | FS-105 (content) | `08-content-authoring` | **VERIFIED** (2026-08-23, VR-4011) | IP-4010 (VERIFIED) | Release plan (FEAT-4000, MVP) |
 | IP-7010 | FS-107 | `08-code-implementation` | **VERIFIED** (2026-08-23, VR-7010-v2) | IP-0010, IP-1010, IP-6010 (all VERIFIED) | Release plan (FEAT-7000, MVP) |
-| IP-8010 | FS-108 | `08-code-implementation` | **COMPLETE** (2026-08-23 — remediation for VR-8010's High finding implemented, ready for re-verification) | all 10 above (all VERIFIED) | Release plan (FEAT-8000, MVP) |
+| IP-8010 | FS-108 | `08-code-implementation` | **VERIFIED** (2026-08-23, VR-8010-v2) | all 10 above (all VERIFIED) | Release plan (FEAT-8000, MVP) |
 
 **IP-0010 is `VERIFIED`** (implemented 2026-08-22; independently verified 2026-08-22 by
 `09-package-verification` — see
@@ -359,3 +359,16 @@ previously-missing non-empty-data render path, including that an ordinary `state
 clear the static catalog. Build clean; full suite green (98 tests: 1 shared + 80 server + 17
 client, up from 96). IP-8010 is `COMPLETE` and ready for a fresh, independent
 `09-package-verification` pass — the last step before all 11 MVP packages are `VERIFIED`.
+
+**IP-8010 was independently re-verified 2026-08-23 and `VERIFIED`** — see
+`docs/implementation/verification/VR-8010-presentation-ui-v2.md`. The fix was live-exercised
+through the real `createGameEngine()`→`createTransport()`→`handleConnection()` path (not just
+`<App>` plus a hand-built message): a genuine `TemplateCatalogMessage` carrying all 7 of IP-3011's
+real asset-type templates is sent exactly once per connection, byte-identical to both connections,
+and never re-sent on a later `state-delta` push. `AssetTray.test.tsx`'s claims were independently
+re-derived (no spread-order bug in `gameClient.ts`); the `AssetTemplate`/`MissionSetTemplate`
+relocation confirmed non-breaking; the message-count test updates confirmed to reflect real new
+behavior, not a loosened assertion. Build clean; full suite green (98 tests, matching the package's
+own claim exactly). No findings. **All 11 MVP Implementation Packages now stand `VERIFIED`** — all
+10 other packages re-confirmed still `VERIFIED` with no drift. The MVP tranche is ready for
+`10-integration-review`.

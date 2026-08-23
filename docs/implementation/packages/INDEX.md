@@ -15,7 +15,7 @@
 | [IP-4011](IP-4011-effect-content.md) | Five D's Effect-Definition Content | FS-105 (content) | `08-content-authoring` | VERIFIED |
 | [IP-6010](IP-6010-fog-of-war-enforcement.md) | Fog-of-War Enforcement | FS-106 | `08-code-implementation` | VERIFIED |
 | [IP-7010](IP-7010-transport.md) | Server-Authoritative WebSocket Transport | FS-107 | `08-code-implementation` | **VERIFIED** (VR-7010-v2, 2026-08-23) |
-| [IP-8010](IP-8010-presentation-ui.md) | Presentation / UI | FS-108 | `08-code-implementation` | COMPLETE (remediation implemented, ready for re-verification) |
+| [IP-8010](IP-8010-presentation-ui.md) | Presentation / UI | FS-108 | `08-code-implementation` | **VERIFIED** (VR-8010-v2, 2026-08-23) |
 
 All 11 packages authorized under the current release plan's MVP-bucketing (G3 satisfied by
 release-plan coverage — see each package's own Authorization line). See
@@ -208,3 +208,14 @@ new `AssetTray.test.tsx` (2 tests) covers the previously-missing non-empty-data 
 clean; full suite green (98 tests, up from 96). IP-8010 is `COMPLETE` and ready for a fresh,
 independent `09-package-verification` pass — the last step before all 11 MVP packages are
 `VERIFIED`.
+
+**IP-8010 was independently re-verified 2026-08-23 and `VERIFIED`** — see
+[VR-8010-v2](../verification/VR-8010-presentation-ui-v2.md). The fix was live-exercised through the
+real `createGameEngine()`→`createTransport()`→`handleConnection()` path: a genuine
+`TemplateCatalogMessage` carrying all 7 of IP-3011's real asset-type templates is sent exactly once
+per connection, identical to both connections, and never re-sent on a later `state-delta` push.
+`AssetTray.test.tsx`'s claims were independently re-derived with no spread-order bug found in
+`gameClient.ts`; the type relocation and test-count updates were confirmed to reflect genuine new
+behavior, not papered-over assertions. Build clean; full suite green (98 tests, matching exactly).
+No findings. **All 11 MVP Implementation Packages now stand `VERIFIED`**, with the other 10
+re-confirmed with no drift — the tranche is ready for `10-integration-review`.
