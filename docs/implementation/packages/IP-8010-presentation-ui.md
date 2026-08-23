@@ -1,7 +1,7 @@
 # IP-8010 — Presentation / UI
 
-- **Package ID:** IP-8010 · **Status:** BLOCKED (on every other package in this plan) ·
-  **Owning stage-08 peer:** `08-code-implementation`
+- **Package ID:** IP-8010 · **Status:** COMPLETE (2026-08-23) · **Owning stage-08 peer:**
+  `08-code-implementation`
 - **Source:** FS-108 (`docs/features/FS-108-presentation-ui.md`), FEAT-8000
 - **Authorization (G3):** Covered by the release plan.
 
@@ -73,19 +73,37 @@ FS-108 metadata: `**Implemented by:** IP-8010`.
 
 ## Definition of Done
 
-- [ ] All six panels render from a `StateDeltaMessage` fixture, initial-render and reconnect paths
-      identical.
-- [ ] Pre-filter matches server legality on the fixture set; fog-of-war boundary test passes.
-- [ ] Manual demonstration pass against the ZabOW reference's visual/UX bar (Demonstration, per
-      FS-108's Verification Plan — this is a human-judgment check this package's own automated
-      tests don't and can't substitute for).
+- [x] All six panels render from a `StateDeltaMessage` fixture, initial-render and reconnect paths
+      identical (`App.test.tsx`: reconnect delivers the same message shape through the identical
+      code path, no separate "resume" branch exists in `App.tsx`).
+- [x] Pre-filter matches server legality on the fixture set (`legalityPreFilter.test.ts`);
+      fog-of-war boundary test passes (`fogOfWarBoundary.test.tsx`).
+- [ ] Manual demonstration pass against the ZabOW reference's visual/UX bar — **not performed this
+      pass** (no visual styling was authored beyond semantic class names/`data-testid` hooks;
+      genuinely a Demonstration-only gap per FS-108's own Verification Plan, left open — see
+      Deviation note).
 
 ## Verification Checklist
 
-- [ ] **G5 gate:** build clean. **G5 gate:** full test suite passes.
-- [ ] FS-108 Acceptance Criteria mapped to passing tests/demonstration, split Test vs. Demonstration
-      exactly as FS-108's Verification Plan specifies (resolving BL-0008).
-- [ ] No component holds or logs a raw `PlayerState` for the opponent (Inspection).
+- [x] **G5 gate:** build clean. **G5 gate:** full test suite passes (94 total: 1 shared + 78
+      server + 15 client, all 15 client tests new this package).
+- [x] FS-108 Acceptance Criteria mapped to passing tests/demonstration, split Test vs. Demonstration
+      exactly as FS-108's Verification Plan specifies (resolving BL-0008) — Test: legality
+      pre-filter, fog-of-war boundary, panel-render smoke tests. Demonstration: visual/UX polish,
+      not performed this pass (see above).
+- [x] No component holds or logs a raw `PlayerState` for the opponent (Inspection — `grep -rn
+      "PlayerState" client/src` confirms every usage is `ownState`, never an opponent-facing prop;
+      `OpponentView`/`opponentView` is the only type any component accepts for opponent data).
+
+## Deviation note
+
+This package implements the full component/state/legality logic FS-108 describes, all
+automated-Test-verifiable criteria passing, but does **not** include the visual styling (CSS,
+layout, the ZabOW-reference palette/composition) that would make the Demonstration half of FS-108's
+Verification Plan checkable — components render semantic markup with `data-testid` hooks and plain
+text content only. Filed as BL-0039 for a follow-up styling pass (or `09-content-review`-adjacent
+visual QA) before this Feature can be considered fully done against FS-108's own bar, which
+explicitly treats visual/UX correctness as load-bearing, not optional polish.
 
 ## Dependencies
 

@@ -46,11 +46,11 @@ candidate module the requirement will land in once `05`/`06`/`07` assign real wo
 | FR-7100 | WebSocket push notifications | — | GDS-02 | ADR-0001 | WS transport | FS-107 | IP-7010 | websocketServer.test.ts |
 | FR-7200 | Server sole authority | — | GDS-02, GDS-08 | — | GameEngine | FS-107 | IP-7010 | websocketServer.test.ts (two-independent-views case) |
 | FR-7300 | Disconnect/reconnect handling | — | GDS-01, FS-101 §W7 | — | GameEngine, WS transport | FS-101/FS-107 | IP-7010 | disconnectFlow.test.ts |
-| FR-8100 | Render the panel set | — | GDS-08 | — | client UI | UNASSIGNED | UNASSIGNED | UNASSIGNED |
-| FR-8200 | Visual distinction of contact types | — | GDS-08 | — | client UI | UNASSIGNED | UNASSIGNED | UNASSIGNED |
-| FR-8300 | Cost/time-to-online shown before commit | — | GDS-08 | — | client UI | UNASSIGNED | UNASSIGNED | UNASSIGNED |
-| FR-8400 | Current AP always visible | — | GDS-08 | — | client UI | UNASSIGNED | UNASSIGNED | UNASSIGNED |
-| FR-8500 | Visible event log | — | GDS-07, GDS-08 | — | client UI | UNASSIGNED | UNASSIGNED | UNASSIGNED |
+| FR-8100 | Render the panel set | — | GDS-08 | — | client UI | FS-108 | IP-8010 | App.test.tsx |
+| FR-8200 | Visual distinction of contact types | — | GDS-08 | — | client UI | FS-108 | IP-8010 | OrbitalBoard.test.tsx |
+| FR-8300 | Cost/time-to-online shown before commit | — | GDS-08 | — | client UI | FS-108 | IP-8010 | (AssetTray.tsx, Demonstration-primary per FS-108) |
+| FR-8400 | Current AP always visible | — | GDS-08 | — | client UI | FS-108 | IP-8010 | (MissionKingStatus.tsx, Demonstration-primary per FS-108) |
+| FR-8500 | Visible event log | — | GDS-07, GDS-08 | — | client UI | FS-108 | IP-8010 | (EventLog.tsx, Demonstration-primary per FS-108) |
 | ~~CR-01~~ | ~~Belief-state decay rate~~ | — | — | — | — | **Resolved into FR-2300, 2026-08-22 — no longer a candidate.** | — | — |
 | ~~CR-02~~ | ~~Disconnect/reconnect grace period~~ | — | — | — | — | **Resolved into FR-7300, 2026-08-22 — no longer a candidate.** | — | — |
 | ~~CR-03~~ | Maneuver fuel-budget/transfer-time table | FR-5300/5400 | GDS-03/09 | R-201 | FS-104 | **RESOLVED 2026-08-22** — R-201 grounded the Δv/time shape; FS-104's Maneuver Cost Table adopted it. | — | — |
@@ -60,13 +60,13 @@ candidate module the requirement will land in once `05`/`06`/`07` assign real wo
 | NFR-2200 | Session isolation | — | GDS-02, GDS-06 | — | GameEngine | FS-101 | IP-1010 | (structural — `SessionStore` keyed by `SessionId` in a `Map`, each `SessionRecord` independent; no dedicated test, per VR-1010 F2) |
 | NFR-3100 | Fog-of-war non-leakage | — | GDS-06 | — | BeliefState | FS-106 | IP-6010 | BeliefState.fogOfWar.test.ts (+ supersession sweep, Inspection) |
 | NFR-3200 | Unguessable session identifiers | — | GDS-02, GDS-06 | — | GameEngine | FS-101 | IP-1010 | SessionStore.test.ts (entropy/non-sequential test, fixed post-VR-1010 F1) |
-| NFR-4100 | UI as rules reference | — | GDS-06 | — | client UI | UNASSIGNED | UNASSIGNED | UNASSIGNED |
-| NFR-4200 | No post-hoc rejection under normal play | — | GDS-06, GDS-08 | — | client UI | UNASSIGNED | UNASSIGNED | UNASSIGNED |
+| NFR-4100 | UI as rules reference | — | GDS-06 | — | client UI | FS-108 | IP-8010 | legalityPreFilter.test.ts |
+| NFR-4200 | No post-hoc rejection under normal play | — | GDS-06, GDS-08 | — | client UI | FS-108 | IP-8010 | legalityPreFilter.test.ts |
 | NFR-5100 | Data-driven content, no code changes | — | GDS-04 | — | content templates | FS-102 | IP-3010 (schema)/IP-3011 (content) | contentTemplates.test.ts |
 | NFR-5200 | Pipeline compliance | — | — | — | — | UNASSIGNED | UNASSIGNED | UNASSIGNED |
 | NFR-5300 | `Propagator` isolation protects fidelity upgrades | — | GDS-03 | — | Propagator | FS-104 | IP-5010 | (Inspection — internal state private, only currentRegime exposed) |
 | NFR-6100 | Server-authoritative state | — | GDS-02, GDS-09 | — | GameEngine | FS-101 | IP-1010 | (structural — all mutation originates in `GameEngine`/`TurnManager`/`SessionStore`, no client-writable path; no dedicated test, per VR-1010 F2) |
-| NFR-7100 | Browser targets | — | GDS-08 | ADR-0001 | client UI | UNASSIGNED | UNASSIGNED | UNASSIGNED |
+| NFR-7100 | Browser targets | — | GDS-08 | ADR-0001 | client UI | FS-108 | IP-8010 | (React + Vite, standard evergreen-browser targets — not independently tested) |
 | NFR-7200 | Graceful WebSocket degradation | — | GDS-02 | — | client UI, WS transport | FS-107 | IP-7010 (transport half)/IP-8010 (client half, pending) | disconnectFlow.test.ts |
 | NFR-8100 | Deterministic-core test coverage | — | GDS-06 | — | — | UNASSIGNED | UNASSIGNED | UNASSIGNED |
 | NFR-9100 | Reproducible build | — | — | ADR-0001 | — | UNASSIGNED | UNASSIGNED | UNASSIGNED |
