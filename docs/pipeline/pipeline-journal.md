@@ -2,36 +2,35 @@
 
 ## Position
 
-- **Updated:** 2026-08-22 (run #34)
-- **Increment:** Iterating toward MVP release readiness. G3 go-ahead covers the whole 11-package
-  tranche. `09-package-verification` runs in a fresh spawned Agent per package (owner's
-  direction); `08-*` implementation continues inline in this session.
-- **Pipeline state:** `00` — manager iterating. `01`–`07` — complete. `08`/`09` — **7 of 11
-  packages implemented, 5 independently verified:**
-  - IP-0010 (scaffold) — `VERIFIED` (VR-0010).
-  - IP-1010 (session/turn) — `VERIFIED` (VR-1010 initially RETURNED for a Critical NFR-3200 gap —
-    sequential/guessable session IDs — fixed same day; VR-1010-v2 confirmed `VERIFIED`).
-  - IP-3010 (asset roster engine) — `VERIFIED` (VR-3010, 1 Low finding).
-  - IP-3011 (asset/mission content) — `VERIFIED` (VR-3011, 3 Low findings, numeric values honestly
-    labeled provisional).
-  - IP-2010 (sensing/F2T2E) — VR-2010 initially **RETURNED** for a High finding (tasking with an
-    effector-only asset silently succeeded instead of rejecting) — fixed same day
-    (`hasSensorCapability` pre-check); re-verification (VR-2010-v2) dispatched, result pending.
-  - IP-5010 (Propagator) — `VERIFIED` (VR-5010) — the verifier independently hand-re-derived all
-    24 Maneuver Cost Table cells against FS-104's raw formula (not just the one regression test),
-    confirming no table-wide error; 2 Low findings.
-  - IP-6010 (fog-of-war enforcement) — `COMPLETE`, awaiting verification. Supersession sweep found
-    no other opponent-data-construction site — clean.
-  - IP-4010/IP-4011/IP-7010/IP-8010 — not yet started.
-  - 57 tests passing, build clean across all 3 workspaces, every G5 gate green at every step.
-- **Backlog:** ~24 open items, all `SCHEDULED`/`DEFERRED`, none blocking — mostly disclosed
-  implementation-time deviations (BL-0021/0022/0028/0030/0031/0033), two real bugs caught and
-  fixed by independent verification (BL-0023 Critical session-ID entropy; BL-0032 High
-  task-rejection gap), plus a few low-stakes doc/RTM lag items.
-- **Next step:** once IP-3011 verifies, `08-code-implementation` on IP-6010 (Fog-of-War
-  Enforcement) — the next critical-path package, needing only IP-2010 `VERIFIED` (pending) beyond
-  already-`VERIFIED` IP-0010.
-- **Open gates:** none — G3 cleared for this tranche.
+- **Updated:** 2026-08-23 (run #42)
+- **Increment:** Iterating toward MVP release readiness. **All 11 MVP packages are now
+  implemented (`COMPLETE`) — the full engine, transport, and client exist for the first time.**
+  8 of 11 are independently `VERIFIED`; the remaining 3 (IP-4011, IP-7010, IP-8010) have
+  verification agents dispatched or pending, currently blocked by an account-level background-
+  agent session limit (BL-0040), not by any code-quality concern.
+- **Pipeline state:** `00` — manager iterating. `01`–`07` — complete. `08` — **11 of 11 packages
+  COMPLETE.** `09` — **8 of 11 VERIFIED**: IP-0010, IP-1010 (RETURNED once for a Critical NFR-3200
+  gap — guessable session IDs — fixed same day, then VERIFIED), IP-3010, IP-3011, IP-2010
+  (RETURNED once for a High finding — tasking an effector-only asset silently succeeded — fixed
+  same day, then VERIFIED), IP-5010 (verifier independently hand-re-derived all 24 Maneuver Cost
+  Table cells, not just the regression test), IP-6010, IP-4010. **Awaiting verification:** IP-4011,
+  IP-7010, IP-8010 (all `COMPLETE`, dependencies satisfied, agents dispatched but hit the session
+  limit mid-run — BL-0040).
+- **Milestone:** 94 tests passing (1 shared + 78 server + 15 client), build clean across all 3
+  workspaces, at every step of this run. Two genuine bugs were caught by independent verification
+  and fixed same-day (Critical: guessable session IDs; High: a task-rejection gap) — the
+  verification discipline is doing real work, not rubber-stamping.
+- **Backlog:** ~30 open items, nearly all `SCHEDULED`/`DEFERRED`/`DONE`, none blocking further
+  implementation — disclosed deviations (BL-0021/22/28/30/31/33/36/37/38), two real bugs caught
+  and fixed (BL-0023 Critical; BL-0032 High), a known missing visual-styling pass (BL-0039), and
+  the current session-limit gate (BL-0040).
+- **Next step:** re-dispatch `09-package-verification` on IP-4011, IP-7010, and IP-8010 once
+  background-agent capacity is available again (~2:20am UTC per the session-limit message, or
+  sooner if the owner directs a different verification approach). Once all 11 are `VERIFIED`:
+  `10-integration-review` on the full MVP package set, then `11-release-readiness`'s GO/NO-GO call
+  (G4, the owner's).
+- **Open gates:** none blocking `08`; BL-0040 (background-agent capacity) blocks the remaining
+  `09` passes, not a design/code gate.
 
 ## Run log
 
@@ -74,3 +73,8 @@
 | 35 | 2026-08-22 | iterate (`00-pipeline-manager`) | `08-content-authoring` | IP-3011 | Authored 7 asset-type + 3 mission-set JSON templates, a loader (`loadContent.ts`), and cross-reference/schema tests. AP-cost/timing values labeled provisional pending `02-research-domain` (BL-0017). Filed BL-0027 (loader doesn't copy JSON into `dist/` yet, non-blocking). Package `COMPLETE`; verification agent dispatched (result pending as of this row). | `08-code-implementation` on IP-2010 (proceeded in parallel, per this run's own judgment, since IP-3010's schema — its real dependency — was already `VERIFIED`). |
 | 36 | 2026-08-22 | iterate (`00-pipeline-manager`) | `08-code-implementation` | IP-2010 | Implemented `BeliefState`'s content-producing half: `applyTasking` (precision advancement capped at sensor `chainRoles` ceiling), `decayStaleEntries` (BL-0009's 5-turn window, `'find'`-removal). Deviation (BL-0028): `applyTasking` takes `observerState`/`opponentTrueState` params GDS-09's signature lacks, needed to resolve tasking meaningfully. Also fixed BL-0029 (VR-1010-v2's F5: reworded the actual sentence, not just appended a fix section). Package `COMPLETE`. | `08-code-implementation` on IP-5010 (parallel branch). |
 | 37 | 2026-08-22 | iterate (`00-pipeline-manager`) | `08-code-implementation` | IP-5010 | Implemented `Propagator`: two-body `advance` (deterministic, no J2), `currentRegime` (R-203 classification), `planManeuver`/`maneuverComplete` (FS-104's Maneuver Cost Table — worked example `LEO-EQUATORIAL→GEO-POLAR` = 11 fuel/5 turns reproduced exactly; BL-0014 rejection). Added `createGameEngine.ts` (BL-0030): the first composition root actually wiring deploy/task/maneuver turn-end hooks to `TurnManager.advanceTurn()`, proven by a new end-to-end wiring test — this closes VR-3010's own Low finding, independently. Filed BL-0031 (fuel-budget field not yet modeled). Package `COMPLETE`. 52 tests passing project-wide. | `09-package-verification` on IP-3011 (dispatched, result pending); then `08-code-implementation` on IP-6010 once IP-2010 verifies. |
+| 38 | 2026-08-23 | iterate (`00-pipeline-manager`) | `08-code-implementation` then `09-package-verification` (spawned Agent) | IP-6010 | Implemented `BeliefState.computeOpponentView`/`applyDeception` as the sole construction points for opponent-facing data (structural fog-of-war enforcement, FS-106). Deviation (BL-0033): `applyDeception` needed parameters GDS-09's signature lacks. Independently verified: **VERIFIED** (VR-6010) — confirmed structurally incapable of leaking true state, supersession sweep re-run across all of `server/src`, three additional live-exercised scenarios beyond the committed tests. Run from an isolated `git worktree` due to concurrent uncommitted IP-4010 edits in the shared tree. One Low finding (BL-0033's note undercounts the actual signature delta). | `08-code-implementation` on IP-7010 (now `READY`) and IP-4010 (dependency-satisfied, found already `COMPLETE` in the shared tree). |
+| 39 | 2026-08-23 | iterate (`00-pipeline-manager`) | `09-package-verification` (spawned Agent) | IP-4010 | Independently verified the `EffectResolver` implementation (already `COMPLETE` from concurrent work): **VERIFIED** (VR-4010) — Deceive/Destroy structural distinction live-exercised through the real `GameEngine.handleAction('engage', ...)` path twice against a pre-populated King, true state confirmed byte-for-byte unchanged under Deceive while Destroy correctly mutated `destroyed`; denial-streak arithmetic cross-checked field-for-field against `GameEngine.checkWinConditions`; BL-0036's `TurnEndHook` `turnNumber` widening confirmed additive via IP-1010/IP-3010's own already-VERIFIED hook-consumer tests. Two Low findings (a Deviation-note undercount matching VR-6010's F1 pattern; stale "handleAction switch" prose). Full suite green (66 tests). | `08-content-authoring` on IP-4011 (dependency now satisfied); `08-code-implementation` on IP-7010 continues. |
+| 40 | 2026-08-23 | iterate (`00-pipeline-manager`) | `08-content-authoring` then `09-package-verification` (spawned Agent, failed) | IP-4011 | Authored the Five D's effect-definition content (JSON per-effect-type registry, `EffectDefinitionRegistry.ts`, a "BL-0037 cross-check" test against IP-4010's real duration constants). Package `COMPLETE`. Verification agent dispatched but failed mid-run: "You've hit your session limit · resets 2:20am (UTC)" — an account-level capacity constraint, not a code defect. Filed BL-0040. | `08-code-implementation` on IP-7010 continues in this session; re-dispatch IP-4011 verification once capacity returns. |
+| 41 | 2026-08-23 | iterate (`00-pipeline-manager`) | `08-code-implementation` then `09-package-verification` (spawned Agent, failed) | IP-7010 | Implemented the server-authoritative WebSocket transport: `Connection`/`SocketLike` interfaces decoupling game logic from the real `ws`/browser API, `ConnectionRegistry`, `createTransport` wiring `SessionStore`/`GameEngine`/`BeliefState` together, `broadcastStateDelta` computing two independently-derived views per player, disconnect notify/choice handling (FS-107 §W7, no timers). Package `COMPLETE`. Verification agent dispatched but again failed on the same session-limit constraint (BL-0040). | `08-code-implementation` on IP-8010 (the only package left, all 10 dependencies now `COMPLETE`); re-dispatch IP-7010 verification once capacity returns. |
+| 42 | 2026-08-23 | iterate (`00-pipeline-manager`) | `08-code-implementation` | IP-8010 | Implemented the presentation/UI layer: `legalityPreFilter.ts` (bounded client-side legality copy resolving BL-0004), `gameClient.ts` (`GameClient`/`SocketLike` state management), all six GDS-08 panels (`OrbitalBoard`, `ActionMenu`, `AssetTray`, `MissionKingStatus`, `IntelPanel`, `EventLog`), `App.tsx` composition, and `main.tsx`'s `adaptWebSocket()` bridge to the native browser `WebSocket` (worked around a TS setter-type-variance build error via `addEventListener`). Package `COMPLETE`. No verification dispatch attempted this row, per the known session-limit constraint (BL-0040) — deferred rather than sent to fail a third time. **All 11 MVP packages now `COMPLETE`.** | Re-dispatch verification for IP-4011, IP-7010, IP-8010 once background-agent capacity returns; then `10-integration-review` on the full MVP set; then `11-release-readiness`'s owner GO/NO-GO (G4). |
