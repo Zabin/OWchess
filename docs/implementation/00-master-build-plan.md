@@ -16,7 +16,7 @@
 | IP-6010 | FS-106 | `08-code-implementation` | **VERIFIED** (2026-08-22, VR-6010) | IP-0010, IP-2010 (both VERIFIED) | Release plan (FEAT-6000, MVP) |
 | IP-4010 | FS-105 (code) | `08-code-implementation` | **VERIFIED** (2026-08-22, VR-4010) | IP-0010, IP-2010, IP-6010 (all VERIFIED) | Release plan (FEAT-4000, MVP) |
 | IP-4011 | FS-105 (content) | `08-content-authoring` | **VERIFIED** (2026-08-23, VR-4011) | IP-4010 (VERIFIED) | Release plan (FEAT-4000, MVP) |
-| IP-7010 | FS-107 | `08-code-implementation` | **COMPLETE** (2026-08-22) | IP-0010, IP-1010, IP-6010 (all VERIFIED) | Release plan (FEAT-7000, MVP) |
+| IP-7010 | FS-107 | `08-code-implementation` | **COMPLETE** (2026-08-22 — RETURNED by VR-7010, 2026-08-23, 2 High findings) | IP-0010, IP-1010, IP-6010 (all VERIFIED) | Release plan (FEAT-7000, MVP) |
 | IP-8010 | FS-108 | `08-code-implementation` | **COMPLETE** (2026-08-23 — IP-7010 still awaiting its own verification) | all 10 above | Release plan (FEAT-8000, MVP) |
 
 **IP-0010 is `VERIFIED`** (implemented 2026-08-22; independently verified 2026-08-22 by
@@ -229,6 +229,34 @@ authored entirely within this package (already substantively disclosed by BL-003
 "70 tests" claim is stale (94 today) purely from concurrent IP-7010/IP-8010 landing. Build clean;
 full suite green. No package flips to `READY` from this VR alone: IP-8010 (the only package naming
 IP-4011) also still needs IP-7010 `VERIFIED`.
+
+**IP-7010 was independently verified 2026-08-23 and RETURNED** — see
+[VR-7010](verification/VR-7010-transport.md). The security/integrity-critical claims held up under
+live, hand-constructed exercise (not just re-reading the code or re-running the committed suite):
+`broadcastStateDelta` genuinely computes two independent per-recipient `StateDeltaMessage`s through
+IP-6010's already-`VERIFIED` `computeOpponentView` — a constructed scenario with deliberately
+distinct true regimes for each player confirmed neither player's socket ever receives the other's
+true state, and the two message payloads are never the same object; `SessionStore`'s
+`crypto.randomBytes(16)` session-ID generation (VR-1010-v2's fix for BL-0023) is unchanged and
+`connectionRegistry.ts` introduces no ID scheme of its own that could bypass it; the disconnect
+notify/choice/reconnect sequence has no timer anywhere (`grep` confirms) and matches FS-101 §W7's
+notify-and-choose policy for the normal `'wait'`/`'cancel'` paths. Two High findings block
+`VERIFIED`: **(F1)** `handleConnection`'s reconnect path silently sends nothing when the presented
+`sessionId` no longer exists, instead of the "clear 'session no longer exists' response" FS-107's
+own W4 edge case and NFR-7200 explicitly require — live-reproduced with a fresh fake connection and
+a nonexistent session ID, and uncaught by either committed test file. **(F2)** FS-101 §W7 requires a
+cancelled session to carry "a distinct outcome value (e.g. `'cancelled'`)"; `SessionState` has no
+`outcome` field at all, and the cancel path only sets `phase = 'ended'` — the package's own DoD
+claim of delivering `outcome: 'cancelled'` is not implemented anywhere in the shipped schema or
+code. Live-reproducing the adjacent edge case (cancelling a session whose `turnNumber` already
+exceeds the 60-turn timeout cap) shows `GameEngine.checkWinConditions` actively mislabels it
+`{winner: null, reason: 'timeout-tiebreak'}` rather than reporting a cancellation — a functional
+correctness bug, not merely a documentation gap. Build clean; full suite green (79 shared+server
+tests, matching the package's own claim exactly). IP-7010 stays `COMPLETE`, routed back to
+`08-code-implementation` (F1: guard the reconnect path) and `07-implementation-planning` (F2: the
+`SessionState`/`outcome` schema gap is upstream of this package's own scope). IP-8010 remains
+`BLOCKED` pending IP-7010's fix-and-reverify cycle (IP-4011 is independently `VERIFIED`, so it is no
+longer part of what blocks IP-8010).
 
 ## Dependency graph
 
