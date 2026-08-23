@@ -28,5 +28,5 @@ if (container) {
   const sessionId = params.get('sessionId') ?? '';
   const socket = new WebSocket(`ws://${window.location.host}/ws?sessionId=${sessionId}`);
   const client = new GameClient(adaptWebSocket(socket));
-  createRoot(container).render(<App client={client} sessionId={sessionId} deployableTemplates={[]} />);
+  createRoot(container).render(<App client={client} sessionId={sessionId} />);
 }

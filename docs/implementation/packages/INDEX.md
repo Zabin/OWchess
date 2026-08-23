@@ -15,7 +15,7 @@
 | [IP-4011](IP-4011-effect-content.md) | Five D's Effect-Definition Content | FS-105 (content) | `08-content-authoring` | VERIFIED |
 | [IP-6010](IP-6010-fog-of-war-enforcement.md) | Fog-of-War Enforcement | FS-106 | `08-code-implementation` | VERIFIED |
 | [IP-7010](IP-7010-transport.md) | Server-Authoritative WebSocket Transport | FS-107 | `08-code-implementation` | **VERIFIED** (VR-7010-v2, 2026-08-23) |
-| [IP-8010](IP-8010-presentation-ui.md) | Presentation / UI | FS-108 | `08-code-implementation` | **RETURNED** (VR-8010, 2026-08-23) |
+| [IP-8010](IP-8010-presentation-ui.md) | Presentation / UI | FS-108 | `08-code-implementation` | COMPLETE (remediation implemented, ready for re-verification) |
 
 All 11 packages authorized under the current release plan's MVP-bucketing (G3 satisfied by
 release-plan coverage — see each package's own Authorization line). See
@@ -199,3 +199,12 @@ one-shot `TemplateCatalogMessage`, sent once per connection, built from a new
 static-catalog alternative was considered and rejected (would reintroduce a BL-0027-family
 JSON/dist-copy problem and cross content-authoring's file ownership for no behavioral gain).
 IP-8010 is now fully specified for `08-code-implementation` to execute and re-submit.
+
+**`08-code-implementation` executed the remediation 2026-08-23** — a `TemplateCatalogMessage` is
+now sent once per connection (`handleConnection`), built from `TemplateRegistry.listAssetTemplates()`
+(new accessor); `AssetTemplate`/`MissionSetTemplate` relocated to `shared/src/interfaces.ts`;
+`gameClient.ts`/`App.tsx`/`main.tsx` consume the catalog reactively instead of a frozen `[]` prop;
+new `AssetTray.test.tsx` (2 tests) covers the previously-missing non-empty-data render path. Build
+clean; full suite green (98 tests, up from 96). IP-8010 is `COMPLETE` and ready for a fresh,
+independent `09-package-verification` pass — the last step before all 11 MVP packages are
+`VERIFIED`.

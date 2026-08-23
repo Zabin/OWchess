@@ -17,7 +17,7 @@
 | IP-4010 | FS-105 (code) | `08-code-implementation` | **VERIFIED** (2026-08-22, VR-4010) | IP-0010, IP-2010, IP-6010 (all VERIFIED) | Release plan (FEAT-4000, MVP) |
 | IP-4011 | FS-105 (content) | `08-content-authoring` | **VERIFIED** (2026-08-23, VR-4011) | IP-4010 (VERIFIED) | Release plan (FEAT-4000, MVP) |
 | IP-7010 | FS-107 | `08-code-implementation` | **VERIFIED** (2026-08-23, VR-7010-v2) | IP-0010, IP-1010, IP-6010 (all VERIFIED) | Release plan (FEAT-7000, MVP) |
-| IP-8010 | FS-108 | `08-code-implementation` | **COMPLETE** (2026-08-23 — RETURNED by VR-8010, 1 High/1 Low; remediation now planned, see IP-8010's own `Remediation (VR-8010)` section) | all 10 above (all VERIFIED) | Release plan (FEAT-8000, MVP) |
+| IP-8010 | FS-108 | `08-code-implementation` | **COMPLETE** (2026-08-23 — remediation for VR-8010's High finding implemented, ready for re-verification) | all 10 above (all VERIFIED) | Release plan (FEAT-8000, MVP) |
 
 **IP-0010 is `VERIFIED`** (implemented 2026-08-22; independently verified 2026-08-22 by
 `09-package-verification` — see
@@ -349,3 +349,13 @@ file ownership untouched), sent once per connection from `handleConnection`, bui
 `shared/src/interfaces.ts` (pure relocation); `App.tsx`'s `deployableTemplates` becomes reactive
 client state instead of a value frozen at mount. IP-8010 is now fully specified for
 `08-code-implementation` to execute and re-submit.
+
+**`08-code-implementation` has now executed the remediation** (2026-08-23): F1 fixed — a
+`TemplateCatalogMessage` is sent once per connection from `handleConnection`, built from the new
+`TemplateRegistry.listAssetTemplates()`; `AssetTemplate`/`MissionSetTemplate` relocated to
+`shared/src/interfaces.ts`; `gameClient.ts` stores the catalog reactively; `App.tsx`/`main.tsx`
+consume it instead of a frozen `[]` prop; a new `AssetTray.test.tsx` (2 tests) covers the
+previously-missing non-empty-data render path, including that an ordinary `state-delta` doesn't
+clear the static catalog. Build clean; full suite green (98 tests: 1 shared + 80 server + 17
+client, up from 96). IP-8010 is `COMPLETE` and ready for a fresh, independent
+`09-package-verification` pass — the last step before all 11 MVP packages are `VERIFIED`.

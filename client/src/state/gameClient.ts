@@ -5,6 +5,7 @@
  */
 import type {
   Action,
+  AssetTemplate,
   DisconnectResponse,
   EventRecord,
   OpponentView,
@@ -12,6 +13,7 @@ import type {
   PlayerState,
   RejectedActionMessage,
   StateDeltaMessage,
+  TemplateCatalogMessage,
 } from '@owchess/shared';
 
 /** Minimal surface both a real browser WebSocket and a test double satisfy. */
@@ -31,6 +33,9 @@ export interface GameClientState {
   connectivity: Connectivity;
   /** Shown distinctly from a client-pre-filtered "not available" case (FS-108 §Error Handling). */
   lastRejection: string | null;
+  /** BL-0048 (VR-8010 remediation): populated once from a TemplateCatalogMessage, persists across
+   *  ordinary state-delta pushes (it's static, not per-turn state). */
+  deployableTemplates: AssetTemplate[];
 }
 
 type Listener = (state: GameClientState) => void;
@@ -43,6 +48,7 @@ export class GameClient {
     eventLog: [],
     connectivity: 'connected',
     lastRejection: null,
+    deployableTemplates: [],
   };
   private listeners = new Set<Listener>();
 
@@ -68,9 +74,12 @@ export class GameClient {
     const msg = JSON.parse(raw) as
       | StateDeltaMessage
       | RejectedActionMessage
+      | TemplateCatalogMessage
       | { type: 'disconnect-notification' };
 
-    if (msg.type === 'state-delta') {
+    if (msg.type === 'template-catalog') {
+      this.state = { ...this.state, deployableTemplates: msg.templates };
+    } else if (msg.type === 'state-delta') {
       this.state = {
         ...this.state,
         ownState: msg.ownState,

@@ -48,7 +48,7 @@ candidate module the requirement will land in once `05`/`06`/`07` assign real wo
 | FR-7300 | Disconnect/reconnect handling | — | GDS-01, FS-101 §W7 | — | GameEngine, WS transport | FS-101/FS-107 | IP-7010 | disconnectFlow.test.ts |
 | FR-8100 | Render the panel set | — | GDS-08 | — | client UI | FS-108 | IP-8010 | App.test.tsx |
 | FR-8200 | Visual distinction of contact types | — | GDS-08 | — | client UI | FS-108 | IP-8010 | OrbitalBoard.test.tsx |
-| FR-8300 | Cost/time-to-online shown before commit | — | GDS-08 | — | client UI | FS-108 | IP-8010 | (AssetTray.tsx, Demonstration-primary per FS-108) |
+| FR-8300 | Cost/time-to-online shown before commit | — | GDS-08 | — | client UI | FS-108 | IP-8010 | AssetTray.tsx, AssetTray.test.tsx (BL-0048 fix — data now genuinely delivered via TemplateCatalogMessage); Demonstration-primary per FS-108 for the visual bar |
 | FR-8400 | Current AP always visible | — | GDS-08 | — | client UI | FS-108 | IP-8010 | (MissionKingStatus.tsx, Demonstration-primary per FS-108) |
 | FR-8500 | Visible event log | — | GDS-07, GDS-08 | — | client UI | FS-108 | IP-8010 | (EventLog.tsx, Demonstration-primary per FS-108) |
 | ~~CR-01~~ | ~~Belief-state decay rate~~ | — | — | — | — | **Resolved into FR-2300, 2026-08-22 — no longer a candidate.** | — | — |

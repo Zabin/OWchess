@@ -2,23 +2,9 @@
  * TemplateRegistry (IP-3010) — schema for the data-driven asset/mission-set templates IP-3011
  * populates. Schema only, no content (FR-3100).
  */
-import type { ChainRole, MissionSetId, OrbitalRegimeLabel, TemplateId } from '@owchess/shared';
+import type { AssetTemplate, MissionSetId, MissionSetTemplate, TemplateId } from '@owchess/shared';
 
-export interface AssetTemplate {
-  templateId: TemplateId;
-  basing: 'ground' | 'space';
-  apCost: number;
-  /** FR-3300: ground assets come online faster/cheaper than space assets. */
-  timeToOnline: number;
-  chainRoles: ChainRole[];
-  regimeAffinity: OrbitalRegimeLabel[];
-}
-
-export interface MissionSetTemplate {
-  missionSetId: MissionSetId;
-  assetTypeIds: TemplateId[];
-  kingRegimeAffinity: OrbitalRegimeLabel[];
-}
+export type { AssetTemplate, MissionSetTemplate };
 
 function isNonEmptyString(v: unknown): v is string {
   return typeof v === 'string' && v.length > 0;
@@ -69,6 +55,12 @@ export class TemplateRegistry {
 
   getAssetTemplate(templateId: TemplateId): AssetTemplate | undefined {
     return this.assetTemplates.get(templateId);
+  }
+
+  /** BL-0048 (VR-8010 remediation): the "list all" accessor the transport layer needs to build a
+   *  TemplateCatalogMessage — getAssetTemplate alone can't serve that (no "list every id" caller). */
+  listAssetTemplates(): AssetTemplate[] {
+    return Array.from(this.assetTemplates.values());
   }
 
   getMissionSetTemplate(missionSetId: MissionSetId): MissionSetTemplate | undefined {

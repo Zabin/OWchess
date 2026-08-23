@@ -6,12 +6,35 @@
 import type {
   Asset,
   AssetId,
+  ChainRole,
+  MissionSetId,
   OrbitalRegimeLabel,
   PlayerId,
   PlayerState,
   OpponentView,
   SessionId,
+  TemplateId,
 } from './types.js';
+
+/**
+ * BL-0048 (VR-8010 remediation): moved verbatim from server/src/engine/TemplateRegistry.ts so
+ * both server and client can reference the same shape — a pure type relocation, no logic.
+ */
+export interface AssetTemplate {
+  templateId: TemplateId;
+  basing: 'ground' | 'space';
+  apCost: number;
+  /** FR-3300: ground assets come online faster/cheaper than space assets. */
+  timeToOnline: number;
+  chainRoles: ChainRole[];
+  regimeAffinity: OrbitalRegimeLabel[];
+}
+
+export interface MissionSetTemplate {
+  missionSetId: MissionSetId;
+  assetTypeIds: TemplateId[];
+  kingRegimeAffinity: OrbitalRegimeLabel[];
+}
 
 export interface Propagator {
   /** Advances every tracked asset's true orbital state by one turn-tick. */

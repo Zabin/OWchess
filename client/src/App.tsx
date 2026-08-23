@@ -8,7 +8,7 @@ import type { GameClient, GameClientState } from './state/gameClient.js';
 import type { ActionKind } from './legality/legalityPreFilter.js';
 import { OrbitalBoard } from './components/OrbitalBoard.js';
 import { ActionMenu } from './components/ActionMenu.js';
-import { AssetTray, type DeployableTemplate } from './components/AssetTray.js';
+import { AssetTray } from './components/AssetTray.js';
 import { MissionKingStatus } from './components/MissionKingStatus.js';
 import { IntelPanel } from './components/IntelPanel.js';
 import { EventLog } from './components/EventLog.js';
@@ -16,10 +16,9 @@ import { EventLog } from './components/EventLog.js';
 export interface AppProps {
   client: GameClient;
   sessionId: string;
-  deployableTemplates: DeployableTemplate[];
 }
 
-export function App({ client, sessionId, deployableTemplates }: AppProps) {
+export function App({ client, sessionId }: AppProps) {
   const [state, setState] = useState<GameClientState>(client.getState());
 
   useEffect(() => client.subscribe(setState), [client]);
@@ -32,7 +31,7 @@ export function App({ client, sessionId, deployableTemplates }: AppProps) {
     return <div data-testid="waiting-for-session">Waiting for session…</div>;
   }
 
-  const { ownState, opponentView, activeTurn } = state;
+  const { ownState, opponentView, activeTurn, deployableTemplates } = state;
 
   function handleAction(kind: ActionKind) {
     client.sendAction(sessionId, { type: kind, payload: {} });

@@ -37,7 +37,7 @@ describe('Disconnect / reconnect flow (IP-7010, FS-101 §W7)', () => {
 
   beforeEach(() => {
     ctx = createGameEngine();
-    transport = createTransport(ctx.store, ctx.engine, ctx.beliefState);
+    transport = createTransport(ctx.store, ctx.engine, ctx.beliefState, ctx.registry);
     sessionId = ctx.store.createSession('alice');
     ctx.store.joinSession(sessionId, 'bob');
     ctx.store.submitKingDeployment(sessionId, 'alice', 'satcom', 'GEO-EQUATORIAL');
@@ -99,7 +99,8 @@ describe('Disconnect / reconnect flow (IP-7010, FS-101 §W7)', () => {
     const newAliceConn = new FakeConnection();
     transport.handleConnection(sessionId, 'alice', newAliceConn);
 
-    expect(newAliceConn.sent).toHaveLength(1);
+    // BL-0048: every connection (including a reconnect) also gets the static template catalog.
+    expect(newAliceConn.sent).toHaveLength(2);
     expect(newAliceConn.lastMessage().type).toBe('state-delta');
     expect(transport.registry.isPendingDisconnect(sessionId)).toBe(false);
   });

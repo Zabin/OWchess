@@ -37,7 +37,7 @@ describe('WebSocket transport (IP-7010)', () => {
 
   beforeEach(() => {
     ctx = createGameEngine();
-    transport = createTransport(ctx.store, ctx.engine, ctx.beliefState);
+    transport = createTransport(ctx.store, ctx.engine, ctx.beliefState, ctx.registry);
     sessionId = ctx.store.createSession('alice');
     ctx.store.joinSession(sessionId, 'bob');
     ctx.store.submitKingDeployment(sessionId, 'alice', 'satcom', 'GEO-EQUATORIAL');
@@ -49,9 +49,11 @@ describe('WebSocket transport (IP-7010)', () => {
     transport.handleConnection(sessionId, 'bob', bobConn);
   });
 
-  it('pushes an initial state-delta to each connection on connect', () => {
-    expect(aliceConn.sent).toHaveLength(1);
-    expect(bobConn.sent).toHaveLength(1);
+  it('pushes a template catalog then an initial state-delta to each connection on connect', () => {
+    // BL-0048: template-catalog is sent first (static, once per connection), state-delta second.
+    expect(aliceConn.sent).toHaveLength(2);
+    expect(bobConn.sent).toHaveLength(2);
+    expect(JSON.parse(aliceConn.sent[0]).type).toBe('template-catalog');
     expect(aliceConn.lastMessage().type).toBe('state-delta');
   });
 
@@ -94,7 +96,8 @@ describe('WebSocket transport (IP-7010)', () => {
     const strayConn = new FakeConnection();
     transport.handleConnection('no-such-session', 'alice', strayConn);
 
-    expect(strayConn.sent).toHaveLength(1);
+    // The template catalog (static, unconditional) still sends; the rejection follows it.
+    expect(strayConn.sent).toHaveLength(2);
     expect(strayConn.lastMessage().type).toBe('action-rejected');
     expect(strayConn.lastMessage().reason).toBe('session no longer exists');
   });

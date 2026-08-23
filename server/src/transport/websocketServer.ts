@@ -14,17 +14,20 @@ import type {
   DisconnectResponse,
   RejectedActionMessage,
   StateDeltaMessage,
+  TemplateCatalogMessage,
 } from '@owchess/shared';
 import type { PlayerId, SessionId } from '@owchess/shared';
 import type { GameEngine } from '../engine/GameEngine.js';
 import type { BeliefState } from '../engine/BeliefState.js';
 import type { SessionStore } from '../engine/SessionStore.js';
+import type { TemplateRegistry } from '../engine/TemplateRegistry.js';
 import { ConnectionRegistry, type Connection } from './connectionRegistry.js';
 
 export function createTransport(
   store: SessionStore,
   engine: GameEngine,
-  beliefState: BeliefState
+  beliefState: BeliefState,
+  templateRegistry: TemplateRegistry
 ) {
   const registry = new ConnectionRegistry();
 
@@ -94,6 +97,15 @@ export function createTransport(
     conn: Connection
   ): void {
     registry.register(sessionId, playerId, conn);
+
+    // BL-0048 (VR-8010 remediation): send the static template catalog once per connection —
+    // identical for both players, no per-recipient computation needed, unlike StateDeltaMessage.
+    const catalog: TemplateCatalogMessage = {
+      type: 'template-catalog',
+      templates: templateRegistry.listAssetTemplates(),
+    };
+    conn.send(JSON.stringify(catalog));
+
     // Reconnect (or initial connect): push a full current state-delta immediately, the same
     // shape W1's initial render already knows how to consume — no special "resume" message.
     broadcastToOne(sessionId, playerId);

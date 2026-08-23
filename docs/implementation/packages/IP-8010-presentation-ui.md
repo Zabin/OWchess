@@ -1,8 +1,8 @@
 # IP-8010 — Presentation / UI
 
-- **Package ID:** IP-8010 · **Status:** COMPLETE, RETURNED 2026-08-23 for remediation (see
-  `Remediation (VR-8010)` below) — not yet re-submitted · **Owning stage-08 peer:**
-  `08-code-implementation`
+- **Package ID:** IP-8010 · **Status:** COMPLETE (2026-08-23 — remediation for VR-8010's High
+  finding implemented, ready for a fresh `09-package-verification` pass) · **Owning stage-08
+  peer:** `08-code-implementation`
 - **Source:** FS-108 (`docs/features/FS-108-presentation-ui.md`), FEAT-8000
 - **Authorization (G3):** Covered by the release plan.
 
@@ -86,8 +86,8 @@ FS-108 metadata: `**Implemented by:** IP-8010`.
 
 ## Verification Checklist
 
-- [x] **G5 gate:** build clean. **G5 gate:** full test suite passes (94 total: 1 shared + 78
-      server + 15 client, all 15 client tests new this package).
+- [x] **G5 gate:** build clean. **G5 gate:** full test suite passes (98 total: 1 shared + 80
+      server + 17 client, as of the VR-8010 remediation — see that section for the count history).
 - [x] FS-108 Acceptance Criteria mapped to passing tests/demonstration, split Test vs. Demonstration
       exactly as FS-108's Verification Plan specifies (resolving BL-0008) — Test: legality
       pre-filter, fog-of-war boundary, panel-render smoke tests. Demonstration: visual/UX polish,
@@ -177,10 +177,11 @@ should formally adopt it in their own next touch (same disclosed-deviation patte
   the initial connect).
 
 **Definition of Done additions:**
-- [ ] F1 fixed: a `TemplateCatalogMessage` is sent once per connection and correctly populates
+- [x] F1 fixed: a `TemplateCatalogMessage` is sent once per connection and correctly populates
       `AssetTray` with real, non-empty, non-default template data; regression test
-      (`AssetTray.test.tsx`) passes.
-- [ ] Full G5 gate (build + full suite) re-run green after the fix.
+      (`AssetTray.test.tsx`, 2 tests) passes.
+- [x] Full G5 gate (build + full suite) re-run green after the fix: 98 tests total
+      (1 shared + 80 server + 17 client), up from 96 (2 new `AssetTray.test.tsx` tests).
 
 **F2 (BL-0049) is explicitly out of this package's remediation scope** — VR-8010 attributed it to
 IP-4010 (`engageAction.ts` never checking `chainRoles` for `'engage'`), not to IP-8010's own code;

@@ -51,7 +51,7 @@ describe('App (IP-8010) — all six panels render from a StateDeltaMessage fixtu
   it('renders all six panels once a state-delta arrives (initial render, W1)', () => {
     const socket = new FakeSocket();
     const client = new GameClient(socket);
-    render(<App client={client} sessionId="s1" deployableTemplates={[]} />);
+    render(<App client={client} sessionId="s1" />);
 
     expect(screen.getByTestId('waiting-for-session')).toBeDefined();
     act(() => socket.deliver(fixtureStateDelta()));
@@ -67,7 +67,7 @@ describe('App (IP-8010) — all six panels render from a StateDeltaMessage fixtu
   it('reconnect uses the identical render path — same full state-delta, no special resume UI', () => {
     const socket = new FakeSocket();
     const client = new GameClient(socket);
-    render(<App client={client} sessionId="s1" deployableTemplates={[]} />);
+    render(<App client={client} sessionId="s1" />);
 
     // First connect
     act(() => socket.deliver(fixtureStateDelta()));
@@ -84,7 +84,7 @@ describe('App (IP-8010) — all six panels render from a StateDeltaMessage fixtu
   it('shows the disconnect-notification banner with wait/cancel choices', () => {
     const socket = new FakeSocket();
     const client = new GameClient(socket);
-    render(<App client={client} sessionId="s1" deployableTemplates={[]} />);
+    render(<App client={client} sessionId="s1" />);
     act(() => socket.deliver(fixtureStateDelta()));
     act(() => socket.deliver({ type: 'disconnect-notification' }));
     expect(screen.getByTestId('disconnect-banner')).toBeDefined();
@@ -93,7 +93,7 @@ describe('App (IP-8010) — all six panels render from a StateDeltaMessage fixtu
   it('shows a rejection banner distinct from a pre-filtered unavailable action', () => {
     const socket = new FakeSocket();
     const client = new GameClient(socket);
-    render(<App client={client} sessionId="s1" deployableTemplates={[]} />);
+    render(<App client={client} sessionId="s1" />);
     act(() => socket.deliver(fixtureStateDelta()));
     act(() => socket.deliver({ type: 'action-rejected', reason: 'insufficient AP' }));
     expect(screen.getByTestId('rejection-banner').textContent).toContain('insufficient AP');
