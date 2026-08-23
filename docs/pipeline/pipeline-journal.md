@@ -2,29 +2,26 @@
 
 ## Position
 
-- **Updated:** 2026-08-23 (run #49)
-- **Increment:** **All 11 MVP Implementation Packages are now independently `VERIFIED` for the
-  first time.** The full engine, transport, content, and client exist, are `COMPLETE`, and have
-  each individually passed a genuinely independent `09-package-verification` pass (several after
-  a real defect was caught and fixed). This closes out the entire per-package loop of the MVP
-  tranche.
-- **Pipeline state:** `00` — manager iterating. `01`–`08` — complete (11/11 packages `COMPLETE`).
-  `09` — **11 of 11 VERIFIED**: IP-0010, IP-1010, IP-3010, IP-3011, IP-2010, IP-5010, IP-6010,
-  IP-4010, IP-4011, IP-7010, IP-8010. `10`/`11` — not yet started.
+- **Updated:** 2026-08-23 (run #50)
+- **Increment:** All 11 MVP Implementation Packages are independently `VERIFIED`, and
+  **`10-integration-review` on the full tranche came back clean — no Critical/High findings.**
+  The MVP is now eligible for the owner's `11-release-readiness` GO/NO-GO call.
+- **Pipeline state:** `00` — manager iterating. `01`–`09` — complete (11/11 packages `VERIFIED`).
+  `10` — **complete, clean** (`docs/reviews/integration-review-mvp-tranche.md`; 4 Medium/Low
+  findings, no Critical/High). `11` — not yet started.
 - **Milestone:** 98 tests passing (1 shared + 80 server + 17 client), build clean across all 3
-  workspaces, at every step. **Four genuine bugs caught by independent verification and fixed**
-  across the tranche: Critical (guessable session IDs, VR-1010), High (a task-legality bypass,
-  VR-2010), High x2 (a silent reconnect drop + a mislabeled cancellation outcome, VR-7010), High
-  (a missing asset-template data-delivery path, VR-8010). The verification discipline did real,
-  non-rubber-stamp work on every single package in the tranche, including its very last member.
-- **Backlog:** ~50 open items, nearly all `SCHEDULED`/`DEFERRED`/`DONE`. Nothing currently due that
-  blocks `10-integration-review`.
-- **Next step:** `10-integration-review` on the full MVP package set — the first cross-package
-  review, checking for interface mismatches, violated load-bearing invariants (server-authority,
-  fog-of-war non-leakage, turn-alternation strictness), duplicated/contradictory behavior, and
-  half-wired seams that no single package's own verification could see. Once that comes back clean:
-  `11-release-readiness`'s GO/NO-GO call (G4, the owner's).
-- **Open gates:** none — no owner decision currently pending.
+  workspaces, re-confirmed at the integration-review stage against a genuinely fresh install. Four
+  genuine bugs caught and fixed during `09` (1 Critical, 3 High); the integration review found no
+  further Critical/High defects, only documentation-lag and one already-tracked cross-package
+  asymmetry — the pipeline's layered scrutiny is holding up end to end.
+- **Backlog:** ~53 open items, nearly all `SCHEDULED`/`DEFERRED`/`DONE`. New from the integration
+  review: BL-0050 (Medium, stale FS metadata), BL-0051 (Medium, MVP never run end-to-end as a real
+  process — flagged for `11` to weigh explicitly), BL-0052 (Low, GDS-09 batch-reconciliation debt).
+- **Next step:** `11-release-readiness` for the owner's GO/NO-GO call on the MVP release bucket.
+  Its Release Assessment should explicitly weigh BL-0051 (playability — no package has ever
+  bootstrapped a real running server) as a residual risk alongside the clean integration result.
+- **Open gates:** none yet — `11-release-readiness`'s own GO/NO-GO call (G4) is the next gate,
+  reserved for the owner by this pipeline's standing rule.
 
 ## Run log
 
@@ -79,3 +76,4 @@
 | 47 | 2026-08-23 | iterate (`00-pipeline-manager`) | `09-package-verification` (spawned Agent, result landed) | IP-8010 | **RETURNED** — 1 High finding (BL-0048): no message type, interface, or shared static catalog exists anywhere to deliver `AssetTemplate` data (AP cost, time-to-online) to the client — `main.tsx` hardcodes `deployableTemplates: []`, GDS-09 never defines a template-catalog channel. `AssetTray`'s own render logic is independently confirmed correct in isolation; this is a missing data-delivery path, leaving FS-108 AC4/FR-8300 permanently undeliverable as shipped. Also 1 Low finding (BL-0049): a genuine, previously-uncaught IP-4010-scope gap (`engageAction.ts` never checks `chainRoles` for `'engage'`, client is stricter than server — doesn't cause a post-hoc-rejection failure). Everything else held under independent audit: fog-of-war rendering boundary genuinely closed (re-derived at the full `GameClient`→`App` pipeline level with a deliberately contaminated `opponentView`), legality pre-filter confirmed a genuine parallel implementation of real server gates (not a stub), BL-0039's styling gap correctly scoped as Demonstration-only. Full suite green (96 tests). | `07-implementation-planning` to decide the template-delivery interface (new message type vs. shared static catalog) — FS-108 itself said "no new interface" needed, so this is a spec-level gap, not solely an implementation one — then `08-code-implementation` to wire it and add `AssetTray` test coverage, then a fresh `09-package-verification` pass. `10-integration-review` cannot proceed until IP-8010 itself reaches `VERIFIED`. |
 | 48 | 2026-08-23 | iterate (`00-pipeline-manager`) | `07-implementation-planning` then `08-code-implementation` then `09-package-verification` (spawned Agent, dispatched) | IP-8010 | Planned and implemented the fix for VR-8010's High finding (BL-0048): decided a new one-shot `TemplateCatalogMessage` over a shared static catalog (avoids reintroducing a BL-0027-family JSON/dist-copy problem and keeps content-authoring's file ownership untouched); `AssetTemplate`/`MissionSetTemplate` relocated to `shared/src/interfaces.ts`; `TemplateRegistry.listAssetTemplates()` added; `websocketServer.ts`'s `handleConnection` sends the catalog once per connection; `gameClient.ts`/`App.tsx`/`main.tsx` consume it reactively instead of a value frozen at mount. Added `AssetTray.test.tsx` (2 tests) covering the previously-missing non-empty-data render path. Full suite green (98 tests, up from 96). Package `COMPLETE`; fresh independent verification agent dispatched, result pending. | Await VR-8010-v2's result. If `VERIFIED`, **all 11 MVP packages are independently verified for the first time** — advance to `10-integration-review` on the full MVP package set, then `11-release-readiness`'s GO/NO-GO call (G4, the owner's). If `RETURNED` again, route back to `08-code-implementation`. |
 | 49 | 2026-08-23 | iterate (`00-pipeline-manager`) | `09-package-verification` (spawned Agent, result landed) | IP-8010 | **VERIFIED** (VR-8010-v2) — the fix was live-exercised through the real `createGameEngine()`→`createTransport()`→`handleConnection()` path (not the committed test's fixture alone): a genuine `TemplateCatalogMessage` carrying all 7 of IP-3011's real asset-type templates is sent exactly once per connection, both connections receive byte-identical catalogs (no per-recipient filtering, as expected for public/static content), and a subsequent real action's `broadcastStateDelta` never re-sends or clobbers it. `AssetTray.test.tsx`'s three claims independently re-derived by reading `gameClient.ts`'s state-update ordering line by line — no bug. Scope confirmed clean; all 10 other packages confirmed still `VERIFIED` with no drift. No findings. **All 11 MVP Implementation Packages are now independently `VERIFIED` for the first time** — the entire tranche (98 tests: 1 shared + 80 server + 17 client) has passed both its own G5 gates and independent scrutiny, including 4 real bugs (1 Critical, 3 High) caught and fixed along the way. | `10-integration-review` on the full MVP package set — the first cross-package review, checking for interface mismatches, violated load-bearing invariants, and half-wired seams that no single package's own verification could see. |
+| 50 | 2026-08-23 | iterate (`00-pipeline-manager`) | `10-integration-review` | Full MVP package set (all 11 packages) | **Clean — no Critical/High findings.** Reviewed all five dimensions against the live tree (fresh `npm install`, full rebuild, full suite re-run: 98 tests green). Confirmed the fog-of-war chain's types line up across `BeliefState`→transport→client with no widening at any hop; confirmed the composition root (`createGameEngine.ts`) genuinely wires every handler/turn-end hook; confirmed no ID-namespace collisions (7 asset types, 3 mission sets, 5 effects); confirmed the 5 accumulated GDS-09 interface deviations (BL-0028/33/36/45/48) are mutually consistent, not just individually reasonable. 4 findings harvested: BL-0050 (Medium, 6/8 FS docs' `Implemented by` metadata stale), BL-0051 (Medium, BL-0038+BL-0027 compound into "MVP never run end-to-end as a real process" — flagged for `11`'s explicit weighing), BL-0049 re-confirmed live (Low, already tracked), BL-0052 (Low, GDS-09 batch-reconciliation debt). Report: `docs/reviews/integration-review-mvp-tranche.md`. | `11-release-readiness` for the owner's GO/NO-GO call on the MVP release bucket — no Critical/High findings block it, but its Release Assessment should explicitly weigh BL-0051 (playability) as a residual risk. |
