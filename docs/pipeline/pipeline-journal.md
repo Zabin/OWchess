@@ -2,12 +2,11 @@
 
 ## Position
 
-- **Updated:** 2026-08-23 (run #42)
+- **Updated:** 2026-08-23 (run #43)
 - **Increment:** Iterating toward MVP release readiness. **All 11 MVP packages are now
   implemented (`COMPLETE`) — the full engine, transport, and client exist for the first time.**
-  8 of 11 are independently `VERIFIED`; the remaining 3 (IP-4011, IP-7010, IP-8010) have
-  verification agents dispatched or pending, currently blocked by an account-level background-
-  agent session limit (BL-0040), not by any code-quality concern.
+  8 of 11 are independently `VERIFIED`; BL-0040's session-limit gate has cleared, and fresh
+  independent verification agents for IP-4011 and IP-7010 are dispatched and running now.
 - **Pipeline state:** `00` — manager iterating. `01`–`07` — complete. `08` — **11 of 11 packages
   COMPLETE.** `09` — **8 of 11 VERIFIED**: IP-0010, IP-1010 (RETURNED once for a Critical NFR-3200
   gap — guessable session IDs — fixed same day, then VERIFIED), IP-3010, IP-3011, IP-2010
@@ -24,13 +23,11 @@
   implementation — disclosed deviations (BL-0021/22/28/30/31/33/36/37/38), two real bugs caught
   and fixed (BL-0023 Critical; BL-0032 High), a known missing visual-styling pass (BL-0039), and
   the current session-limit gate (BL-0040).
-- **Next step:** re-dispatch `09-package-verification` on IP-4011, IP-7010, and IP-8010 once
-  background-agent capacity is available again (~2:20am UTC per the session-limit message, or
-  sooner if the owner directs a different verification approach). Once all 11 are `VERIFIED`:
-  `10-integration-review` on the full MVP package set, then `11-release-readiness`'s GO/NO-GO call
-  (G4, the owner's).
-- **Open gates:** none blocking `08`; BL-0040 (background-agent capacity) blocks the remaining
-  `09` passes, not a design/code gate.
+- **Next step:** await IP-4011/IP-7010 verification results (dispatched run #43); harvest findings
+  and update ledgers on each completion; then dispatch IP-8010 verification once both land (its
+  remaining blocking dependencies). Once all 11 are `VERIFIED`: `10-integration-review` on the full
+  MVP package set, then `11-release-readiness`'s GO/NO-GO call (G4, the owner's).
+- **Open gates:** none. BL-0040 resolved (session-limit cleared); no gate currently blocks `09`.
 
 ## Run log
 
@@ -78,3 +75,4 @@
 | 40 | 2026-08-23 | iterate (`00-pipeline-manager`) | `08-content-authoring` then `09-package-verification` (spawned Agent, failed) | IP-4011 | Authored the Five D's effect-definition content (JSON per-effect-type registry, `EffectDefinitionRegistry.ts`, a "BL-0037 cross-check" test against IP-4010's real duration constants). Package `COMPLETE`. Verification agent dispatched but failed mid-run: "You've hit your session limit · resets 2:20am (UTC)" — an account-level capacity constraint, not a code defect. Filed BL-0040. | `08-code-implementation` on IP-7010 continues in this session; re-dispatch IP-4011 verification once capacity returns. |
 | 41 | 2026-08-23 | iterate (`00-pipeline-manager`) | `08-code-implementation` then `09-package-verification` (spawned Agent, failed) | IP-7010 | Implemented the server-authoritative WebSocket transport: `Connection`/`SocketLike` interfaces decoupling game logic from the real `ws`/browser API, `ConnectionRegistry`, `createTransport` wiring `SessionStore`/`GameEngine`/`BeliefState` together, `broadcastStateDelta` computing two independently-derived views per player, disconnect notify/choice handling (FS-107 §W7, no timers). Package `COMPLETE`. Verification agent dispatched but again failed on the same session-limit constraint (BL-0040). | `08-code-implementation` on IP-8010 (the only package left, all 10 dependencies now `COMPLETE`); re-dispatch IP-7010 verification once capacity returns. |
 | 42 | 2026-08-23 | iterate (`00-pipeline-manager`) | `08-code-implementation` | IP-8010 | Implemented the presentation/UI layer: `legalityPreFilter.ts` (bounded client-side legality copy resolving BL-0004), `gameClient.ts` (`GameClient`/`SocketLike` state management), all six GDS-08 panels (`OrbitalBoard`, `ActionMenu`, `AssetTray`, `MissionKingStatus`, `IntelPanel`, `EventLog`), `App.tsx` composition, and `main.tsx`'s `adaptWebSocket()` bridge to the native browser `WebSocket` (worked around a TS setter-type-variance build error via `addEventListener`). Package `COMPLETE`. No verification dispatch attempted this row, per the known session-limit constraint (BL-0040) — deferred rather than sent to fail a third time. **All 11 MVP packages now `COMPLETE`.** | Re-dispatch verification for IP-4011, IP-7010, IP-8010 once background-agent capacity returns; then `10-integration-review` on the full MVP set; then `11-release-readiness`'s owner GO/NO-GO (G4). |
+| 43 | 2026-08-23 | iterate (`00-pipeline-manager`, user requested "Continue") | `09-package-verification` (two spawned Agents, independent, dispatched in parallel) | IP-4011 and IP-7010 | The BL-0040 session-limit gate is time-based (resets ~2:20am UTC) and has now cleared. Re-dispatched fresh independent verification agents for both packages (IP-4011 depends only on IP-4010, already VERIFIED; IP-7010 depends on IP-0010/IP-1010/IP-6010, all already VERIFIED — genuinely parallel, non-overlapping files). Both dispatched, results pending as of this row. | Await both agents' completion notifications; harvest findings and update ledgers on each; once both land, dispatch IP-8010 verification (its last two blocking dependencies will then be satisfied). |
