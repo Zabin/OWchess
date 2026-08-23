@@ -20,6 +20,7 @@
 | IP-8010 | FS-108 | `08-code-implementation` | **VERIFIED** (2026-08-23, VR-8010-v2) | all 10 above (all VERIFIED) | Release plan (FEAT-8000, MVP) |
 | IP-9038 | — (bug remediation: BL-0038/BL-0027) | `08-code-implementation` | **VERIFIED** (2026-08-23 — [VR-9038](verification/VR-9038-server-bootstrap.md); own scope confirmed done and live-tested; surfaced BL-0056, a separate pre-existing blocker) | IP-1010, IP-5010, IP-6010, IP-7010, IP-8010 (all VERIFIED) | Closes disclosed deviations in already-authorized packages (IP-7010, IP-3011) + completes FS-101's already-approved W1 workflow — see TWBS §6 |
 | IP-9056 | — (bug remediation: BL-0056) | `08-code-implementation` | **VERIFIED** (2026-08-23 — [VR-9056](verification/VR-9056-king-deployment-wiring.md); closes BL-0056, independently confirmed) | IP-9038, IP-1010, IP-3011, IP-8010 (all VERIFIED) | Completes FS-101's already-approved W1/W2 workflow (secret King deployment) — see TWBS §7 |
+| IP-9062 | — (bug remediation: BL-0062) | `08-code-implementation` | **READY** (2026-08-23 — see [IP-9062](packages/IP-9062-action-targeting-ui.md)) | IP-8010, IP-3010, IP-3011, IP-2010, IP-5010, IP-4010, IP-4011, IP-9056 (all VERIFIED) | Completes FS-103/FS-105/FS-108's already-approved player-facing selection workflows (Task's "player selects a sensor and a target," Engage's/Maneuver's equivalent, FS-108's own claimed "input submission" scope) — see TWBS §8 |
 
 **IP-9038** is the sole package not tied to an MVP Feature — it is the real server bootstrap
 (BL-0038/BL-0027) that MSTR-001 v0.4 (C10) put on the critical path to the deferred G4 gate: all
@@ -470,3 +471,32 @@ no further package remains gated on either. Recommended next: re-run (or extend)
 `10-integration-review`/the human playtest MSTR-001 v0.4 was deferred pending, now that a real
 client can genuinely reach and complete King deployment into an active, playable game end-to-end
 for the first time in this project's history.
+
+**`10-integration-review` reviewed {IP-9038, IP-9056} together** (2026-08-23, see
+`docs/reviews/integration-review-remediation-tranche-9038-9056.md`) — clean, no new findings, all
+five carried-forward Low findings re-confirmed non-blocking. The transport/session-bootstrap seam
+these two packages jointly created is confirmed integration-clean against the already-VERIFIED
+MVP tranche.
+
+**`08-training-manual-authoring` authored the first training-corpus pass** (2026-08-23,
+`docs/training/`, `docs/manual/`) against this now-integration-clean, playable build. While
+capturing FR-9420's first-full-game screenshots, discovered and disclosed **BL-0062 (Critical)**:
+the shipped client has never had a UI to supply Deploy's target regime or Maneuver/Task/Engage's
+required targeting parameters — confirmed live (a deployed asset renders with a blank orbital
+regime) and by code reading (`App.tsx`'s Action Menu sends an empty payload for every click,
+`AssetTray.tsx`'s deploy callback never sends a regime). **A real human player cannot currently
+complete a full game to any win condition through the shipped interface** — this is now the
+critical-path blocker before MSTR-001 v0.4's human playtest and before FR-9420 can be marked fully
+satisfied.
+
+**`07-implementation-planning` authored IP-9062** (2026-08-23, see TWBS §8 and
+`packages/IP-9062-action-targeting-ui.md`) to close BL-0062: four new small picker components
+(Deploy-regime, Maneuver, Task, Engage), each constraining its own options to genuinely legal
+choices, wired into `App.tsx`/`AssetTray.tsx` in place of the current empty/incomplete payload
+sends, plus a small additive `AssetTemplate.applicableEffects` field so the Engage picker can
+constrain its effect choices to what an effector template actually supports. Client-UI-only — no
+server engine/transport behavior changes. All eight named dependencies are `VERIFIED`, so
+**IP-9062 is `READY` now**. Authorization: completes FS-103/FS-105/FS-108's already-approved
+player-facing selection workflows (FS-103 §W1 explicitly names "the player selects one of their
+online sensors and a target" as the Task workflow) — same release-plan-coverage basis already
+used for IP-9038/IP-9056, not a fresh scope grant.

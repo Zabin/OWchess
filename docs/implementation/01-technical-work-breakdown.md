@@ -165,3 +165,53 @@ currently does not).
 W1/W2 workflow (secret King deployment is explicitly named there); FR-9420 (owner-authorized,
 MSTR-001 C10) requires the game to actually be playable, which this gap is the sole remaining
 blocker to. Completing already-approved scope, not new scope.
+
+## 8. Remediation — client targeting UI for Deploy/Maneuver/Task/Engage (2026-08-23, BL-0062)
+
+Not a feature — a bug-remediation package with no owning FS, discovered by
+`08-training-manual-authoring`'s first live-drive pass while capturing FR-9420's screenshots.
+IP-8010 (FS-108, VERIFIED) built the six-panel display and the Action Menu's legality-gated
+buttons, but never built the follow-on input surface that collects *which* asset, *which* target
+regime/asset, and *which* effect a Deploy/Maneuver/Task/Engage actually needs — `App.tsx`'s
+`handleAction` sends an empty payload for Maneuver/Task/Engage, and `AssetTray.tsx`'s `onDeploy`
+never sends a target regime. The server-side handlers (`deployAction.ts`, `maneuverAction.ts`,
+`taskAction.ts`, `engageAction.ts`, all already `VERIFIED` under IP-3010/IP-2010/IP-5010/IP-4010)
+are untouched and correct; this is purely a missing client input surface.
+
+**Verb inventory:** *select* (a player chooses a source asset + target regime/asset/effect from
+their own current, already-received state — new picker components, no new server capability),
+*submit* (the client sends a fully-populated `Action.payload` instead of an empty one — a change
+to `App.tsx`'s existing `handleAction`/`AssetTray`'s existing `onDeploy` call sites, not a new
+message type), *constrain* (each picker's options must be a genuine, non-misleading subset of
+what the server will actually accept — regime choices from the deploying template's own
+`regimeAffinity`, asset choices from the player's own online/eligible assets, target choices from
+`OpponentView.beliefEntries`, effect choices per the effector's real allowed-effects data). No
+*resolve/render/apply/persist* verb is touched — those already exist and are `VERIFIED`
+server-side; this package is client-input-collection only.
+
+One package: the four pickers (Deploy-regime, Maneuver, Task, Engage) share one coherent
+Definition of Done (a player can now supply real, accepted parameters for all four actions) and
+one verification story (a single live end-to-end script exercising all four). Splitting per-action
+would fragment a single interaction-surface fix across four packages with no independent
+verification benefit — each picker is trivial on its own; the value is in the four together
+finally closing BL-0062's "no full game is completable" finding.
+
+**Client-visible effect-catalog judgment call:** `server/src/content/effects/*.json`'s
+`allowedEffectorTemplateIds` (which effector can apply which of the Five D's) is not currently on
+the wire — `AssetTemplate`/`TemplateCatalogMessage` carry no such field. Two options: (a) add a
+new field so the client can offer only legal effects per effector, mirroring the
+`regimeAffinity`-constrains-the-regime-picker pattern already used for Deploy/King deployment; (b)
+let the client offer all 5 and rely on the server's own rejection-with-reason. This TWBS resolves
+it as **(a)** — consistent with this project's standing convention (every other picker in the
+tree constrains its own options to genuinely legal ones, never "offer everything and let the
+server reject") and with NFR-4200's bounded-client-copy discipline already governing
+`legalityPreFilter.ts`. IP-9062 below adds this as a small, disclosed, additive extension to
+`AssetTemplate`/`TemplateCatalogMessage` (a new `applicableEffects` field on the effector
+templates), not a new message type.
+
+**Authorization (G3):** covered — FS-103 §W1 already specifies "the player selects one of their
+online sensors and a target: a regime, an existing track, or an unresolved contact" as the
+Task workflow (never built); FS-105's Engage workflow and FS-102's Maneuver/Deploy content both
+presuppose the same class of player-facing selection. FEAT-8000/FS-108's Scope already claims
+"how input is submitted" as its own responsibility. This package completes already-approved
+workflow, not new scope — the same authorization basis already used for IP-9038/IP-9056.
