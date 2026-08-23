@@ -2,26 +2,29 @@
 
 ## Position
 
-- **Updated:** 2026-08-23 (run #51)
-- **Increment:** The MVP Release Assessment is written
-  (`docs/reviews/release-assessment-mvp.md`) — all 8 planned Features/11 packages delivered,
-  `VERIFIED`, integration-clean. **Advisory recommendation: GO.** The pipeline now holds at the
-  **G4 gate** — the owner's explicit GO/NO-GO decision — before any baseline record is flipped.
-- **Pipeline state:** `00` — manager iterating. `01`–`10` — complete. `11` — **assessment written,
-  awaiting the owner's G4 decision**; baseline NOT yet flipped (per this skill's own rule: only an
-  explicit owner GO triggers that).
-- **Milestone:** 98 tests passing, build clean, integration-reviewed clean — the entire MVP tranche
-  has now passed every automated and independent-review gate this pipeline has. Four genuine bugs
-  (1 Critical, 3 High) caught and fixed along the way by `09`; `10` found no further Critical/High
-  defects.
-- **Backlog:** ~53 open items, nearly all `SCHEDULED`/`DEFERRED`/`DONE`. Two residual risks flagged
-  explicitly in the Release Assessment for the owner's awareness (not blockers): BL-0051 (never run
-  end-to-end as a real process) and BL-0039 (no visual styling yet).
-- **Next step:** put the G4 GO/NO-GO decision to the owner. On GO: flip the release-plan bucket
-  state and any other baseline records, then `00-pipeline-manager` surveys the tree to start the
-  next increment. On NO-GO or deferred: hold here, or route a named blocking item back through
-  `07`→`08`→`09` per the owner's direction.
-- **Open gates:** **G4 — the release GO/NO-GO call — is open**, awaiting the owner.
+- **Updated:** 2026-08-23 (run #52)
+- **Increment:** At the G4 gate, **the owner deferred the MVP GO/NO-GO decision** pending a real
+  human playtest, and directed a vision amendment (v0.4, C10): the operator-facing training corpus
+  is now a co-equal product with the code, modeled on the sibling `ZabSpaceExercise` project's own
+  proven pattern. `docs/reviews/release-assessment-mvp.md`'s advisory GO recommendation stands,
+  unactioned — this is a deferral, not a NO-GO.
+- **Pipeline state:** `00` — manager iterating. `01` — **just amended (v0.4)**, see below. `02`–`10`
+  — complete for the MVP tranche. `11` — assessment written, G4 decision now deferred pending new
+  work rather than pending an answer.
+- **Milestone:** 98 tests passing, build clean, integration-reviewed clean, Release Assessment
+  written — the MVP tranche has passed every gate this pipeline had *before* this vision amendment
+  added a new one (a clean training review, MSTR-001 §6).
+- **Backlog:** ~53 open items. BL-0051 (never run end-to-end as a real process) and BL-0039 (no
+  visual styling) are now directly on the critical path to revisiting G4, not just residual risks.
+- **Next step:** `04-requirements-engineering` to add a new FR/NFR family for the training corpus
+  (C10's trigger). Then: author two new pipeline skills (stage-08 training-corpus-authoring peer,
+  stage-09 independent-review peer); `07`→`08`→`09` to close BL-0038/BL-0027 (real server
+  bootstrap); the new stage-08 skill to write `docs/training/`+`docs/manual/` against the real
+  running result (real screenshots via the environment's pre-installed Playwright); the new
+  stage-09 skill to review it; then revisit the G4 gate armed with both a clean code-side
+  Release Assessment and a clean training review.
+- **Open gates:** G4 remains open, but is now **blocked on new work**, not merely awaiting an
+  owner answer — the next several runs address that work before G4 is revisited.
 
 ## Run log
 
@@ -78,3 +81,4 @@
 | 49 | 2026-08-23 | iterate (`00-pipeline-manager`) | `09-package-verification` (spawned Agent, result landed) | IP-8010 | **VERIFIED** (VR-8010-v2) — the fix was live-exercised through the real `createGameEngine()`→`createTransport()`→`handleConnection()` path (not the committed test's fixture alone): a genuine `TemplateCatalogMessage` carrying all 7 of IP-3011's real asset-type templates is sent exactly once per connection, both connections receive byte-identical catalogs (no per-recipient filtering, as expected for public/static content), and a subsequent real action's `broadcastStateDelta` never re-sends or clobbers it. `AssetTray.test.tsx`'s three claims independently re-derived by reading `gameClient.ts`'s state-update ordering line by line — no bug. Scope confirmed clean; all 10 other packages confirmed still `VERIFIED` with no drift. No findings. **All 11 MVP Implementation Packages are now independently `VERIFIED` for the first time** — the entire tranche (98 tests: 1 shared + 80 server + 17 client) has passed both its own G5 gates and independent scrutiny, including 4 real bugs (1 Critical, 3 High) caught and fixed along the way. | `10-integration-review` on the full MVP package set — the first cross-package review, checking for interface mismatches, violated load-bearing invariants, and half-wired seams that no single package's own verification could see. |
 | 50 | 2026-08-23 | iterate (`00-pipeline-manager`) | `10-integration-review` | Full MVP package set (all 11 packages) | **Clean — no Critical/High findings.** Reviewed all five dimensions against the live tree (fresh `npm install`, full rebuild, full suite re-run: 98 tests green). Confirmed the fog-of-war chain's types line up across `BeliefState`→transport→client with no widening at any hop; confirmed the composition root (`createGameEngine.ts`) genuinely wires every handler/turn-end hook; confirmed no ID-namespace collisions (7 asset types, 3 mission sets, 5 effects); confirmed the 5 accumulated GDS-09 interface deviations (BL-0028/33/36/45/48) are mutually consistent, not just individually reasonable. 4 findings harvested: BL-0050 (Medium, 6/8 FS docs' `Implemented by` metadata stale), BL-0051 (Medium, BL-0038+BL-0027 compound into "MVP never run end-to-end as a real process" — flagged for `11`'s explicit weighing), BL-0049 re-confirmed live (Low, already tracked), BL-0052 (Low, GDS-09 batch-reconciliation debt). Report: `docs/reviews/integration-review-mvp-tranche.md`. | `11-release-readiness` for the owner's GO/NO-GO call on the MVP release bucket — no Critical/High findings block it, but its Release Assessment should explicitly weigh BL-0051 (playability) as a residual risk. |
 | 51 | 2026-08-23 | iterate (`00-pipeline-manager`) | `11-release-readiness` | MVP release bucket (all 8 Features / 11 packages) | Release Assessment written (`docs/reviews/release-assessment-mvp.md`): all 8 planned Features delivered, independently VERIFIED (4 genuine bugs caught and fixed along the way), integration-reviewed clean. **Advisory recommendation: GO**, with two residual risks flagged explicitly for the owner — BL-0051 (never run end-to-end as a real deployed process) and BL-0039 (no visual styling yet, pre-existing). Baseline NOT flipped — that step is reserved for the owner's explicit GO per this skill's own rule and the pipeline's G4 gate. | **GATE: G4** — put the GO/NO-GO decision to the owner. On GO: flip the release-plan bucket state and any other baseline records, then start the next increment (`00-pipeline-manager` survey). On NO-GO or deferred: hold at this gate, or route a named blocking item back through `07`→`08`→`09` per the owner's direction. |
+| 52 | 2026-08-23 | manual (owner-directed vision amendment at the G4 gate, not a manager iteration) | `01-vision` | `docs/master/MSTR-001-program-vision.md` (v0.4), `docs/architecture/00-vision.md`, `docs/architecture/strategic-assumptions-register.md` (A9) | At the MVP release's G4 gate, the owner deferred the GO/NO-GO decision pending a real human playtest, pointing to the sibling `ZabSpaceExercise` project's own training-corpus-as-co-equal-product pattern as the model to follow. Added C10 to MSTR-001 (training corpus is a co-equal product with the code, requirements-backed, built/kept current by dedicated stage-08/09 pipeline skills, scoped to one shared player-facing corpus — no per-role manuals, unlike the source pattern's White/Blue/Red scoping). Companion GDS-00 section and assumption A9 added. | `04-requirements-engineering` to add a new FR/NFR family for the training corpus; then author two new pipeline skills (a stage-08 training-corpus-authoring peer, a stage-09 independent-review peer); then `07-implementation-planning`/`08-code-implementation`/`09-package-verification` to close BL-0038/BL-0027 (real server bootstrap) before real screenshots are possible; then the new stage-08 skill writes the corpus against the real running result. The G4 gate on `docs/reviews/release-assessment-mvp.md` remains open (deferred, not NO-GO) until that's done. |
