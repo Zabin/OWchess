@@ -142,5 +142,5 @@ committed test file; (F2) the package's own DoD claim that a cancelled session g
 `checkWinConditions` actively mislabels it `{winner: null, reason: 'timeout-tiebreak'}`. Build
 clean; full suite green (79 shared+server tests, matching the package's own claim exactly). IP-7010
 stays `COMPLETE`, routed back to `08-code-implementation` (F1) and `07-implementation-planning`
-(F2's `SessionState` schema gap). IP-8010 remains `BLOCKED` pending IP-7010's (and IP-4011's
-already-`VERIFIED`) fix-and-reverify cycle.
+(F2's `SessionState` schema gap). IP-4011 is independently `VERIFIED` as of this same day (see above); IP-8010 remains `BLOCKED`
+pending only IP-7010's own fix-and-reverify cycle now.
