@@ -93,7 +93,7 @@ export interface TurnManager {
   advanceTurn(): void;
 }
 
-export type WinReason = 'destruction' | 'denial' | 'resignation' | 'timeout-tiebreak';
+export type WinReason = 'destruction' | 'denial' | 'resignation' | 'timeout-tiebreak' | 'cancelled';
 
 export interface WinResult {
   winner: PlayerId | null;

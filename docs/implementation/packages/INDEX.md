@@ -14,7 +14,7 @@
 | [IP-4010](IP-4010-effect-resolver.md) | `EffectResolver` (the Five D's Mechanism) | FS-105 (code) | `08-code-implementation` | VERIFIED |
 | [IP-4011](IP-4011-effect-content.md) | Five D's Effect-Definition Content | FS-105 (content) | `08-content-authoring` | VERIFIED |
 | [IP-6010](IP-6010-fog-of-war-enforcement.md) | Fog-of-War Enforcement | FS-106 | `08-code-implementation` | VERIFIED |
-| [IP-7010](IP-7010-transport.md) | Server-Authoritative WebSocket Transport | FS-107 | `08-code-implementation` | COMPLETE |
+| [IP-7010](IP-7010-transport.md) | Server-Authoritative WebSocket Transport | FS-107 | `08-code-implementation` | COMPLETE (remediation implemented, ready for re-verification) |
 | [IP-8010](IP-8010-presentation-ui.md) | Presentation / UI | FS-108 | `08-code-implementation` | COMPLETE |
 
 All 11 packages authorized under the current release plan's MVP-bucketing (G3 satisfied by
@@ -145,10 +145,11 @@ stays `COMPLETE`, routed back to `08-code-implementation` (F1) and `07-implement
 (F2's `SessionState` schema gap). IP-4011 is independently `VERIFIED` as of this same day (see above); IP-8010 remains `BLOCKED`
 pending only IP-7010's own fix-and-reverify cycle now.
 
-**`07-implementation-planning` planned the remediation 2026-08-23** — see IP-7010's own
-`Remediation (VR-7010)` section (`docs/implementation/packages/IP-7010-transport.md`): F1 gets an
-explicit rejection message on reconnect to a nonexistent session (no new wire message type — reuses
-the existing rejection shape); F2 gets an additive `SessionState.cancelled` field plus a
-`'cancelled'` `WinReason`, checked first (ahead of resignation) in `checkWinConditions`, with a
-regression test reproducing VR-7010's exact past-timeout-cap scenario. IP-7010 is now fully
-specified for `08-code-implementation` to execute and re-submit.
+**`08-code-implementation` executed the remediation 2026-08-23** — F1: `broadcastToOne` now sends
+an explicit `action-rejected`/`'session no longer exists'` rejection instead of silently dropping a
+reconnect to a nonexistent session (`websocketServer.test.ts` regression test). F2: added
+`SessionState.cancelled` (additive), `'cancelled'` to `WinReason`, `handleDisconnectResponse`'s
+`'cancel'` branch sets it, `GameEngine.checkWinConditions` checks it first (ahead of resignation) —
+verified against VR-7010's exact past-timeout-cap scenario in a new `disconnectFlow.test.ts`
+regression test. Build clean; full suite green (96 tests, up from 94). IP-7010 is `COMPLETE` and
+ready for a fresh, independent `09-package-verification` pass.

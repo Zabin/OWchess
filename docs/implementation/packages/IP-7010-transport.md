@@ -1,8 +1,8 @@
 # IP-7010 — Server-Authoritative WebSocket Transport
 
-- **Package ID:** IP-7010 · **Status:** COMPLETE, RETURNED 2026-08-23 for remediation (see
-  `Remediation (VR-7010)` below) — not yet re-submitted · **Owning stage-08 peer:**
-  `08-code-implementation`
+- **Package ID:** IP-7010 · **Status:** COMPLETE (2026-08-23 — remediation for VR-7010's 2 High
+  findings implemented, ready for a fresh `09-package-verification` pass) · **Owning stage-08
+  peer:** `08-code-implementation`
 - **Source:** FS-107 (`docs/features/FS-107-server-authoritative-transport.md`), FEAT-7000
 - **Authorization (G3):** Covered by the release plan.
 
@@ -155,12 +155,14 @@ mislabeled outcome, not merely an absent field.
   specific on their own (that's exactly what let this gap ship unnoticed).
 
 **Definition of Done additions:**
-- [ ] F1 fixed: reconnect to a nonexistent `sessionId` sends an explicit rejection, never a silent
-      drop; regression test passes.
-- [ ] F2 fixed: `SessionState.cancelled` exists, is set on cancel, and `checkWinConditions` returns
+- [x] F1 fixed: reconnect to a nonexistent `sessionId` sends an explicit rejection
+      (`action-rejected`, `reason: 'session no longer exists'`), never a silent drop; regression
+      test (`websocketServer.test.ts`) passes.
+- [x] F2 fixed: `SessionState.cancelled` exists, is set on cancel, and `checkWinConditions` returns
       `{ winner: null, reason: 'cancelled' }` for a cancelled session — including the past-timeout-
-      cap case VR-7010 hand-reproduced; regression test passes.
-- [ ] Full G5 gate (build + full suite) re-run green after both fixes.
+      cap case VR-7010 hand-reproduced; regression test (`disconnectFlow.test.ts`) passes.
+- [x] Full G5 gate (build + full suite) re-run green after both fixes: 96 tests total
+      (1 shared + 80 server + 15 client), up from 94 (2 new regression tests).
 
 **Verification Checklist addition:** re-submit to `09-package-verification` for a fresh,
 independent pass once both fixes land — the previous `VERIFIED`-track claims for Tasks 1/2/4 and

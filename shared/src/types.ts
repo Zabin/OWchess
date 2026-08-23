@@ -113,4 +113,8 @@ export interface SessionState {
   turnNumber: number;
   eventLog: EventRecord[];
   phase: SessionPhase;
+  /** F2/BL-0045: set true when a disconnected session is cancelled (FS-101 §W7) — distinguishes
+   *  "called off, no winner" from every other 'ended' outcome so it is never re-derived as a
+   *  resignation/destruction/denial/timeout result. */
+  cancelled?: boolean;
 }

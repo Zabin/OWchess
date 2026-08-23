@@ -85,6 +85,12 @@ export class GameEngine implements IGameEngine {
     if (!session) return null;
     const [a, b] = session.players;
 
+    // -1. Cancellation (F2/BL-0045, FS-101 §W7) — terminal and unconditional; a cancelled session
+    //     must never be re-derived as a resignation/destruction/denial/timeout result.
+    if (session.cancelled) {
+      return { winner: null, reason: 'cancelled' };
+    }
+
     // 0. Resignation (FR-1410) — immediate/terminal, takes precedence over everything else.
     const resigner = this.resignedBy.get(sessionId);
     if (resigner) {

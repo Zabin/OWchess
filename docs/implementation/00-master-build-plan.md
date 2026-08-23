@@ -16,7 +16,7 @@
 | IP-6010 | FS-106 | `08-code-implementation` | **VERIFIED** (2026-08-22, VR-6010) | IP-0010, IP-2010 (both VERIFIED) | Release plan (FEAT-6000, MVP) |
 | IP-4010 | FS-105 (code) | `08-code-implementation` | **VERIFIED** (2026-08-22, VR-4010) | IP-0010, IP-2010, IP-6010 (all VERIFIED) | Release plan (FEAT-4000, MVP) |
 | IP-4011 | FS-105 (content) | `08-content-authoring` | **VERIFIED** (2026-08-23, VR-4011) | IP-4010 (VERIFIED) | Release plan (FEAT-4000, MVP) |
-| IP-7010 | FS-107 | `08-code-implementation` | **COMPLETE** (2026-08-22 — RETURNED by VR-7010, 2026-08-23, 2 High findings) | IP-0010, IP-1010, IP-6010 (all VERIFIED) | Release plan (FEAT-7000, MVP) |
+| IP-7010 | FS-107 | `08-code-implementation` | **COMPLETE** (2026-08-23 — remediation for VR-7010's 2 High findings implemented, ready for re-verification) | IP-0010, IP-1010, IP-6010 (all VERIFIED) | Release plan (FEAT-7000, MVP) |
 | IP-8010 | FS-108 | `08-code-implementation` | **COMPLETE** (2026-08-23 — IP-7010 still awaiting its own verification) | all 10 above | Release plan (FEAT-8000, MVP) |
 
 **IP-0010 is `VERIFIED`** (implemented 2026-08-22; independently verified 2026-08-22 by
@@ -288,11 +288,13 @@ IP-2010/IP-6010's own sequence, converging only at IP-8010.
 VR-6010, VR-4010, and VR-4011 above) — no further action needed on any of them. **IP-7010 was
 independently verified 2026-08-23 and RETURNED** (see VR-7010 above, 2 High findings: F1 a silent
 reconnect-to-nonexistent-session failure, F2 a missing/mislabeled cancellation `outcome`).
-**`07-implementation-planning` has now planned the remediation** (2026-08-23, see IP-7010's own
-`Remediation (VR-7010)` section): F1 gets an explicit rejection message on reconnect to a
-nonexistent session; F2 gets a small additive `SessionState.cancelled` field plus a `'cancelled'`
-`WinReason`, checked first (ahead of resignation) in `checkWinConditions`. IP-7010 stays
-`COMPLETE`, now with a fully specified fix plan ready for `08-code-implementation` to execute, then
-re-submit for a fresh `09-package-verification` pass. **IP-8010** is also `COMPLETE` but remains
-blocked from any further ledger advancement until IP-7010 (the last of its ten named dependencies)
-is itself `VERIFIED`.
+**`08-code-implementation` has now executed the remediation** (2026-08-23): F1 fixed —
+`broadcastToOne` sends an explicit `action-rejected`/`'session no longer exists'` message instead
+of silently dropping a reconnect to a nonexistent session; F2 fixed — `SessionState.cancelled`
+(additive field), `WinReason` gained `'cancelled'`, `handleDisconnectResponse`'s `'cancel'` branch
+sets it, and `GameEngine.checkWinConditions` checks it first (ahead of resignation), verified
+against VR-7010's exact hand-reproduced past-timeout-cap scenario in a new regression test. Build
+clean; full suite green (96 tests: 1 shared + 80 server + 15 client, up from 94). IP-7010 is
+`COMPLETE` and ready for a fresh, independent `09-package-verification` pass. **IP-8010** is also
+`COMPLETE` but remains blocked from any further ledger advancement until IP-7010 is itself
+`VERIFIED`.

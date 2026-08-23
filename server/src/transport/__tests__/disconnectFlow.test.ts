@@ -71,6 +71,22 @@ describe('Disconnect / reconnect flow (IP-7010, FS-101 §W7)', () => {
     expect(result?.winner ?? null).toBeNull();
   });
 
+  it('F2/BL-0045: "cancel" is distinguishable as its own outcome, not a timeout-tiebreak (VR-7010\'s past-timeout-cap scenario)', () => {
+    // Push turnNumber past the 60-turn timeout cap before cancelling — VR-7010's exact
+    // hand-reproduced consequence: without a distinct cancellation marker, checkWinConditions
+    // falls through to the timeout/tiebreak branch instead.
+    const session = ctx.store.getSession(sessionId)!;
+    session.turnNumber = 61;
+
+    aliceConn.simulateClose();
+    bobConn.simulateMessage({ type: 'disconnect-response', choice: 'cancel' });
+
+    expect(session.phase).toBe('ended');
+    expect(session.cancelled).toBe(true);
+    const result = ctx.engine.checkWinConditions(sessionId);
+    expect(result).toEqual({ winner: null, reason: 'cancelled' });
+  });
+
   it('"wait" keeps the session open with no state change', () => {
     aliceConn.simulateClose();
     bobConn.simulateMessage({ type: 'disconnect-response', choice: 'wait' });

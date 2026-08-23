@@ -80,7 +80,10 @@ export function createTransport(
   function handleDisconnectResponse(sessionId: SessionId, msg: DisconnectResponse): void {
     if (msg.choice === 'cancel') {
       const session = store.getSession(sessionId);
-      if (session) session.phase = 'ended'; // FR-7300: no winner recorded
+      if (session) {
+        session.phase = 'ended'; // FR-7300: no winner recorded
+        session.cancelled = true; // F2/BL-0045: distinguishes this from every other 'ended' outcome
+      }
     }
     // 'wait': no state change — the session simply stays open for a future reconnect.
   }
@@ -109,9 +112,18 @@ export function createTransport(
     });
   }
 
+  /** F1 (BL-0044/VR-7010): a reconnect presenting a sessionId that no longer exists must get an
+   *  explicit rejection, never a silent drop (FS-107 §W4, NFR-7200). */
   function broadcastToOne(sessionId: SessionId, playerId: PlayerId): void {
     const session = store.getSession(sessionId);
-    if (!session) return;
+    if (!session) {
+      const rejection: RejectedActionMessage = {
+        type: 'action-rejected',
+        reason: 'session no longer exists',
+      };
+      registry.get(sessionId, playerId)?.send(JSON.stringify(rejection));
+      return;
+    }
     const player = session.players.find((p) => p.playerId === playerId);
     const opponent = session.players.find((p) => p.playerId !== playerId);
     if (!player || !opponent) return;

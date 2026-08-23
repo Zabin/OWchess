@@ -89,4 +89,13 @@ describe('WebSocket transport (IP-7010)', () => {
     const elapsedMs = Date.now() - start;
     expect(elapsedMs).toBeLessThan(3000);
   });
+
+  it('F1/BL-0044: reconnecting with a sessionId that no longer exists sends an explicit rejection, not a silent drop', () => {
+    const strayConn = new FakeConnection();
+    transport.handleConnection('no-such-session', 'alice', strayConn);
+
+    expect(strayConn.sent).toHaveLength(1);
+    expect(strayConn.lastMessage().type).toBe('action-rejected');
+    expect(strayConn.lastMessage().reason).toBe('session no longer exists');
+  });
 });
