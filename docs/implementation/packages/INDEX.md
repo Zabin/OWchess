@@ -15,7 +15,7 @@
 | [IP-4011](IP-4011-effect-content.md) | Five D's Effect-Definition Content | FS-105 (content) | `08-content-authoring` | VERIFIED |
 | [IP-6010](IP-6010-fog-of-war-enforcement.md) | Fog-of-War Enforcement | FS-106 | `08-code-implementation` | VERIFIED |
 | [IP-7010](IP-7010-transport.md) | Server-Authoritative WebSocket Transport | FS-107 | `08-code-implementation` | **VERIFIED** (VR-7010-v2, 2026-08-23) |
-| [IP-8010](IP-8010-presentation-ui.md) | Presentation / UI | FS-108 | `08-code-implementation` | COMPLETE |
+| [IP-8010](IP-8010-presentation-ui.md) | Presentation / UI | FS-108 | `08-code-implementation` | **RETURNED** (VR-8010, 2026-08-23) |
 
 All 11 packages authorized under the current release plan's MVP-bucketing (G3 satisfied by
 release-plan coverage — see each package's own Authorization line). See
@@ -166,3 +166,27 @@ Low, informational, non-blocking findings (pre-existing "deploying-phase connect
 by this fix; RTM NFR-7200 cell incomplete but not wrong). **IP-7010 flips `COMPLETE` → `VERIFIED`.**
 IP-8010 (names all 10 other packages, all now `VERIFIED`) is the next package eligible for its own
 `09-package-verification` pass.
+
+**IP-8010 was independently verified 2026-08-23 and RETURNED** — see
+[VR-8010](../verification/VR-8010-presentation-ui.md). The fog-of-war rendering boundary was
+independently re-derived beyond the committed component-level test, at the full
+`GameClient`→`App` pipeline level with a deliberately contaminated `StateDeltaMessage` — no leak
+found. The legality pre-filter's coarse gates were cross-checked line-by-line against the real
+server code (`TurnManager`, `assertOnline`, `Propagator.planManeuver`,
+`BeliefState.hasSensorCapability`) and confirmed a genuine parallel implementation, not a stub.
+One High finding blocks `VERIFIED`: (F1) no message type, interface, or shared static catalog
+exists anywhere in the codebase to deliver `AssetTemplate` (AP cost/time-to-online) data from
+server to client — `main.tsx` hardcodes `deployableTemplates: []`, GDS-09 never defines such a
+channel, and no test renders `AssetTray` with non-empty data — leaving FS-108 AC4/FR-8300
+permanently undeliverable by the shipped system today, not merely an outstanding Demonstration
+item as the package's Deviation note implies by bundling it with the honestly-disclosed BL-0039
+CSS-only gap. `AssetTray`'s own render logic is independently confirmed correct in isolation via
+a live scratch render with real data — the defect is the missing data path, not the component.
+One Low finding (F2) noted for the record: the client's `engage`-category gate is stricter than
+the server's real `engageAction.ts`/`EffectResolver` (which never checks `chainRoles` at all) — a
+previously-uncaught IP-4010-scope gap, not an IP-8010 defect. Build clean; full suite green (96
+tests, rebuilt from a genuinely clean `node_modules`). IP-8010 stays `COMPLETE`, routed to
+`07-implementation-planning` first (F1 needs a new interface/data-delivery decision) then
+`08-code-implementation`, for a fresh `09-package-verification` pass. All 10 other MVP packages
+remain `VERIFIED`; IP-8010 is the sole package standing between this project and a fully verified
+MVP tranche.

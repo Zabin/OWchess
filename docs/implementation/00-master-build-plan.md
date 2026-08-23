@@ -17,7 +17,7 @@
 | IP-4010 | FS-105 (code) | `08-code-implementation` | **VERIFIED** (2026-08-22, VR-4010) | IP-0010, IP-2010, IP-6010 (all VERIFIED) | Release plan (FEAT-4000, MVP) |
 | IP-4011 | FS-105 (content) | `08-content-authoring` | **VERIFIED** (2026-08-23, VR-4011) | IP-4010 (VERIFIED) | Release plan (FEAT-4000, MVP) |
 | IP-7010 | FS-107 | `08-code-implementation` | **VERIFIED** (2026-08-23, VR-7010-v2) | IP-0010, IP-1010, IP-6010 (all VERIFIED) | Release plan (FEAT-7000, MVP) |
-| IP-8010 | FS-108 | `08-code-implementation` | **COMPLETE** (2026-08-23 — all 10 dependencies now VERIFIED; next for `09-package-verification`) | all 10 above | Release plan (FEAT-8000, MVP) |
+| IP-8010 | FS-108 | `08-code-implementation` | **RETURNED** (2026-08-23, VR-8010 — 1 High, 1 Low finding) | all 10 above (all VERIFIED) | Release plan (FEAT-8000, MVP) |
 
 **IP-0010 is `VERIFIED`** (implemented 2026-08-22; independently verified 2026-08-22 by
 `09-package-verification` — see
@@ -308,3 +308,35 @@ clean `node_modules`; full suite green (96 tests, matching exactly). **IP-7010 i
 **IP-8010** (all 10 named dependencies now `VERIFIED`) is the next package eligible for its own
 `09-package-verification` pass — it remains `COMPLETE`, no further implementation work needed,
 just awaiting that verification pass.
+
+**IP-8010 was independently verified 2026-08-23 and RETURNED** — see
+[VR-8010](verification/VR-8010-presentation-ui.md). The fog-of-war rendering boundary was
+independently re-derived beyond the committed component-level test, at the full
+`GameClient`→`App` pipeline level with a deliberately contaminated `StateDeltaMessage` (smuggled
+`PlayerState`-only fields onto an `OpponentView`-shaped object) — no leak found through `App`'s
+rendered output. The legality pre-filter's coarse gates were cross-checked line-by-line against
+the real server code (`TurnManager.submitAction`/`spendAP`, `assertOnline`,
+`Propagator.planManeuver`'s BL-0014 rejection, `BeliefState.hasSensorCapability`) and confirmed a
+genuine parallel implementation, not a stub. One High finding blocks `VERIFIED`: (F1) no message
+type, interface, or shared static catalog exists anywhere in the codebase to deliver
+`AssetTemplate` (AP cost/time-to-online) data from server to client — `main.tsx` hardcodes
+`deployableTemplates: []`, GDS-09 never defines such a channel (`AssetTemplate` content lives only
+in `server/src/content/`, never re-exported through `shared/`), and no test anywhere renders
+`AssetTray` with non-empty data. This leaves FS-108 AC4/FR-8300 permanently undeliverable by the
+shipped system today — not merely an outstanding Demonstration item, as the package's own
+Deviation note implies by bundling the whole Demonstration-scoped surface under the honestly-
+disclosed BL-0039 CSS-only gap. A live scratch render independently confirmed `AssetTray`'s own
+component logic is correct given real data — the defect is the missing data-delivery path, not
+the component. One Low finding (F2) noted for the record, not blocking: the client's
+`engage`-category gate (`chainRoles.includes('engage')`) is stricter than the real server code
+(`engageAction.ts`/`EffectResolver.resolveEngagement` never check `chainRoles` at all) — a
+previously-uncaught gap in IP-4010's own scope, not an IP-8010 defect, and not capable of causing
+a post-hoc rejection (the client only ever hides a category the server would still accept, never
+the reverse). Rebuilt from a genuinely clean `node_modules`; full suite green (96 tests: 1 shared +
+80 server + 15 client, matching VR-7010-v2's count exactly). **IP-8010 stays `COMPLETE`**, routed
+to `07-implementation-planning` first (F1 needs a new interface/data-delivery decision — a
+template-catalog message type or a shared static catalog export — before `08-code-implementation`
+can wire it and before any Demonstration pass on AC4/FR-8300 is even attemptable), then back to
+`08-code-implementation`, for a fresh, independent `09-package-verification` pass. All 10 other
+MVP packages remain `VERIFIED`; `10-integration-review` cannot yet proceed on the full MVP tranche
+until IP-8010 itself reaches `VERIFIED`.
