@@ -57,6 +57,7 @@ function fixtureTemplateCatalog(): TemplateCatalogMessage {
       { templateId: 'cheap-sensor', basing: 'ground', apCost: 1, timeToOnline: 1, chainRoles: ['find'], regimeAffinity: ['LEO-EQUATORIAL'] },
       { templateId: 'expensive-effector', basing: 'space', apCost: 5, timeToOnline: 3, chainRoles: ['engage'], regimeAffinity: ['GEO-EQUATORIAL'] },
     ],
+    missionSets: [],
   };
 }
 

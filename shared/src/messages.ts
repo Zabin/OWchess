@@ -3,8 +3,16 @@
  * extended 2026-08-22 by FS-107 with DisconnectNotification/DisconnectResponse.
  */
 
-import type { Action, ActionResult, AssetTemplate } from './interfaces.js';
-import type { EventRecord, OpponentView, PlayerId, PlayerState, SessionId } from './types.js';
+import type { Action, ActionResult, AssetTemplate, MissionSetTemplate } from './interfaces.js';
+import type {
+  EventRecord,
+  MissionSetId,
+  OpponentView,
+  OrbitalRegimeLabel,
+  PlayerId,
+  PlayerState,
+  SessionId,
+} from './types.js';
 
 // client -> server
 export interface ActionMessage {
@@ -36,6 +44,26 @@ export interface DisconnectResponse {
   choice: 'wait' | 'cancel';
 }
 
+/** IP-9056/BL-0056: submits a secret King selection (FR-1210). */
+export interface DeployKingMessage {
+  type: 'deploy-king';
+  sessionId: SessionId;
+  missionSetId: MissionSetId;
+  regime: OrbitalRegimeLabel;
+}
+
+/**
+ * IP-9056/BL-0056: sent instead of a StateDeltaMessage while a joined session hasn't reached
+ * 'active' yet — never carries either player's actual selection (FR-1210 secrecy), only whether
+ * each side has submitted.
+ */
+export interface DeploymentStatusMessage {
+  type: 'deployment-status';
+  phase: 'deploying' | 'active';
+  ownDeployed: boolean;
+  opponentDeployed: boolean;
+}
+
 /**
  * BL-0048 (VR-8010 remediation): sent once per connection (not on every StateDeltaMessage) —
  * template data is static and identical for both players, so there's no per-recipient
@@ -44,13 +72,16 @@ export interface DisconnectResponse {
 export interface TemplateCatalogMessage {
   type: 'template-catalog';
   templates: AssetTemplate[];
+  /** IP-9056/BL-0056: added so KingDeploymentPicker can render real mission-set options. */
+  missionSets: MissionSetTemplate[];
 }
 
-export type ClientToServerMessage = ActionMessage | DisconnectResponse;
+export type ClientToServerMessage = ActionMessage | DisconnectResponse | DeployKingMessage;
 export type ServerToClientMessage =
   | StateDeltaMessage
   | RejectedActionMessage
   | DisconnectNotification
-  | TemplateCatalogMessage;
+  | TemplateCatalogMessage
+  | DeploymentStatusMessage;
 
 export type { ActionResult };

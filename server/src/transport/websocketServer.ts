@@ -11,6 +11,8 @@
  */
 import type {
   ActionMessage,
+  DeployKingMessage,
+  DeploymentStatusMessage,
   DisconnectResponse,
   RejectedActionMessage,
   StateDeltaMessage,
@@ -91,6 +93,35 @@ export function createTransport(
     // 'wait': no state change — the session simply stays open for a future reconnect.
   }
 
+  /** IP-9056/BL-0056: pushes each player their own DeploymentStatusMessage — never reveals either
+   *  side's actual selection, only who has submitted (FR-1210 secrecy). */
+  function broadcastDeploymentStatus(sessionId: SessionId): void {
+    const playerIds = store.getJoinedPlayerIds(sessionId);
+    if (!playerIds) return;
+    for (const pid of playerIds) {
+      const status = store.getDeploymentStatus(sessionId, pid);
+      if (!status) continue;
+      const message: DeploymentStatusMessage = { type: 'deployment-status', ...status };
+      registry.get(sessionId, pid)?.send(JSON.stringify(message));
+    }
+  }
+
+  /** IP-9056/BL-0056: the previously-missing wire path for FR-1210/1220 secret King deployment. */
+  function handleDeployKingMessage(sessionId: SessionId, playerId: PlayerId, msg: DeployKingMessage): void {
+    const result = store.submitKingDeployment(sessionId, playerId, msg.missionSetId, msg.regime);
+    if (!result.accepted) {
+      const rejection: RejectedActionMessage = { type: 'action-rejected', reason: result.reason ?? 'rejected' };
+      registry.get(sessionId, playerId)?.send(JSON.stringify(rejection));
+      return;
+    }
+    const status = store.getDeploymentStatus(sessionId, playerId);
+    if (status?.phase === 'active') {
+      broadcastStateDelta(sessionId);
+    } else {
+      broadcastDeploymentStatus(sessionId);
+    }
+  }
+
   function handleConnection(
     sessionId: SessionId,
     playerId: PlayerId,
@@ -103,19 +134,34 @@ export function createTransport(
     const catalog: TemplateCatalogMessage = {
       type: 'template-catalog',
       templates: templateRegistry.listAssetTemplates(),
+      missionSets: templateRegistry.listMissionSetTemplates(), // IP-9056/BL-0056
     };
     conn.send(JSON.stringify(catalog));
 
-    // Reconnect (or initial connect): push a full current state-delta immediately, the same
-    // shape W1's initial render already knows how to consume — no special "resume" message.
-    broadcastToOne(sessionId, playerId);
+    // IP-9056/BL-0056: distinguish "no session," "deploying," and "active" before attempting
+    // broadcastToOne, which only makes sense once a real SessionState exists.
+    if (!store.hasSessionRecord(sessionId)) {
+      const rejection: RejectedActionMessage = { type: 'action-rejected', reason: 'session no longer exists' };
+      conn.send(JSON.stringify(rejection));
+    } else {
+      const status = store.getDeploymentStatus(sessionId, playerId);
+      if (status?.phase === 'deploying') {
+        conn.send(JSON.stringify({ type: 'deployment-status', ...status } satisfies DeploymentStatusMessage));
+      } else {
+        // Reconnect (or initial connect): push a full current state-delta immediately, the same
+        // shape W1's initial render already knows how to consume — no special "resume" message.
+        broadcastToOne(sessionId, playerId);
+      }
+    }
 
     conn.onMessage((raw) => {
-      const msg = JSON.parse(raw) as ActionMessage | DisconnectResponse;
+      const msg = JSON.parse(raw) as ActionMessage | DisconnectResponse | DeployKingMessage;
       if (msg.type === 'action') {
         handleActionMessage(sessionId, playerId, msg);
       } else if (msg.type === 'disconnect-response') {
         handleDisconnectResponse(sessionId, msg);
+      } else if (msg.type === 'deploy-king') {
+        handleDeployKingMessage(sessionId, playerId, msg);
       }
     });
 

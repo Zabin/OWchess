@@ -1,7 +1,8 @@
 # IP-9056 — King-Deployment Wire Exposure
 
-- **Package ID:** IP-9056 · **Status:** BLOCKED (on IP-9038 reaching `VERIFIED` — currently
-  `COMPLETE`, verification in progress) · **Owning stage-08 peer:** `08-code-implementation`
+- **Package ID:** IP-9056 · **Status:** COMPLETE (2026-08-23 — implemented and live end-to-end
+  tested; closes BL-0056, the sole remaining blocker to a genuinely playable game) · **Owning
+  stage-08 peer:** `08-code-implementation`
 - **Source:** No FS (bug remediation) — closes BL-0056; see `01-technical-work-breakdown.md` §7.
 - **Authorization (G3):** Covered — completes FS-101's own already-approved W1/W2 workflow
   (secret King deployment). See TWBS §7.
@@ -134,34 +135,53 @@ package closes).
 
 ## Definition of Done
 
-- [ ] A real client can submit a King deployment over a real WebSocket connection and receive
-      correct status updates, with the opponent's selection never revealed at any point (FR-1210).
-- [ ] Once both players deploy, both receive a real `StateDeltaMessage` and reach `phase: 'active'`
-      — confirmed via the same live end-to-end style check IP-9038 used (real HTTP create/join,
-      two real `ws` clients, both submitting a deployment, both receiving the resulting state).
-- [ ] A second deployment attempt by an already-deployed player is rejected (FR-1230).
-- [ ] `KingDeploymentPicker` renders real mission-set/regime options sourced from the server's own
-      content (`TemplateCatalogMessage`), not hardcoded values.
-- [ ] Full G5 gate (build + full test suite) green.
+- [x] A real client can submit a King deployment over a real WebSocket connection and receive
+      correct status updates, with the opponent's selection never revealed at any point (FR-1210)
+      — confirmed both by `kingDeploymentFlow.test.ts` (asserts no `deployment-status` message
+      ever contains `missionSetId`/`regime`) and a live real-`ws`-client smoke test.
+- [x] Once both players deploy, both receive a real `StateDeltaMessage` and reach `phase: 'active'`
+      — confirmed via the same live end-to-end style check IP-9038 used: real HTTP create/join,
+      two real `ws` clients, both submitting a deployment (`satcom`/`GEO-EQUATORIAL` and
+      `isr`/`LEO-POLAR`), both receiving a real `state-delta` in response.
+- [x] A second deployment attempt by an already-deployed player is rejected (FR-1230) — confirmed
+      by `kingDeploymentFlow.test.ts`'s dedicated test.
+- [x] `KingDeploymentPicker` renders real mission-set/regime options sourced from the server's own
+      content (`TemplateCatalogMessage`), not hardcoded values — confirmed by
+      `KingDeploymentPicker.test.tsx`.
+- [x] Full G5 gate (build + full test suite) green: 113 tests total (1 shared + 88 server + 24
+      client, up from 105 — 4 new `kingDeploymentFlow.test.ts` + 4 new
+      `KingDeploymentPicker.test.tsx`).
 
 ## Verification Checklist
 
-- [ ] **G5 gate:** build clean. **G5 gate:** full test suite passes.
-- [ ] A live, real end-to-end run: start the built server, create a session, join it, deploy both
-      Kings via real WebSocket messages (or via Playwright driving the real `KingDeploymentPicker`
-      UI), and confirm the session reaches `phase: 'active'` with a real `StateDeltaMessage` —
-      this is the specific claim BL-0056 exists to close; a committed regression test alone is not
-      sufficient given this exact category of gap (wire-level unreachability) is what escaped
-      every prior test.
-- [ ] No fog-of-war leak: `DeploymentStatusMessage` never carries `missionSetId`/`regime` for
-      either player — grep-confirm no code path attaches them to that message type.
+- [x] **G5 gate:** build clean. **G5 gate:** full test suite passes (113 tests).
+- [x] A live, real end-to-end run: started the built server, created a session via real `fetch`,
+      joined it via real `fetch`, connected two real `ws` clients, sent both `deploy-king`
+      messages, and confirmed the session reaches `phase: 'active'` with both clients receiving a
+      real `state-delta` — this is the specific claim BL-0056 exists to close.
+      `09-package-verification` should independently reproduce this same live sequence with its
+      own script, not merely re-run the committed tests.
+- [x] No fog-of-war leak: `DeploymentStatusMessage` never carries `missionSetId`/`regime` for
+      either player — confirmed both by direct code reading (the type declaration only has
+      `phase`/`ownDeployed`/`opponentDeployed`) and by `kingDeploymentFlow.test.ts`'s explicit
+      assertion against the actual serialized wire messages.
+
+## Deviation note
+
+One small addition beyond the two `SessionStore` accessors this package originally named
+(`hasSessionRecord`, `getDeploymentStatus`): a third read-only accessor,
+`getJoinedPlayerIds(sessionId): PlayerId[] | undefined`, was needed for
+`broadcastDeploymentStatus` to enumerate both joined players (neither `PlayerId` is knowable from
+a pre-active `SessionState`, since none exists yet — the same reasoning that motivated the other
+two accessors). Same file already in scope, purely additive, no existing method's behavior
+changed.
 
 ## Dependencies
 
-IP-9038 (`COMPLETE`, not yet `VERIFIED` — this package extends IP-9038's `websocketServer.ts`/
-`main.tsx` changes and should not start implementation until IP-9038 itself is confirmed `VERIFIED`,
-to avoid compounding an unverified base). IP-1010, IP-3011 (mission-set content), IP-8010 — all
-`VERIFIED`.
+IP-9038 (`VERIFIED`, confirmed via VR-9038 before this package's implementation began — this
+package extends IP-9038's `websocketServer.ts`/`main.tsx` changes and deliberately waited for that
+confirmation to avoid compounding an unverified base). IP-1010, IP-3011 (mission-set content),
+IP-8010 — all `VERIFIED`.
 
 ## Risks
 

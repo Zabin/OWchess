@@ -12,8 +12,8 @@ candidate module the requirement will land in once `05`/`06`/`07` assign real wo
 | FR-1120 | Join session | — | GDS-01, GDS-02 | ADR-0001 | GameEngine | FS-101 | IP-1010 | TurnManager.test.ts (via SessionStore fixture setup) |
 | FR-1121 | Reject over-capacity join | — | GDS-01 | — | GameEngine | FS-101 | IP-1010 | SessionStore.test.ts |
 | FR-1130 | Withhold start until both joined | — | GDS-01 | — | GameEngine | FS-101 | IP-1010 | SessionStore.test.ts |
-| FR-1210 | Secret King selection | — | GDS-01, GDS-04 | — | GameEngine, BeliefState | FS-101 | IP-1010 | TurnManager.test.ts (via SessionStore fixture setup) |
-| FR-1220 | Simultaneous resolution | — | GDS-01 | — | GameEngine, TurnManager | FS-101 | IP-1010 | TurnManager.test.ts (via SessionStore fixture setup) |
+| FR-1210 | Secret King selection | — | GDS-01, GDS-04 | — | GameEngine, BeliefState, WS transport | FS-101 | IP-1010 (logic), IP-9056 (wire exposure) | TurnManager.test.ts (logic, via fixture setup); kingDeploymentFlow.test.ts (real wire path, IP-9056) |
+| FR-1220 | Simultaneous resolution | — | GDS-01 | — | GameEngine, TurnManager, WS transport | FS-101 | IP-1010 (logic), IP-9056 (wire exposure) | TurnManager.test.ts (logic, via fixture setup); kingDeploymentFlow.test.ts (real wire path, IP-9056) |
 | FR-1230 | King immutability | — | GDS-04 | — | GameEngine | FS-101 | IP-1010 | SessionStore.test.ts |
 | FR-1310 | Grant AP allotment | — | GDS-01, GDS-07 | — | TurnManager | FS-101 | IP-1010 | TurnManager.test.ts |
 | FR-1320 | Enumerate legal actions | — | GDS-06, GDS-08 | — | TurnManager, client UI | UNASSIGNED | UNASSIGNED | UNASSIGNED |

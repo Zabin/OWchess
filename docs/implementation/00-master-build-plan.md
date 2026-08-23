@@ -19,7 +19,7 @@
 | IP-7010 | FS-107 | `08-code-implementation` | **VERIFIED** (2026-08-23, VR-7010-v2) | IP-0010, IP-1010, IP-6010 (all VERIFIED) | Release plan (FEAT-7000, MVP) |
 | IP-8010 | FS-108 | `08-code-implementation` | **VERIFIED** (2026-08-23, VR-8010-v2) | all 10 above (all VERIFIED) | Release plan (FEAT-8000, MVP) |
 | IP-9038 | — (bug remediation: BL-0038/BL-0027) | `08-code-implementation` | **VERIFIED** (2026-08-23 — [VR-9038](verification/VR-9038-server-bootstrap.md); own scope confirmed done and live-tested; surfaced BL-0056, a separate pre-existing blocker) | IP-1010, IP-5010, IP-6010, IP-7010, IP-8010 (all VERIFIED) | Closes disclosed deviations in already-authorized packages (IP-7010, IP-3011) + completes FS-101's already-approved W1 workflow — see TWBS §6 |
-| IP-9056 | — (bug remediation: BL-0056) | `08-code-implementation` | **IN PROGRESS** (2026-08-23) | IP-9038, IP-1010, IP-3011, IP-8010 (all VERIFIED) | Completes FS-101's already-approved W1/W2 workflow (secret King deployment) — see TWBS §7 |
+| IP-9056 | — (bug remediation: BL-0056) | `08-code-implementation` | **COMPLETE** (2026-08-23 — implemented and live end-to-end tested) | IP-9038, IP-1010, IP-3011, IP-8010 (all VERIFIED) | Completes FS-101's already-approved W1/W2 workflow (secret King deployment) — see TWBS §7 |
 
 **IP-9038** is the sole package not tied to an MVP Feature — it is the real server bootstrap
 (BL-0038/BL-0027) that MSTR-001 v0.4 (C10) put on the critical path to the deferred G4 gate: all
@@ -430,3 +430,14 @@ extended with mission-set data, and a new client `KingDeploymentPicker`. Was `BL
 reaching `VERIFIED` — deliberately not started against an unverified base. **Now `READY`**: IP-9038
 flipped to `VERIFIED` above (2026-08-23, VR-9038), and IP-9056's other named dependencies
 (IP-1010, IP-3011, IP-8010) are all independently `VERIFIED` already.
+
+**`08-code-implementation` implemented IP-9056 and it is `COMPLETE`** (2026-08-23): the
+`DeployKingMessage`/`DeploymentStatusMessage` wire pair, `handleConnection`'s three-way branching
+(no-session/deploying/active), `TemplateCatalogMessage` extended with `missionSets`, and the new
+`KingDeploymentPicker` client component are all implemented and live end-to-end tested — real HTTP
+create/join, two real `ws` clients, both submitting a King deployment, both receiving a real
+`state-delta` once the session reaches `phase: 'active'`. Full suite green (113 tests, up from
+105). **This closes BL-0056 — the sole remaining blocker to a real client ever reaching a playable
+game is now resolved**, pending independent verification. FR-9420's first-full-game walkthrough
+and the human playtest MSTR-001 v0.4 exists to obtain are now genuinely attemptable for the first
+time in this project's history.

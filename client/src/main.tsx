@@ -1,13 +1,14 @@
 /**
- * Client entry point (IP-8010, extended by IP-9038 closing BL-0038/BL-0055). Shows Landing until
- * a sessionId+playerId are known (from the URL, or from creating/joining a game), then connects a
- * real browser WebSocket and renders App.
+ * Client entry point (IP-8010, extended by IP-9038 closing BL-0038/BL-0055, and IP-9056 closing
+ * BL-0056). Shows Landing until a sessionId+playerId are known, then KingDeploymentPicker until
+ * the session reaches 'active' phase, then App.
  */
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from './App.js';
 import { Landing } from './components/Landing.js';
-import { GameClient, type SocketLike } from './state/gameClient.js';
+import { KingDeploymentPicker } from './components/KingDeploymentPicker.js';
+import { GameClient, type GameClientState, type SocketLike } from './state/gameClient.js';
 
 /** Adapts a native browser WebSocket to GameClient's SocketLike interface via addEventListener,
  *  since WebSocket's own onmessage/onclose setter types are wider than SocketLike's. */
@@ -41,6 +42,13 @@ function Root() {
     return new GameClient(adaptWebSocket(socket));
   }, [entered]);
 
+  const [state, setState] = useState<GameClientState | null>(() => client?.getState() ?? null);
+  useEffect(() => {
+    if (!client) return;
+    setState(client.getState());
+    return client.subscribe(setState);
+  }, [client]);
+
   if (!entered || !client) {
     return (
       <Landing
@@ -51,6 +59,19 @@ function Root() {
           window.history.pushState({}, '', url);
           setEntered({ sessionId, playerId });
         }}
+      />
+    );
+  }
+
+  // IP-9056/BL-0056: a real StateDeltaMessage only ever arrives once phase === 'active' —
+  // ownState remaining null is exactly "not there yet," whether that's deployment-status still
+  // pending or the message simply hasn't arrived.
+  if (state && !state.ownState) {
+    return (
+      <KingDeploymentPicker
+        missionSets={state.missionSets}
+        status={state.deploymentStatus}
+        onDeploy={(missionSetId, regime) => client.deployKing(entered.sessionId, missionSetId, regime)}
       />
     );
   }

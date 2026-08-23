@@ -66,4 +66,9 @@ export class TemplateRegistry {
   getMissionSetTemplate(missionSetId: MissionSetId): MissionSetTemplate | undefined {
     return this.missionSetTemplates.get(missionSetId);
   }
+
+  /** IP-9056/BL-0056: the "list all" accessor KingDeploymentPicker needs. */
+  listMissionSetTemplates(): MissionSetTemplate[] {
+    return Array.from(this.missionSetTemplates.values());
+  }
 }

@@ -138,6 +138,37 @@ export class SessionStore {
     return this.sessions.get(sessionId)?.session ?? undefined;
   }
 
+  /** IP-9056/BL-0056: distinct from getSession — true for a joined-but-not-yet-deployed session,
+   *  where getSession() correctly returns undefined (no resolved SessionState exists yet). */
+  hasSessionRecord(sessionId: SessionId): boolean {
+    return this.sessions.has(sessionId);
+  }
+
+  /** IP-9056/BL-0056: lets the transport enumerate both joined players to push each their own
+   *  DeploymentStatusMessage — a small addition alongside hasSessionRecord/getDeploymentStatus,
+   *  needed for the same reason (neither PlayerId is knowable from a pre-active SessionState,
+   *  since none exists yet). */
+  getJoinedPlayerIds(sessionId: SessionId): PlayerId[] | undefined {
+    return this.sessions.get(sessionId)?.playerIds;
+  }
+
+  /** IP-9056/BL-0056: lets the transport distinguish "no session," "deploying," and "active"
+   *  without ever revealing either player's actual selection (FR-1210 secrecy). */
+  getDeploymentStatus(
+    sessionId: SessionId,
+    playerId: PlayerId
+  ): { phase: 'deploying' | 'active'; ownDeployed: boolean; opponentDeployed: boolean } | undefined {
+    const record = this.sessions.get(sessionId);
+    if (!record) return undefined;
+    if (record.session) return { phase: 'active', ownDeployed: true, opponentDeployed: true };
+    const opponentId = record.playerIds.find((p) => p !== playerId);
+    return {
+      phase: 'deploying',
+      ownDeployed: record.pendingKingSelections.has(playerId),
+      opponentDeployed: opponentId ? record.pendingKingSelections.has(opponentId) : false,
+    };
+  }
+
   getPlayerState(sessionId: SessionId, playerId: PlayerId): PlayerState | undefined {
     return this.getSession(sessionId)?.players.find((p) => p.playerId === playerId);
   }

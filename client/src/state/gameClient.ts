@@ -6,9 +6,13 @@
 import type {
   Action,
   AssetTemplate,
+  DeploymentStatusMessage,
   DisconnectResponse,
   EventRecord,
+  MissionSetId,
+  MissionSetTemplate,
   OpponentView,
+  OrbitalRegimeLabel,
   PlayerId,
   PlayerState,
   RejectedActionMessage,
@@ -36,6 +40,12 @@ export interface GameClientState {
   /** BL-0048 (VR-8010 remediation): populated once from a TemplateCatalogMessage, persists across
    *  ordinary state-delta pushes (it's static, not per-turn state). */
   deployableTemplates: AssetTemplate[];
+  /** IP-9056/BL-0056: populated once from a TemplateCatalogMessage, same lifetime as
+   *  deployableTemplates. */
+  missionSets: MissionSetTemplate[];
+  /** IP-9056/BL-0056: null until a connection is made; never carries either player's actual
+   *  selection (FR-1210 secrecy) — only whether each side has submitted. */
+  deploymentStatus: { phase: 'deploying' | 'active'; ownDeployed: boolean; opponentDeployed: boolean } | null;
 }
 
 type Listener = (state: GameClientState) => void;
@@ -49,6 +59,8 @@ export class GameClient {
     connectivity: 'connected',
     lastRejection: null,
     deployableTemplates: [],
+    missionSets: [],
+    deploymentStatus: null,
   };
   private listeners = new Set<Listener>();
 
@@ -75,10 +87,16 @@ export class GameClient {
       | StateDeltaMessage
       | RejectedActionMessage
       | TemplateCatalogMessage
+      | DeploymentStatusMessage
       | { type: 'disconnect-notification' };
 
     if (msg.type === 'template-catalog') {
-      this.state = { ...this.state, deployableTemplates: msg.templates };
+      this.state = { ...this.state, deployableTemplates: msg.templates, missionSets: msg.missionSets };
+    } else if (msg.type === 'deployment-status') {
+      this.state = {
+        ...this.state,
+        deploymentStatus: { phase: msg.phase, ownDeployed: msg.ownDeployed, opponentDeployed: msg.opponentDeployed },
+      };
     } else if (msg.type === 'state-delta') {
       this.state = {
         ...this.state,
@@ -108,5 +126,10 @@ export class GameClient {
 
   respondToDisconnect(choice: DisconnectResponse['choice']): void {
     this.socket.send(JSON.stringify({ type: 'disconnect-response', choice }));
+  }
+
+  /** IP-9056/BL-0056: submits a secret King selection (FR-1210). */
+  deployKing(sessionId: string, missionSetId: MissionSetId, regime: OrbitalRegimeLabel): void {
+    this.socket.send(JSON.stringify({ type: 'deploy-king', sessionId, missionSetId, regime }));
   }
 }
