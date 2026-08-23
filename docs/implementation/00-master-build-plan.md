@@ -19,6 +19,7 @@
 | IP-7010 | FS-107 | `08-code-implementation` | **VERIFIED** (2026-08-23, VR-7010-v2) | IP-0010, IP-1010, IP-6010 (all VERIFIED) | Release plan (FEAT-7000, MVP) |
 | IP-8010 | FS-108 | `08-code-implementation` | **VERIFIED** (2026-08-23, VR-8010-v2) | all 10 above (all VERIFIED) | Release plan (FEAT-8000, MVP) |
 | IP-9038 | — (bug remediation: BL-0038/BL-0027) | `08-code-implementation` | **COMPLETE** (2026-08-23 — own scope done, live-tested; surfaced BL-0056, a separate pre-existing blocker) | IP-1010, IP-5010, IP-6010, IP-7010, IP-8010 (all VERIFIED) | Closes disclosed deviations in already-authorized packages (IP-7010, IP-3011) + completes FS-101's already-approved W1 workflow — see TWBS §6 |
+| IP-9056 | — (bug remediation: BL-0056) | `08-code-implementation` | **BLOCKED** (on IP-9038 → VERIFIED) | IP-9038 (COMPLETE, verification in progress), IP-1010, IP-3011, IP-8010 (all VERIFIED) | Completes FS-101's already-approved W1/W2 workflow (secret King deployment) — see TWBS §7 |
 
 **IP-9038** is the sole package not tied to an MVP Feature — it is the real server bootstrap
 (BL-0038/BL-0027) that MSTR-001 v0.4 (C10) put on the critical path to the deferred G4 gate: all
@@ -401,3 +402,10 @@ active game today, independent of IP-9038's own correctness. IP-9038 itself is `
 own scope is done and live-verified — but the human playtest MSTR-001 v0.4 exists to obtain, and
 FR-9420's first-full-game walkthrough, remain blocked on BL-0056, which needs its own remediation
 package next.
+
+**`07-implementation-planning` authored IP-9056** (2026-08-23, see `01-technical-work-breakdown.md`
+§7) to close BL-0056: a new `DeployKingMessage`/`DeploymentStatusMessage` wire pair, transport
+branching to distinguish "no session"/"deploying"/"active" on connect, `TemplateCatalogMessage`
+extended with mission-set data, and a new client `KingDeploymentPicker`. `BLOCKED` on IP-9038
+reaching `VERIFIED` (currently `COMPLETE`, independent verification in progress) — deliberately
+not started against an unverified base.

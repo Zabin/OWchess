@@ -134,3 +134,34 @@ session-creation/join HTTP+UI addition, while not literally named by BL-0038/BL-
 necessary to make FS-101's own already-approved W1 workflow ("two players join a session via a
 shareable link") actually functional, and FR-9410/9420 (owner-authorized, MSTR-001 C10) require
 the game to actually run — this is completing already-approved scope, not new scope.
+
+## 7. Remediation — King-deployment wire exposure (2026-08-23, BL-0056)
+
+Not a feature — a bug-remediation package with no owning FS, discovered by IP-9038's own live
+end-to-end smoke test. `SessionStore.submitKingDeployment` (IP-1010) is fully unit-tested but has
+never had any caller outside test setup code: no `ActionType`/message covers it, and
+`GameEngine.handleAction`'s dispatch structurally cannot carry it (it requires
+`session.phase === 'active'`, but a session's `SessionState` doesn't exist — `getSession` returns
+`undefined` — until *after* both players' King selections resolve). One package: the wire message,
+the transport wiring, and the client picker UI are only meaningful together, and none has an
+independent verification story.
+
+**Verb inventory:** *submit* (a client sends its secret King selection — new `DeployKingMessage`,
+handled directly in `websocketServer.ts`, parallel to the existing `ActionMessage`/
+`DisconnectResponse` cases, since this precedes `GameEngine.handleAction`'s phase gate entirely),
+*report status* (a connecting/waiting client needs to know it's in the pre-active `'deploying'`
+phase rather than getting `handleConnection`'s existing "session no longer exists" rejection,
+which is what happens today since `broadcastToOne` treats "no `SessionState` yet" as
+indistinguishable from "no session at all" — new `DeploymentStatusMessage`), *transition* (once
+both submit, the session becomes `'active'` and the existing `StateDeltaMessage`/`broadcastStateDelta`
+flow takes over unchanged — no new mechanism needed here, `SessionStore.submitKingDeployment`
+already creates the real `SessionState` on the second submission), *pick* (a client needs a
+mission-set + regime UI — new `KingDeploymentPicker.tsx`, sourcing its options from the
+`TemplateCatalogMessage` IP-9038/BL-0048 already established as the pattern for server-authored,
+static, both-players-identical data — extended to also carry `MissionSetTemplate[]`, which it
+currently does not).
+
+**Authorization (G3):** covered — this closes a pre-existing gap in FS-101's own already-approved
+W1/W2 workflow (secret King deployment is explicitly named there); FR-9420 (owner-authorized,
+MSTR-001 C10) requires the game to actually be playable, which this gap is the sole remaining
+blocker to. Completing already-approved scope, not new scope.
