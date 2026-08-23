@@ -16,7 +16,7 @@
 | [IP-6010](IP-6010-fog-of-war-enforcement.md) | Fog-of-War Enforcement | FS-106 | `08-code-implementation` | VERIFIED |
 | [IP-7010](IP-7010-transport.md) | Server-Authoritative WebSocket Transport | FS-107 | `08-code-implementation` | **VERIFIED** (VR-7010-v2, 2026-08-23) |
 | [IP-8010](IP-8010-presentation-ui.md) | Presentation / UI | FS-108 | `08-code-implementation` | **VERIFIED** (VR-8010-v2, 2026-08-23) |
-| [IP-9038](IP-9038-server-bootstrap.md) | Real Server Bootstrap (Session HTTP API + WebSocket + Static Serving) | — (bug remediation: BL-0038/BL-0027) | `08-code-implementation` | **READY** (2026-08-23) |
+| [IP-9038](IP-9038-server-bootstrap.md) | Real Server Bootstrap (Session HTTP API + WebSocket + Static Serving) | — (bug remediation: BL-0038/BL-0027) | `08-code-implementation` | **COMPLETE** (2026-08-23 — surfaced BL-0056) |
 
 The 11 MVP packages above are authorized under the current release plan's MVP-bucketing (G3 satisfied by
 release-plan coverage — see each package's own Authorization line). See
@@ -227,3 +227,12 @@ deferred the G4 decision** (MSTR-001 v0.4, C10) pending a real human playtest.
 §6) to close the blocker: BL-0038 (no real bootstrap), BL-0027 (dist content-copy gap), and a
 disclosed session-creation/join gap (BL-0055). All its dependencies are `VERIFIED`; it is `READY`
 for `08-code-implementation` now.
+
+**`08-code-implementation` implemented IP-9038 and it is `COMPLETE`** (2026-08-23): real HTTP
+session create/join, static client serving, a real `ws.WebSocketServer` bootstrap wired to the
+already-`VERIFIED` transport, and the BL-0027 dist-content-copy fix — all live-tested end-to-end
+with real HTTP/WebSocket clients, not just committed tests (105 tests total, up from 98). That
+same live test surfaced **BL-0056**: King deployment has no wire-level exposure anywhere, blocking
+any real client from ever reaching an active game — a separate, pre-existing gap this package
+could not and did not fix (out of its own scope), now the sole remaining blocker before the
+training corpus's first-full-game walkthrough (FR-9420) is possible.

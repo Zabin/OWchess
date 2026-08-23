@@ -18,7 +18,7 @@
 | IP-4011 | FS-105 (content) | `08-content-authoring` | **VERIFIED** (2026-08-23, VR-4011) | IP-4010 (VERIFIED) | Release plan (FEAT-4000, MVP) |
 | IP-7010 | FS-107 | `08-code-implementation` | **VERIFIED** (2026-08-23, VR-7010-v2) | IP-0010, IP-1010, IP-6010 (all VERIFIED) | Release plan (FEAT-7000, MVP) |
 | IP-8010 | FS-108 | `08-code-implementation` | **VERIFIED** (2026-08-23, VR-8010-v2) | all 10 above (all VERIFIED) | Release plan (FEAT-8000, MVP) |
-| IP-9038 | — (bug remediation: BL-0038/BL-0027) | `08-code-implementation` | **IN PROGRESS** (2026-08-23) | IP-1010, IP-5010, IP-6010, IP-7010, IP-8010 (all VERIFIED) | Closes disclosed deviations in already-authorized packages (IP-7010, IP-3011) + completes FS-101's already-approved W1 workflow — see TWBS §6 |
+| IP-9038 | — (bug remediation: BL-0038/BL-0027) | `08-code-implementation` | **COMPLETE** (2026-08-23 — own scope done, live-tested; surfaced BL-0056, a separate pre-existing blocker) | IP-1010, IP-5010, IP-6010, IP-7010, IP-8010 (all VERIFIED) | Closes disclosed deviations in already-authorized packages (IP-7010, IP-3011) + completes FS-101's already-approved W1 workflow — see TWBS §6 |
 
 **IP-9038** is the sole package not tied to an MVP Feature — it is the real server bootstrap
 (BL-0038/BL-0027) that MSTR-001 v0.4 (C10) put on the critical path to the deferred G4 gate: all
@@ -388,3 +388,16 @@ authored IP-9038** (2026-08-23) to close the blocker that decision surfaced: BL-
 `WebSocketServer` bootstrap), BL-0027 (dist doesn't copy content JSON), and a disclosed
 session-creation/join gap (BL-0055) FS-101's own W1 workflow assumed but no package ever built.
 All of IP-9038's dependencies are `VERIFIED`; it is `READY` now.
+
+**`08-code-implementation` implemented IP-9038** (2026-08-23): a real `http.Server` with session
+create/join routes, static client serving, a `ws.WebSocketServer` upgrade handler wired to the
+already-`VERIFIED` transport, and a build-script content-copy fix (`server/dist/content/` now
+holds all 15 JSON files, matching source — BL-0027 closed). Live-tested end-to-end with real HTTP
+calls and two real `ws` clients, not just committed tests. Full suite green (105 tests, up from
+98). **This same live run surfaced a new, more fundamental blocker: BL-0056** — King deployment
+(FR-1210/1220) has no wire-level exposure anywhere (no action type, no message, no client UI ever
+calls `SessionStore.submitKingDeployment` outside test setup), so no real client can ever reach an
+active game today, independent of IP-9038's own correctness. IP-9038 itself is `COMPLETE` — its
+own scope is done and live-verified — but the human playtest MSTR-001 v0.4 exists to obtain, and
+FR-9420's first-full-game walkthrough, remain blocked on BL-0056, which needs its own remediation
+package next.

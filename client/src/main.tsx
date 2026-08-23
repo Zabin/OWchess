@@ -1,11 +1,12 @@
 /**
- * Client entry point (IP-8010). Connects a real browser WebSocket (which already satisfies
- * GameClient's SocketLike interface) to the server -- but no package yet bootstraps a real
- * WebSocketServer to connect to (BL-0038), so this path is exercised in tests via a fake
- * connection, not yet end-to-end in a browser against a running server.
+ * Client entry point (IP-8010, extended by IP-9038 closing BL-0038/BL-0055). Shows Landing until
+ * a sessionId+playerId are known (from the URL, or from creating/joining a game), then connects a
+ * real browser WebSocket and renders App.
  */
+import { useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from './App.js';
+import { Landing } from './components/Landing.js';
 import { GameClient, type SocketLike } from './state/gameClient.js';
 
 /** Adapts a native browser WebSocket to GameClient's SocketLike interface via addEventListener,
@@ -22,11 +23,42 @@ function adaptWebSocket(ws: WebSocket): SocketLike {
   };
 }
 
+function initialParams(): { sessionId: string; playerId: string } | null {
+  const params = new URLSearchParams(window.location.search);
+  const sessionId = params.get('sessionId');
+  const playerId = params.get('playerId');
+  return sessionId && playerId ? { sessionId, playerId } : null;
+}
+
+function Root() {
+  const [entered, setEntered] = useState(initialParams);
+
+  const client = useMemo(() => {
+    if (!entered) return null;
+    const socket = new WebSocket(
+      `ws://${window.location.host}/ws?sessionId=${entered.sessionId}&playerId=${entered.playerId}`
+    );
+    return new GameClient(adaptWebSocket(socket));
+  }, [entered]);
+
+  if (!entered || !client) {
+    return (
+      <Landing
+        onEnter={(sessionId, playerId) => {
+          const url = new URL(window.location.href);
+          url.searchParams.set('sessionId', sessionId);
+          url.searchParams.set('playerId', playerId);
+          window.history.pushState({}, '', url);
+          setEntered({ sessionId, playerId });
+        }}
+      />
+    );
+  }
+
+  return <App client={client} sessionId={entered.sessionId} />;
+}
+
 const container = document.getElementById('root');
 if (container) {
-  const params = new URLSearchParams(window.location.search);
-  const sessionId = params.get('sessionId') ?? '';
-  const socket = new WebSocket(`ws://${window.location.host}/ws?sessionId=${sessionId}`);
-  const client = new GameClient(adaptWebSocket(socket));
-  createRoot(container).render(<App client={client} sessionId={sessionId} />);
+  createRoot(container).render(<Root />);
 }

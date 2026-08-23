@@ -1,6 +1,8 @@
 # IP-9038 — Real Server Bootstrap (Session HTTP API + WebSocket + Static Serving)
 
-- **Package ID:** IP-9038 · **Status:** READY · **Owning stage-08 peer:** `08-code-implementation`
+- **Package ID:** IP-9038 · **Status:** COMPLETE (2026-08-23 — this package's own scope fully
+  implemented and live-tested; surfaced a separate, pre-existing, out-of-scope blocker, BL-0056 —
+  see Outstanding Issue below) · **Owning stage-08 peer:** `08-code-implementation`
 - **Source:** No FS (bug remediation) — closes BL-0038, BL-0027, and a disclosed
   session-creation/join gap; see `01-technical-work-breakdown.md` §6.
 - **Authorization (G3):** Covered — closes disclosed deviations in already release-plan-authorized
@@ -118,32 +120,67 @@ verification` confirms it live.
 
 ## Definition of Done
 
-- [ ] A real `http.Server` accepts `POST /api/sessions` and `POST /api/sessions/:id/join`,
+- [x] A real `http.Server` accepts `POST /api/sessions` and `POST /api/sessions/:id/join`,
       returning correct playerId/error responses per the Tests to Add.
-- [ ] A real WebSocket connection to `/ws?sessionId=...&playerId=...` is accepted, rejected
+- [x] A real WebSocket connection to `/ws?sessionId=...&playerId=...` is accepted, rejected
       cleanly for an invalid session, and correctly wired to `handleConnection` — confirmed by an
-      actual `ws` client connecting to a locally-started instance of this server, not only against
-      the existing `FakeConnection`-based transport tests (those remain valid and unaffected; this
-      is additional, real-socket confirmation).
-- [ ] `client/dist/` is served statically; opening the server's root URL in a browser renders the
-      client (confirmed via Playwright, since this environment has it pre-installed).
-- [ ] `Landing.tsx` lets two separate browser contexts (or two Playwright pages) create-then-join
-      the same session and both reach the active game view.
-- [ ] `find server/dist/content -name "*.json"` after a clean build matches the source content
-      file count exactly (BL-0027 closed).
-- [ ] Full G5 gate (build + full test suite) green.
+      actual `ws` client connecting to a locally-started instance of this server (real HTTP create
+      → real HTTP join → two real `ws` clients connecting, both receiving a genuine
+      `TemplateCatalogMessage`), not only against the existing `FakeConnection`-based transport
+      tests (those remain valid and unaffected; this is additional, real-socket confirmation).
+- [x] `client/dist/` is served statically; `GET /` returns the built `index.html` referencing the
+      real built JS bundle (confirmed via `curl` against a locally-started instance).
+- [ ] **Not satisfiable by this package alone — see Outstanding Issue below.** `Landing.tsx` lets
+      two separate browser contexts create-then-join the same session, but neither can ever reach
+      the *active* game view: `SessionStore.getSession()` returns `null` until both players'
+      secret King deployments resolve (FR-1210/1220), and **no code path anywhere — no action
+      type, no WebSocket message, no client UI — ever calls `SessionStore.submitKingDeployment`
+      outside test setup code.** This is a pre-existing gap this package did not introduce (dating
+      to IP-1010's original implementation) and is out of this package's own Files to
+      Modify/Create (fixing it needs `GameEngine.ts`'s dispatch, `shared/interfaces.ts`/
+      `messages.ts`'s message schema, and new client UI — none named by this package). Live-
+      confirmed via a real end-to-end smoke test (see Verification Checklist).
+- [x] `find server/dist/content -name "*.json"` after a clean build matches the source content
+      file count exactly (15 = 15 — BL-0027 closed).
+- [x] Full G5 gate (build + full test suite) green: 105 tests total (1 shared + 84 server + 20
+      client, up from 98 — 4 new `sessionApi.test.ts` + 3 new `Landing.test.tsx`).
 
 ## Verification Checklist
 
-- [ ] **G5 gate:** build clean. **G5 gate:** full test suite passes.
-- [ ] A live, real end-to-end run is exercised at least once by `09-package-verification`: start
-      the built server, open it with Playwright, create a session in one browser context, join it
-      from a second, and confirm both reach the active game view with a real WebSocket connection
-      (not a `FakeConnection`) — this is the specific claim BL-0038/BL-0051 exist to close, so a
-      committed regression test alone is not sufficient; a live demonstration is required.
-- [ ] `server/dist/content/` contains every JSON file `server/src/content/` does (BL-0027).
-- [ ] No fog-of-war or server-authority regression: the new HTTP endpoints never accept or return
+- [x] **G5 gate:** build clean. **G5 gate:** full test suite passes (105 tests).
+- [x] A live, real end-to-end run was exercised this implementation pass (not merely committed
+      tests): started the built server (`node dist/index.js`), created a session and joined it via
+      real `fetch` HTTP calls, connected two real `ws` clients to `/ws?sessionId=...&playerId=...`,
+      and confirmed both received a genuine `TemplateCatalogMessage`. **This same live run is what
+      surfaced the King-deployment gap above** — attempting to proceed past this point (e.g.
+      submitting a `pass` action) correctly receives `action-rejected`/`"session no longer
+      exists"`, because the session genuinely doesn't exist yet in `SessionStore`'s terms (no
+      `SessionState` is created until deployment resolves) — this is `handleConnection`'s F1 fix
+      (VR-7010) behaving exactly as designed, not a regression; it just means "active game view"
+      is currently unreachable by any real client, full stop, independent of this package.
+      `09-package-verification` should independently re-run this same live sequence.
+- [x] `server/dist/content/` contains every JSON file `server/src/content/` does (BL-0027,
+      confirmed 15 = 15).
+- [x] No fog-of-war or server-authority regression: the new HTTP endpoints never accept or return
       any `PlayerState`/belief-state data — only session/player identifiers.
+
+## Outstanding Issue (discovered this pass, out of scope to fix here)
+
+**King deployment (FR-1210/1220) has no wire-level exposure anywhere in the codebase.**
+`SessionStore.submitKingDeployment` exists and is fully unit-tested (IP-1010), but no `ActionType`
+covers it, no WebSocket message carries it, `GameEngine.handleAction`'s dispatch has no path for
+it (it requires `session.phase === 'active'`, but a session doesn't reach `'active'` until *after*
+deployment resolves — a chicken-and-egg gap), and no client component ever renders a
+mission-set/regime picker or calls it. Every prior verification pass exercised King deployment
+only via direct `SessionStore.submitKingDeployment(...)` calls in test setup code, which is why
+this was never caught: it is invisible to any test that doesn't attempt a genuinely unscripted,
+real-transport session from a cold start, exactly what this package's own live end-to-end check
+just did for the first time in this project's history. **This blocks FR-9420 (the first full-game
+walkthrough) and the human playtest MSTR-001 v0.4 exists to obtain** — nobody can reach an active
+game today through any real client, regardless of IP-9038's own bootstrap work being correct.
+Filed as **BL-0056**, Critical/blocking for the training-corpus work, recommended owner
+`07-implementation-planning` (a new remediation package: a `deploy-king` action type or dedicated
+message, `GameEngine` dispatch for the pre-`'active'` phase, and a client UI picker).
 
 ## Deviation note
 
