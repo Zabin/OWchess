@@ -287,8 +287,12 @@ IP-2010/IP-6010's own sequence, converging only at IP-8010.
 **IP-5010, IP-2010, IP-6010, IP-4010, and IP-4011 are all `VERIFIED`** (see VR-5010, VR-2010-v2,
 VR-6010, VR-4010, and VR-4011 above) — no further action needed on any of them. **IP-7010 was
 independently verified 2026-08-23 and RETURNED** (see VR-7010 above, 2 High findings: F1 a silent
-reconnect-to-nonexistent-session failure, F2 a missing/mislabeled cancellation `outcome`) — it
-stays `COMPLETE` and needs a fresh `08-code-implementation` pass against those findings (plus a
-`07-implementation-planning` look at F2's upstream `SessionState` schema gap) before it can be
-re-submitted for verification. **IP-8010** is also `COMPLETE` but remains blocked from any further
-ledger advancement until IP-7010 (the last of its ten named dependencies) is itself `VERIFIED`.
+reconnect-to-nonexistent-session failure, F2 a missing/mislabeled cancellation `outcome`).
+**`07-implementation-planning` has now planned the remediation** (2026-08-23, see IP-7010's own
+`Remediation (VR-7010)` section): F1 gets an explicit rejection message on reconnect to a
+nonexistent session; F2 gets a small additive `SessionState.cancelled` field plus a `'cancelled'`
+`WinReason`, checked first (ahead of resignation) in `checkWinConditions`. IP-7010 stays
+`COMPLETE`, now with a fully specified fix plan ready for `08-code-implementation` to execute, then
+re-submit for a fresh `09-package-verification` pass. **IP-8010** is also `COMPLETE` but remains
+blocked from any further ledger advancement until IP-7010 (the last of its ten named dependencies)
+is itself `VERIFIED`.

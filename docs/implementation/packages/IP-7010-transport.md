@@ -1,7 +1,8 @@
 # IP-7010 — Server-Authoritative WebSocket Transport
 
-- **Package ID:** IP-7010 · **Status:** COMPLETE (2026-08-22) · **Owning
-  stage-08 peer:** `08-code-implementation`
+- **Package ID:** IP-7010 · **Status:** COMPLETE, RETURNED 2026-08-23 for remediation (see
+  `Remediation (VR-7010)` below) — not yet re-submitted · **Owning stage-08 peer:**
+  `08-code-implementation`
 - **Source:** FS-107 (`docs/features/FS-107-server-authoritative-transport.md`), FEAT-7000
 - **Authorization (G3):** Covered by the release plan.
 
@@ -92,6 +93,80 @@ package yet bootstraps a real `WebSocketServer` wrapping actual sockets into `Co
 calling `createTransport`/`handleConnection`. This is the same "no production bootstrap yet"
 pattern already disclosed for deploy/belief/maneuver/effect ticking (BL-0022/0030) — filed as
 BL-0038, the last remaining piece before the server can actually run end-to-end.
+
+## Remediation (VR-7010, 2026-08-23)
+
+`docs/implementation/verification/VR-7010-transport.md` returned this package with 2 High
+findings, both live-reproduced against the shipped tree, not merely inferred from reading. This
+section plans their fix — `08-code-implementation` executes it, then re-submits for a fresh
+`09-package-verification` pass.
+
+**F1 (BL-0044) — silent drop on reconnect to a nonexistent session.** `handleConnection`'s
+reconnect path currently returns early with no message sent at all when the presented `sessionId`
+doesn't exist in `SessionStore`, instead of the "clear session-no-longer-exists response" FS-107's
+own W4 edge case and NFR-7200 name explicitly.
+
+- **Files to Modify:** `server/src/transport/websocketServer.ts` (`handleConnection`).
+- **Task:** when a reconnect attempt's `sessionId` doesn't resolve to a live session, send that
+  socket a `RejectedActionMessage`-shaped response (reusing the existing rejection message type —
+  no new wire message needed, since this isn't an in-session action rejection but the same "tell
+  the client clearly, don't just drop it" contract) with a reason string identifying the session as
+  no longer existing, then close or leave the connection registry untouched for that socket (no
+  session to associate it with). Do not introduce a new message type unless
+  `RejectedActionMessage`'s shape genuinely cannot carry this (check `shared/src/messages.ts`
+  first — it's a general-purpose one-way rejection, this should fit).
+- **Test to add:** `websocketServer.test.ts` — a connection presenting a `sessionId` with no
+  matching session receives exactly one rejection-shaped message and is not silently dropped;
+  distinguish this from the legitimate first-connection (`phase: 'deploying'`, no existing session
+  expected) case, which must not be affected.
+
+**F2 (BL-0045) — no field distinguishes a cancelled session's outcome.** `SessionState`
+(`shared/src/types.ts`, GDS-07) has `phase: SessionPhase` (`'deploying' | 'active' | 'ended'`) but
+nothing else — no `outcome`/cancellation marker at all, despite this package's own Task 3 and
+Definition of Done literally claiming `'cancel'` produces `outcome: 'cancelled'`. VR-7010
+live-reproduced the consequence: cancelling a session whose `turnNumber` has already passed the
+60-turn timeout cap causes `GameEngine.checkWinConditions` (`shared/src/interfaces.ts`,
+`WinResult`/`WinReason`; `server/src/engine/GameEngine.ts`) to fall through to its
+timeout/tiebreak branch and report `{winner: null, reason: 'timeout-tiebreak'}` — an actively
+mislabeled outcome, not merely an absent field.
+
+- **Files to Modify:**
+  - `shared/src/types.ts` — add `cancelled?: boolean` to `SessionState` (additive, optional,
+    non-breaking for any existing consumer that doesn't set it). This is a small, targeted field
+    addition in the same spirit as BL-0021's `totalDenialTurns`/`destroyed` additions to `Asset` —
+    `03-architecture-design-synthesis`/GDS-07 should formally adopt it in GDS-07's own next touch,
+    same as BL-0021/28/33/36's disclosed-deviation pattern; it is not blocking for this fix.
+  - `shared/src/interfaces.ts` — add `'cancelled'` to the `WinReason` union
+    (`'destruction' | 'denial' | 'resignation' | 'timeout-tiebreak' | 'cancelled'`), so
+    `checkWinConditions` can return `{winner: null, reason: 'cancelled'}` using the existing
+    `WinResult` shape rather than inventing a parallel return type.
+  - `server/src/transport/websocketServer.ts` (`handleDisconnectResponse`'s `'cancel'` branch) —
+    set `session.cancelled = true` alongside `session.phase = 'ended'`.
+  - `server/src/engine/GameEngine.ts` (`checkWinConditions`) — check `session.cancelled` **first**,
+    before the existing resignation check (a cancelled session should never be re-derived as a
+    resignation, destruction, denial, or timeout win/loss — cancellation is terminal and
+    unconditional, matching FS-101 §W7's "no winner recorded" policy exactly): if
+    `session.cancelled`, return `{ winner: null, reason: 'cancelled' }` immediately.
+- **Test to add:** `disconnectFlow.test.ts` — reproduce VR-7010's exact hand-constructed scenario:
+  a session with `turnNumber` already past the 60-turn cap, then cancelled via
+  `DisconnectResponse: 'cancel'`; assert `checkWinConditions` returns
+  `{ winner: null, reason: 'cancelled' }`, not `'timeout-tiebreak'`. Keep the existing
+  `phase === 'ended'`/`winner == null` assertions too — they're correct, just insufficiently
+  specific on their own (that's exactly what let this gap ship unnoticed).
+
+**Definition of Done additions:**
+- [ ] F1 fixed: reconnect to a nonexistent `sessionId` sends an explicit rejection, never a silent
+      drop; regression test passes.
+- [ ] F2 fixed: `SessionState.cancelled` exists, is set on cancel, and `checkWinConditions` returns
+      `{ winner: null, reason: 'cancelled' }` for a cancelled session — including the past-timeout-
+      cap case VR-7010 hand-reproduced; regression test passes.
+- [ ] Full G5 gate (build + full suite) re-run green after both fixes.
+
+**Verification Checklist addition:** re-submit to `09-package-verification` for a fresh,
+independent pass once both fixes land — the previous `VERIFIED`-track claims for Tasks 1/2/4 and
+the two-independently-computed-views test are unaffected by this remediation and don't need
+re-proving, but the whole package still needs a fresh VR per this project's standing methodology
+(no package is marked `VERIFIED` on a partial re-check).
 
 ## Dependencies
 
