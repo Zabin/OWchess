@@ -19,7 +19,7 @@
 | IP-7010 | FS-107 | `08-code-implementation` | **VERIFIED** (2026-08-23, VR-7010-v2) | IP-0010, IP-1010, IP-6010 (all VERIFIED) | Release plan (FEAT-7000, MVP) |
 | IP-8010 | FS-108 | `08-code-implementation` | **VERIFIED** (2026-08-23, VR-8010-v2) | all 10 above (all VERIFIED) | Release plan (FEAT-8000, MVP) |
 | IP-9038 | — (bug remediation: BL-0038/BL-0027) | `08-code-implementation` | **VERIFIED** (2026-08-23 — [VR-9038](verification/VR-9038-server-bootstrap.md); own scope confirmed done and live-tested; surfaced BL-0056, a separate pre-existing blocker) | IP-1010, IP-5010, IP-6010, IP-7010, IP-8010 (all VERIFIED) | Closes disclosed deviations in already-authorized packages (IP-7010, IP-3011) + completes FS-101's already-approved W1 workflow — see TWBS §6 |
-| IP-9056 | — (bug remediation: BL-0056) | `08-code-implementation` | **COMPLETE** (2026-08-23 — implemented and live end-to-end tested) | IP-9038, IP-1010, IP-3011, IP-8010 (all VERIFIED) | Completes FS-101's already-approved W1/W2 workflow (secret King deployment) — see TWBS §7 |
+| IP-9056 | — (bug remediation: BL-0056) | `08-code-implementation` | **VERIFIED** (2026-08-23 — [VR-9056](verification/VR-9056-king-deployment-wiring.md); closes BL-0056, independently confirmed) | IP-9038, IP-1010, IP-3011, IP-8010 (all VERIFIED) | Completes FS-101's already-approved W1/W2 workflow (secret King deployment) — see TWBS §7 |
 
 **IP-9038** is the sole package not tied to an MVP Feature — it is the real server bootstrap
 (BL-0038/BL-0027) that MSTR-001 v0.4 (C10) put on the critical path to the deferred G4 gate: all
@@ -441,3 +441,32 @@ create/join, two real `ws` clients, both submitting a King deployment, both rece
 game is now resolved**, pending independent verification. FR-9420's first-full-game walkthrough
 and the human playtest MSTR-001 v0.4 exists to obtain are now genuinely attemptable for the first
 time in this project's history.
+
+**`09-package-verification` independently verified IP-9056** (2026-08-23, see
+[VR-9056](verification/VR-9056-king-deployment-wiring.md)): re-ran the full suite from the current
+tree state (113 tests, exact match to the package's claim), then wrote and ran its own fresh,
+independent live e2e script — real HTTP session create/join, two real `ws` clients, real
+`deploy-king` messages using the package's own `satcom`/`GEO-EQUATORIAL` and `isr`/`LEO-POLAR`
+values (cross-checked against the real `server/src/content/missionSets/*.json` content) — and
+reproduced every claimed step: initial `deployment-status` (phase `deploying`, never a rejection)
+for both players, a per-recipient status broadcast on the first deployment, both players
+transitioning to a real `state-delta` (`phase: 'active'`) on the second deployment, and a third
+deployment attempt by the already-deployed player rejected with the exact FR-1230 reason string.
+**The secrecy claim — DeploymentStatusMessage never carrying either player's `missionSetId`/
+`regime` — was independently confirmed at the type declaration, every message-construction site's
+code, and a live raw-JSON-string capture** (not merely the typed/parsed fields), the strongest
+level of confirmation this project's verification method has applied to a fog-of-war-adjacent
+claim to date. **BL-0056 independently confirmed genuinely closed**: `submitKingDeployment` now
+has exactly one production call site (`websocketServer.ts:111`), reached through an unbroken,
+live-verified chain from a real WebSocket connection all the way from `server/src/index.ts`'s
+upgrade handler. Scope audit found the diff matches the package's declared file set except one
+undeclared-but-benign 1-line fixture touch, mechanically forced by `TemplateCatalogMessage`'s new
+required field. Three Low, non-blocking findings recorded (FR-1230's RTM row not also naming
+`kingDeploymentFlow.test.ts`; the package's promised FS-101 "second implementer" metadata note was
+not actually added; the undeclared fixture-file scope touch). **IP-9056 flips `COMPLETE` →
+`VERIFIED`.** Both IP-9038 and IP-9056 sit outside the original 11-package MVP dependency graph
+(the MVP tranche itself already completed `10-integration-review`/`11-release-readiness` earlier);
+no further package remains gated on either. Recommended next: re-run (or extend)
+`10-integration-review`/the human playtest MSTR-001 v0.4 was deferred pending, now that a real
+client can genuinely reach and complete King deployment into an active, playable game end-to-end
+for the first time in this project's history.
