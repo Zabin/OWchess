@@ -17,7 +17,7 @@
 | IP-4010 | FS-105 (code) | `08-code-implementation` | **VERIFIED** (2026-08-22, VR-4010) | IP-0010, IP-2010, IP-6010 (all VERIFIED) | Release plan (FEAT-4000, MVP) |
 | IP-4011 | FS-105 (content) | `08-content-authoring` | **VERIFIED** (2026-08-23, VR-4011) | IP-4010 (VERIFIED) | Release plan (FEAT-4000, MVP) |
 | IP-7010 | FS-107 | `08-code-implementation` | **VERIFIED** (2026-08-23, VR-7010-v2) | IP-0010, IP-1010, IP-6010 (all VERIFIED) | Release plan (FEAT-7000, MVP) |
-| IP-8010 | FS-108 | `08-code-implementation` | **RETURNED** (2026-08-23, VR-8010 — 1 High, 1 Low finding) | all 10 above (all VERIFIED) | Release plan (FEAT-8000, MVP) |
+| IP-8010 | FS-108 | `08-code-implementation` | **COMPLETE** (2026-08-23 — RETURNED by VR-8010, 1 High/1 Low; remediation now planned, see IP-8010's own `Remediation (VR-8010)` section) | all 10 above (all VERIFIED) | Release plan (FEAT-8000, MVP) |
 
 **IP-0010 is `VERIFIED`** (implemented 2026-08-22; independently verified 2026-08-22 by
 `09-package-verification` — see
@@ -340,3 +340,12 @@ can wire it and before any Demonstration pass on AC4/FR-8300 is even attemptable
 `08-code-implementation`, for a fresh, independent `09-package-verification` pass. All 10 other
 MVP packages remain `VERIFIED`; `10-integration-review` cannot yet proceed on the full MVP tranche
 until IP-8010 itself reaches `VERIFIED`.
+
+**`07-implementation-planning` has now planned the remediation** (2026-08-23, see IP-8010's own
+`Remediation (VR-8010)` section): a new one-shot `TemplateCatalogMessage` (not a shared static
+catalog — avoids reintroducing a BL-0027-family JSON/dist-copy problem and keeps content-authoring's
+file ownership untouched), sent once per connection from `handleConnection`, built from a new
+`TemplateRegistry.listAssetTemplates()` accessor; `AssetTemplate`/`MissionSetTemplate` move to
+`shared/src/interfaces.ts` (pure relocation); `App.tsx`'s `deployableTemplates` becomes reactive
+client state instead of a value frozen at mount. IP-8010 is now fully specified for
+`08-code-implementation` to execute and re-submit.

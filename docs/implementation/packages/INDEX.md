@@ -190,3 +190,12 @@ tests, rebuilt from a genuinely clean `node_modules`). IP-8010 stays `COMPLETE`,
 `08-code-implementation`, for a fresh `09-package-verification` pass. All 10 other MVP packages
 remain `VERIFIED`; IP-8010 is the sole package standing between this project and a fully verified
 MVP tranche.
+
+**`07-implementation-planning` planned the remediation 2026-08-23** — see IP-8010's own
+`Remediation (VR-8010)` section (`docs/implementation/packages/IP-8010-presentation-ui.md`): a new
+one-shot `TemplateCatalogMessage`, sent once per connection, built from a new
+`TemplateRegistry.listAssetTemplates()` accessor; `AssetTemplate`/`MissionSetTemplate` relocated to
+`shared/src/interfaces.ts`; `App.tsx`'s asset-tray data becomes reactive client state. A shared
+static-catalog alternative was considered and rejected (would reintroduce a BL-0027-family
+JSON/dist-copy problem and cross content-authoring's file ownership for no behavioral gain).
+IP-8010 is now fully specified for `08-code-implementation` to execute and re-submit.

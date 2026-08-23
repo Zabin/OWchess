@@ -1,6 +1,7 @@
 # IP-8010 — Presentation / UI
 
-- **Package ID:** IP-8010 · **Status:** COMPLETE (2026-08-23) · **Owning stage-08 peer:**
+- **Package ID:** IP-8010 · **Status:** COMPLETE, RETURNED 2026-08-23 for remediation (see
+  `Remediation (VR-8010)` below) — not yet re-submitted · **Owning stage-08 peer:**
   `08-code-implementation`
 - **Source:** FS-108 (`docs/features/FS-108-presentation-ui.md`), FEAT-8000
 - **Authorization (G3):** Covered by the release plan.
@@ -104,6 +105,92 @@ Verification Plan checkable — components render semantic markup with `data-tes
 text content only. Filed as BL-0039 for a follow-up styling pass (or `09-content-review`-adjacent
 visual QA) before this Feature can be considered fully done against FS-108's own bar, which
 explicitly treats visual/UX correctness as load-bearing, not optional polish.
+
+## Remediation (VR-8010, 2026-08-23)
+
+`docs/implementation/verification/VR-8010-presentation-ui.md` returned this package with 1 High
+finding (F1, BL-0048) and 1 Low finding (F2, BL-0049, not this package's own defect — see below).
+This section plans F1's fix; `08-code-implementation` executes it, then re-submits for a fresh
+`09-package-verification` pass.
+
+**F1 (BL-0048) — no channel delivers `AssetTemplate` data to the client.** FS-108 itself states
+"Interfaces Used: ... No new interface," which VR-8010 confirmed was wrong: `AssetTemplate`
+content lives only in `server/src/content/`/`TemplateRegistry`, GDS-09 never defines a
+template-catalog channel, and `main.tsx` hardcodes `deployableTemplates: []`.
+
+**Decision: a new, one-shot WebSocket message (`TemplateCatalogMessage`), not a shared static
+catalog.** Considered relocating the asset-type/mission-set JSON content into `shared/src/` so
+both server and client could import it directly at build time with no wire message at all — but
+this would (a) touch `08-content-authoring`'s file ownership for no behavioral gain, (b)
+reintroduce a JSON-resolution/dist-copy problem in the same family as the already-tracked BL-0027
+(`tsc -b` doesn't copy runtime JSON into `dist/`), and (c) contradict the very reason IP-7010's
+transport layer already exists: the server is the sole place client-facing data gets assembled and
+served. A new message type reuses the existing, already-proven wire-message pattern (the same
+pattern `ActionMessage`/`StateDeltaMessage`/`DisconnectNotification` already use), needs no new
+build tooling, and keeps `AssetTemplate` content exactly where content-authoring already owns it.
+This is additive to GDS-09/FS-108 — `03-architecture-design-synthesis`/`06-feature-specification`
+should formally adopt it in their own next touch (same disclosed-deviation pattern as BL-0021/28/
+33/36/45); it is not blocking for this fix.
+
+- **Files to Modify:**
+  - `shared/src/interfaces.ts` — add `AssetTemplate`/`MissionSetTemplate` interfaces, moved
+    verbatim from `server/src/engine/TemplateRegistry.ts` (pure relocation of a type declaration
+    that has no logic of its own — no behavior change).
+  - `shared/src/messages.ts` — add
+    `interface TemplateCatalogMessage { type: 'template-catalog'; templates: AssetTemplate[] }`;
+    add it to the `ServerToClientMessage` union.
+  - `server/src/engine/TemplateRegistry.ts` — import `AssetTemplate`/`MissionSetTemplate` from
+    `@owchess/shared` instead of declaring them locally; add
+    `listAssetTemplates(): AssetTemplate[]` returning `Array.from(this.assetTemplates.values())`
+    (the "list all," not just "get by id," accessor the transport layer needs).
+  - `server/src/transport/websocketServer.ts` — `createTransport` gains a 4th parameter,
+    `templateRegistry: TemplateRegistry`; in `handleConnection`, immediately after
+    `registry.register(...)` and before (or alongside) the existing `broadcastToOne` call, send
+    that one connection a `TemplateCatalogMessage` built from
+    `templateRegistry.listAssetTemplates()` — once per connection, not on every subsequent
+    `StateDeltaMessage` push, since template data is static and identical for both players.
+  - `server/src/transport/__tests__/websocketServer.test.ts`,
+    `server/src/transport/__tests__/disconnectFlow.test.ts` — update every `createTransport(...)`
+    call site to pass `ctx.registry` (already returned by `createGameEngine()`, per
+    `server/src/engine/createGameEngine.ts`'s existing `return { store, engine, registry, ... }`)
+    as the 4th argument.
+  - `client/src/state/gameClient.ts` — add `deployableTemplates: AssetTemplate[]` to
+    `GameClientState` (initial value `[]`); in `handleMessage`, add a `'template-catalog'` case
+    that stores `msg.templates` into state and notifies subscribers, matching the existing
+    per-message-type handling pattern already used for `'state-delta'`/`'action-rejected'`/etc.
+  - `client/src/App.tsx` — drop the `deployableTemplates` prop from `AppProps` entirely; read
+    `state.deployableTemplates` from the existing `GameClientState` subscription instead (the same
+    subscription `ownState`/`opponentView`/`activeTurn` already come from) — this makes the tray's
+    data genuinely reactive instead of a value frozen at mount time.
+  - `client/src/main.tsx` — remove the now-obsolete `deployableTemplates={[]}` prop from the
+    `<App>` call.
+  - `client/src/__tests__/App.test.tsx` — update the 4 existing `render(<App .../>)` call sites to
+    drop the removed prop.
+
+- **Test to add:** a new `client/src/__tests__/AssetTray.test.tsx` (VR-8010 confirmed none
+  currently exists) rendering `<App>` with a `FakeSocket`, delivering a `'template-catalog'`
+  message with real, non-default template data (at least one affordable and one unaffordable
+  template given a constrained `apRemaining`), then asserting: the tray shows both templates'
+  cost/time-to-online text; the unaffordable one is rendered disabled with a reason (FR-8300's
+  "disabled-with-reason, not hidden" rule); a subsequent `'state-delta'` message does not clear the
+  previously-delivered template list (confirming it persists across ordinary state pushes, not just
+  the initial connect).
+
+**Definition of Done additions:**
+- [ ] F1 fixed: a `TemplateCatalogMessage` is sent once per connection and correctly populates
+      `AssetTray` with real, non-empty, non-default template data; regression test
+      (`AssetTray.test.tsx`) passes.
+- [ ] Full G5 gate (build + full suite) re-run green after the fix.
+
+**F2 (BL-0049) is explicitly out of this package's remediation scope** — VR-8010 attributed it to
+IP-4010 (`engageAction.ts` never checking `chainRoles` for `'engage'`), not to IP-8010's own code;
+it is tracked separately and does not block IP-8010's re-verification.
+
+**Verification Checklist addition:** re-submit to `09-package-verification` for a fresh,
+independent pass once F1 lands — the previously-`Pass`-audited items (fog-of-war rendering
+boundary, legality pre-filter parallel-implementation claim, panel-render smoke tests) are
+unaffected by this remediation and don't need re-proving, but the whole package still needs a
+fresh VR per this project's standing methodology.
 
 ## Dependencies
 
