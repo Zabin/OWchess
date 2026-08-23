@@ -2,26 +2,26 @@
 
 ## Position
 
-- **Updated:** 2026-08-23 (run #50)
-- **Increment:** All 11 MVP Implementation Packages are independently `VERIFIED`, and
-  **`10-integration-review` on the full tranche came back clean — no Critical/High findings.**
-  The MVP is now eligible for the owner's `11-release-readiness` GO/NO-GO call.
-- **Pipeline state:** `00` — manager iterating. `01`–`09` — complete (11/11 packages `VERIFIED`).
-  `10` — **complete, clean** (`docs/reviews/integration-review-mvp-tranche.md`; 4 Medium/Low
-  findings, no Critical/High). `11` — not yet started.
-- **Milestone:** 98 tests passing (1 shared + 80 server + 17 client), build clean across all 3
-  workspaces, re-confirmed at the integration-review stage against a genuinely fresh install. Four
-  genuine bugs caught and fixed during `09` (1 Critical, 3 High); the integration review found no
-  further Critical/High defects, only documentation-lag and one already-tracked cross-package
-  asymmetry — the pipeline's layered scrutiny is holding up end to end.
-- **Backlog:** ~53 open items, nearly all `SCHEDULED`/`DEFERRED`/`DONE`. New from the integration
-  review: BL-0050 (Medium, stale FS metadata), BL-0051 (Medium, MVP never run end-to-end as a real
-  process — flagged for `11` to weigh explicitly), BL-0052 (Low, GDS-09 batch-reconciliation debt).
-- **Next step:** `11-release-readiness` for the owner's GO/NO-GO call on the MVP release bucket.
-  Its Release Assessment should explicitly weigh BL-0051 (playability — no package has ever
-  bootstrapped a real running server) as a residual risk alongside the clean integration result.
-- **Open gates:** none yet — `11-release-readiness`'s own GO/NO-GO call (G4) is the next gate,
-  reserved for the owner by this pipeline's standing rule.
+- **Updated:** 2026-08-23 (run #51)
+- **Increment:** The MVP Release Assessment is written
+  (`docs/reviews/release-assessment-mvp.md`) — all 8 planned Features/11 packages delivered,
+  `VERIFIED`, integration-clean. **Advisory recommendation: GO.** The pipeline now holds at the
+  **G4 gate** — the owner's explicit GO/NO-GO decision — before any baseline record is flipped.
+- **Pipeline state:** `00` — manager iterating. `01`–`10` — complete. `11` — **assessment written,
+  awaiting the owner's G4 decision**; baseline NOT yet flipped (per this skill's own rule: only an
+  explicit owner GO triggers that).
+- **Milestone:** 98 tests passing, build clean, integration-reviewed clean — the entire MVP tranche
+  has now passed every automated and independent-review gate this pipeline has. Four genuine bugs
+  (1 Critical, 3 High) caught and fixed along the way by `09`; `10` found no further Critical/High
+  defects.
+- **Backlog:** ~53 open items, nearly all `SCHEDULED`/`DEFERRED`/`DONE`. Two residual risks flagged
+  explicitly in the Release Assessment for the owner's awareness (not blockers): BL-0051 (never run
+  end-to-end as a real process) and BL-0039 (no visual styling yet).
+- **Next step:** put the G4 GO/NO-GO decision to the owner. On GO: flip the release-plan bucket
+  state and any other baseline records, then `00-pipeline-manager` surveys the tree to start the
+  next increment. On NO-GO or deferred: hold here, or route a named blocking item back through
+  `07`→`08`→`09` per the owner's direction.
+- **Open gates:** **G4 — the release GO/NO-GO call — is open**, awaiting the owner.
 
 ## Run log
 
@@ -77,3 +77,4 @@
 | 48 | 2026-08-23 | iterate (`00-pipeline-manager`) | `07-implementation-planning` then `08-code-implementation` then `09-package-verification` (spawned Agent, dispatched) | IP-8010 | Planned and implemented the fix for VR-8010's High finding (BL-0048): decided a new one-shot `TemplateCatalogMessage` over a shared static catalog (avoids reintroducing a BL-0027-family JSON/dist-copy problem and keeps content-authoring's file ownership untouched); `AssetTemplate`/`MissionSetTemplate` relocated to `shared/src/interfaces.ts`; `TemplateRegistry.listAssetTemplates()` added; `websocketServer.ts`'s `handleConnection` sends the catalog once per connection; `gameClient.ts`/`App.tsx`/`main.tsx` consume it reactively instead of a value frozen at mount. Added `AssetTray.test.tsx` (2 tests) covering the previously-missing non-empty-data render path. Full suite green (98 tests, up from 96). Package `COMPLETE`; fresh independent verification agent dispatched, result pending. | Await VR-8010-v2's result. If `VERIFIED`, **all 11 MVP packages are independently verified for the first time** — advance to `10-integration-review` on the full MVP package set, then `11-release-readiness`'s GO/NO-GO call (G4, the owner's). If `RETURNED` again, route back to `08-code-implementation`. |
 | 49 | 2026-08-23 | iterate (`00-pipeline-manager`) | `09-package-verification` (spawned Agent, result landed) | IP-8010 | **VERIFIED** (VR-8010-v2) — the fix was live-exercised through the real `createGameEngine()`→`createTransport()`→`handleConnection()` path (not the committed test's fixture alone): a genuine `TemplateCatalogMessage` carrying all 7 of IP-3011's real asset-type templates is sent exactly once per connection, both connections receive byte-identical catalogs (no per-recipient filtering, as expected for public/static content), and a subsequent real action's `broadcastStateDelta` never re-sends or clobbers it. `AssetTray.test.tsx`'s three claims independently re-derived by reading `gameClient.ts`'s state-update ordering line by line — no bug. Scope confirmed clean; all 10 other packages confirmed still `VERIFIED` with no drift. No findings. **All 11 MVP Implementation Packages are now independently `VERIFIED` for the first time** — the entire tranche (98 tests: 1 shared + 80 server + 17 client) has passed both its own G5 gates and independent scrutiny, including 4 real bugs (1 Critical, 3 High) caught and fixed along the way. | `10-integration-review` on the full MVP package set — the first cross-package review, checking for interface mismatches, violated load-bearing invariants, and half-wired seams that no single package's own verification could see. |
 | 50 | 2026-08-23 | iterate (`00-pipeline-manager`) | `10-integration-review` | Full MVP package set (all 11 packages) | **Clean — no Critical/High findings.** Reviewed all five dimensions against the live tree (fresh `npm install`, full rebuild, full suite re-run: 98 tests green). Confirmed the fog-of-war chain's types line up across `BeliefState`→transport→client with no widening at any hop; confirmed the composition root (`createGameEngine.ts`) genuinely wires every handler/turn-end hook; confirmed no ID-namespace collisions (7 asset types, 3 mission sets, 5 effects); confirmed the 5 accumulated GDS-09 interface deviations (BL-0028/33/36/45/48) are mutually consistent, not just individually reasonable. 4 findings harvested: BL-0050 (Medium, 6/8 FS docs' `Implemented by` metadata stale), BL-0051 (Medium, BL-0038+BL-0027 compound into "MVP never run end-to-end as a real process" — flagged for `11`'s explicit weighing), BL-0049 re-confirmed live (Low, already tracked), BL-0052 (Low, GDS-09 batch-reconciliation debt). Report: `docs/reviews/integration-review-mvp-tranche.md`. | `11-release-readiness` for the owner's GO/NO-GO call on the MVP release bucket — no Critical/High findings block it, but its Release Assessment should explicitly weigh BL-0051 (playability) as a residual risk. |
+| 51 | 2026-08-23 | iterate (`00-pipeline-manager`) | `11-release-readiness` | MVP release bucket (all 8 Features / 11 packages) | Release Assessment written (`docs/reviews/release-assessment-mvp.md`): all 8 planned Features delivered, independently VERIFIED (4 genuine bugs caught and fixed along the way), integration-reviewed clean. **Advisory recommendation: GO**, with two residual risks flagged explicitly for the owner — BL-0051 (never run end-to-end as a real deployed process) and BL-0039 (no visual styling yet, pre-existing). Baseline NOT flipped — that step is reserved for the owner's explicit GO per this skill's own rule and the pipeline's G4 gate. | **GATE: G4** — put the GO/NO-GO decision to the owner. On GO: flip the release-plan bucket state and any other baseline records, then start the next increment (`00-pipeline-manager` survey). On NO-GO or deferred: hold at this gate, or route a named blocking item back through `07`→`08`→`09` per the owner's direction. |
