@@ -1,7 +1,7 @@
 # GDS-00 — Vision (design-facing restatement)
 
-- **Owned by:** `01-vision` · **Status:** 🟢 Gate-confirmed, same gate state as MSTR-001 v0.3 ·
-  **Source:** `docs/master/MSTR-001-program-vision.md` v0.3
+- **Owned by:** `01-vision` · **Status:** 🟢 Gate-confirmed, same gate state as MSTR-001 v0.4 ·
+  **Source:** `docs/master/MSTR-001-program-vision.md` v0.4
 
 This is the design-facing restatement of MSTR-001, in the vocabulary the GDS ladder builds on.
 MSTR-001 is authoritative for purpose-level statements; this document translates its commitments
@@ -84,3 +84,17 @@ OQ-10 remain open, proceeding to their originally-named downstream stage unchang
 
 **Gate:** closed 2026-08-21. Next: GDS-01 (Concept of Operations) via
 `03-architecture-design-synthesis`, including the tech-stack ADR that OQ-02's resolution requires.
+
+## Training corpus as a co-equal product (added v0.4, MSTR-001 C10)
+
+Per MSTR-001 C10, the operator-facing training corpus (`docs/training/` + `docs/manual/`) is a
+co-equal deliverable, not incidental documentation. In system terms: it is a second, parallel
+artifact stream with its own requirements (a new FR/NFR family, next via
+`04-requirements-engineering`), its own authoring/verification pipeline stages (a stage-08 peer of
+`08-code-implementation` and a stage-09 peer of `09-package-verification`, to be authored), and its
+own currency obligation — every operator-visible capability the game ships must have corresponding,
+as-built-verified manual coverage before a release bucket's `11-release-readiness` gate can
+recommend GO. This is scoped for OW Chess's actual shape: one symmetric two-player game with no
+facilitator/multi-role structure, so the corpus is a single shared player-facing manual, not
+per-role manuals (unlike the `ZabSpaceExercise` pattern this is modeled on, which needs White/Blue/
+Red-scoped manuals for its facilitated multi-cell exercise format).
