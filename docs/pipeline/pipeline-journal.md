@@ -2,31 +2,28 @@
 
 ## Position
 
-- **Updated:** 2026-08-23 (run #62)
-- **Increment:** **Training corpus first-pass authored** (`docs/training/`, `docs/manual/`,
-  commit `37a9a28`) — install-and-run and interface modules fully live-verified. While capturing
-  the first-game walkthrough's screenshots, **discovered and filed a Critical gap: BL-0062**. The
-  shipped client has no UI to supply Deploy's target regime or Maneuver/Task/Engage's required
-  targeting parameters — confirmed live (a deployed asset renders with a blank regime) and by
-  code reading (the Action Menu sends an empty payload for every click). **A real human player
-  cannot currently complete a full game to any win condition through the shipped interface** —
-  this bears directly on MSTR-001 v0.4's human-playtest premise, and is now the critical-path
-  blocker ahead of both a genuine playtest and a complete FR-9420 walkthrough.
-- **Pipeline state:** `00` — manager iterating. `01`–`10` — complete for the {IP-9038, IP-9056}
-  delta. `08-training-manual-authoring` — first pass done, honestly incomplete on FR-9420 pending
-  BL-0062. `11` — G4 still deferred.
-- **Milestone:** 113 tests passing, all green. Training corpus exists for the first time in this
-  project's history, documenting the shipped app honestly including its own real gaps rather than
-  a papered-over ideal. BL-0062 is now the single highest-priority open item.
-- **Backlog:** ~62 open items. BL-0062 (Critical) is the sole due item — outranks the pending
-  `09-training-manual-review` pass, since fixing it will require revisiting `03-first-game.md`/
-  `06-manual-traceability.md`'s FR-9420 row anyway.
-- **Next step:** `07-implementation-planning` to package BL-0062 (a client UI package adding
-  regime/target/effect pickers for Deploy/Maneuver/Task/Engage), then `08-code-implementation` →
-  `09-package-verification`. `09-training-manual-review` can run in parallel on this pass's
-  as-shipped-honest corpus, but the corpus will need another authoring pass once BL-0062 ships.
-- **Open gates:** G4 remains open. Not an owner gate yet — BL-0062 is closeable by the pipeline
-  itself (07→08→09) before any owner decision is needed.
+- **Updated:** 2026-08-23 (run #63)
+- **Increment:** **IP-9062 authored and `READY`** (`docs/implementation/packages/
+  IP-9062-action-targeting-ui.md`, TWBS §8) — closes BL-0062 (Critical): four new client picker
+  components (Deploy-regime, Maneuver, Task, Engage) plus a small additive
+  `AssetTemplate.applicableEffects` field, wired into `App.tsx`/`AssetTray.tsx` in place of the
+  current empty/incomplete payload sends. Client-UI-only, no server engine/transport changes. All
+  8 named dependencies already `VERIFIED`.
+- **Pipeline state:** `00` — manager iterating. `01`–`07` — complete for this delta. `08` —
+  IP-9062 `READY`, not yet started. `09`–`11` — unaffected; `11`'s G4 still deferred.
+- **Milestone:** 113 tests passing, all green. Training corpus exists and documents its own real
+  gap honestly. BL-0062 now has a fully-specified, `READY`, already-authorized package waiting to
+  be built — the last step before a real human-playable game and a complete FR-9420 walkthrough.
+- **Backlog:** ~63 open items. IP-9062 is the sole due item.
+- **Next step:** `08-code-implementation` on IP-9062, then `09-package-verification` (with the
+  same live end-to-end discipline: a real Deploy-with-regime, Task, Maneuver, and Engage each
+  completed through the new UI). Once `VERIFIED`, `08-training-manual-authoring` re-runs
+  `03-first-game.md`/`06-manual-traceability.md`'s FR-9420 row with a genuine win-condition
+  walkthrough, then `09-training-manual-review`, then the G4 gate is revisited.
+- **Open gates:** G4 remains open. Not an owner gate yet — IP-9062 is closeable by the pipeline
+  itself (08→09) before any owner decision is needed. This run paused here (a natural
+  implementation-start boundary) for an owner check-in after a long autonomous run rather than
+  starting a new code-implementation pass unprompted.
 
 ## Run log
 
@@ -94,3 +91,4 @@
 | 60 | 2026-08-23 | iterate (`00-pipeline-manager`, `09-package-verification` spawned Agent, result landed) | `09-package-verification` | IP-9056 | **VERIFIED** (VR-9056). Independently rebuilt clean, ran the full suite (113 tests, exact match), and independently reproduced the live create->join->deploy-king x2->state-delta sequence with its own fresh script from a cold server start: confirmed initial deployment-status (never a rejection), player 1's deploy accepted, player 2's deployment-status broadcast raw-JSON-checked to leak neither missionSetId/regime nor the keys themselves, player 2's deploy flips both to a real state-delta at phase 'active', a third same-player deploy rejected with the exact 'King already deployed (FR-1230)' message. Confirmed BL-0056 closure via grep (exactly one production submitKingDeployment call site, reached from a real WS connection, no bypass). 3 new Low findings (BL-0059/60/61, all non-blocking: an RTM gap, a missed FS-101 metadata note, an undeclared-but-benign AssetTray.test.tsx touch). **BL-0056 flipped DONE.** Both halves of the original playtest blocker (bootstrap + King-deployment wiring) are now independently VERIFIED — a real client can play a full game from cold start for the first time in this project's history. | `10-integration-review` on the {IP-9038, IP-9056} remediation tranche (both touch the transport/session-bootstrap seam the original MVP integration review never saw, since neither existed at that time) before `08-training-manual-authoring` documents behavior as integrated. |
 | 61 | 2026-08-23 | iterate (`00-pipeline-manager`) | `10-integration-review` | {IP-9038, IP-9056} remediation tranche | Clean review — `docs/reviews/integration-review-remediation-tranche-9038-9056.md`. G5 gates green (build clean, 113/113 tests). All five dimensions exercised: interface consistency (DeploymentStatusMessage/TemplateCatalogMessage compose cleanly with the pre-existing StateDeltaMessage/computeOpponentView chain, no overlap), invariant sweep (server authority, fog-of-war non-leakage, turn alternation all hold — DeploymentStatusMessage's fields independently re-derived as structurally incapable of carrying a selection), behavioral coherence (one deployment-transition path, one render path, no dead-ends), traceability coherence (INDEX files/RTM consistent; all 5 carried-forward Low findings BL-0057/58/59/60/61 re-confirmed non-blocking, none reclassified), documentation coherence (no CLAUDE.md/memory.md yet — first-run status, consistent). No new findings. The transport/session-bootstrap seam these two packages jointly created — the first ever exercised by a real client from a cold process start — is confirmed integration-clean. | `08-training-manual-authoring` to write the training corpus (docs/training/, docs/manual/) against the now-provably-integrated, playable game — the deliverable the owner's original redirect asked for. Then `09-training-manual-review`, then the G4 gate is revisited. |
 | 62 | 2026-08-23 | iterate (`00-pipeline-manager`) | `08-training-manual-authoring` | `docs/training/` (01-06 + INDEX), `docs/manual/` (5 screenshots + INDEX) | First authoring pass of the full training corpus (FR-9000/NFR-10000), committed `37a9a28`. Install-and-run and interface modules fully live-verified. While driving the real app via Playwright to capture the first-game walkthrough's screenshots, **discovered and confirmed a Critical, previously-unknown gap (filed as BL-0062)**: the shipped client has no UI to supply Deploy's target regime or Maneuver/Task/Engage's required targeting parameters (source asset, target regime/asset, effect) -- `App.tsx`'s Action Menu handler sends an empty payload for every action, and `AssetTray.tsx`'s Deploy callback never sends a regime. Confirmed live: a deployed asset renders with a blank regime (screenshot `game-board-after-deploy.png`); confirmed by code reading that Maneuver/Task/Engage cannot be completed for the same reason. **A real human player cannot currently complete a full game to any win condition through the shipped interface** -- this bears directly on MSTR-001 v0.4's human-playtest premise. Documented honestly (not papered over) per FR-9310; not fixed in this pass (out of this skill's scope, which is docs/training + docs/manual only). | `07-implementation-planning` to package BL-0062 (a client UI package adding regime/target/effect pickers for Deploy/Maneuver/Task/Engage) -- this is now the critical-path blocker before a genuine human playtest or a complete FR-9420 walkthrough is possible. `09-training-manual-review` can still review this pass's corpus in parallel (it documents the gap honestly, which is itself reviewable), but the corpus's FR-9420 row will need another pass once BL-0062 is fixed. |
+| 63 | 2026-08-23 | iterate (`00-pipeline-manager`) | `07-implementation-planning` | IP-9062 (new, bug-remediation) | Authored IP-9062 to close BL-0062: four new client picker components (Deploy-regime, Maneuver, Task, Engage), each constraining options to genuinely legal choices, wired into App.tsx/AssetTray.tsx in place of the current empty/incomplete payload sends, plus a small additive `AssetTemplate.applicableEffects` field. Client-UI-only, no server engine/transport changes. TWBS §8 added. Authorization: completes FS-103/FS-105/FS-108's already-approved player-facing selection workflows (FS-103 W1 explicitly names "the player selects one of their online sensors and a target" as the Task workflow) -- same release-plan-coverage basis as IP-9038/IP-9056, disclosed as a judgment call in the package's own Risks section for the owner to object to if they disagree. All 8 named dependencies VERIFIED; package is READY. | `08-code-implementation` on IP-9062 -- the package that will finally make a full human-playable game possible. |
