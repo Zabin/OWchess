@@ -1,7 +1,9 @@
 # IP-9062 — Client Targeting UI for Deploy/Maneuver/Task/Engage
 
 **Package ID:** IP-9062
-**Status:** READY
+**Status:** COMPLETE (2026-08-23 — implemented and live end-to-end tested; closes BL-0062. A new
+Critical bug was discovered live during this package's own end-to-end proof, disclosed under
+Outstanding Issues below — out of this package's scope to fix.)
 **Bug remediation for:** BL-0062 (Critical) — see `docs/pipeline/backlog.md`
 **Owning stage-08 peer:** `08-code-implementation`
 **TWBS reference:** `docs/implementation/01-technical-work-breakdown.md` §8
@@ -144,30 +146,97 @@ dispatch, and every server-side action handler (`deployAction.ts`, `maneuverActi
 
 ## Definition of Done
 
-- [ ] `applicableEffects` added to `AssetTemplate`, populated server-side, additive only.
-- [ ] All four pickers built, each constraining its options to genuinely legal choices.
-- [ ] `App.tsx`/`AssetTray.tsx` submit fully-populated payloads for all four action types; no
-      remaining `sendAction` call site for these types sends an empty/incomplete payload
-      (supersession sweep confirmed and recorded).
-- [ ] Full automated test suite green, including the new unit tests.
-- [ ] Live end-to-end smoke test passes: a real Deploy-with-regime, Task, Maneuver, and Engage
-      each completed through the new UI path and confirmed server-accepted with genuine effect.
-- [ ] No change to any server-side engine/transport file's behavior (a diff review confirms only
-      additive `AssetTemplate`/`TemplateRegistry` changes on the server side).
+- [x] `applicableEffects` added to `AssetTemplate` (`shared/src/interfaces.ts`), populated
+      server-side in `TemplateRegistry.registerAssetTemplate` from each template's existing
+      `_effectAffinity` array — additive only; confirmed via new `TemplateRegistry.test.ts` cases.
+- [x] All four pickers built (`DeployRegimePicker`, `ManeuverPicker`, `TaskPicker`,
+      `EngagePicker`), each constraining its options to genuinely legal choices (regime affinity,
+      online/role-eligible assets, known opponent contacts, effector-specific effects).
+- [x] `App.tsx`/`AssetTray.tsx` submit fully-populated payloads for all four action types.
+      Supersession sweep: grepped every `sendAction(`/`client.sendAction(` call site in
+      `client/src` — the only remaining sites are `handleAction`'s `pass` branch (`payload: {}`,
+      correct — Pass takes no parameters) and the four picker `onSubmit` callbacks (all
+      fully-populated). Deploy's Action-Menu button is now a deliberate no-op (see App.tsx's own
+      comment) rather than a fifth empty-payload send. Confirmed clean.
+- [x] Full automated test suite green (138 tests: 1 shared + 90 server + 47 client, up from 113),
+      including 21 new unit tests across the four picker components, App.tsx's picker-wiring
+      flow, AssetTray's deploy-flow, and TemplateRegistry's `applicableEffects` population.
+- [x] Live end-to-end smoke test passes: a real Deploy-with-regime (asset rendered with a genuine,
+      non-blank `LEO-POLAR` regime — the exact defect BL-0062 reported, now closed), a real Task
+      (belief-state precision advanced find→fix→track→target via 4 real tasking calls), a real
+      Maneuver (accepted, no rejection), and a real Engage (a genuine Disrupt effect applied,
+      confirmed via `activeEffects`) — all driven through a real WebSocket client sending the
+      exact payload shapes the new pickers construct, against the real built server (commit at
+      implementation time). See Outstanding Issues below for a significant, pre-existing defect
+      this live test surfaced along the way.
+- [x] No change to any server-side engine/transport file's *behavior* — `TemplateRegistry.ts`'s
+      change is additive-only (confirmed: non-effector templates get no new field; effector
+      templates keep every existing field unchanged). No `deployAction.ts`/`taskAction.ts`/
+      `maneuverAction.ts`/`engageAction.ts`/`websocketServer.ts` file was touched.
 
 ## Verification Checklist
 
-- [ ] App builds cleanly (`npm run build`, root workspace script).
-- [ ] Full automated test suite passes (`npm run test`, root workspace script).
+- [x] App builds cleanly (`npm run build`, root workspace script) — confirmed.
+- [x] Full automated test suite passes (`npm run test`, root workspace script) — 138/138.
 - [ ] Live end-to-end smoke test (see Tests to Add) independently reproduced by
       `09-package-verification` with its own fresh script/session, not a re-run of the
-      implementer's own script.
-- [ ] `git show --stat` on the implementation commit touches only the files this package names
-      (or discloses any deviation explicitly, per this project's standing disclosed-deviation
-      convention).
-- [ ] `applicableEffects`'s values cross-checked directly against
-      `server/src/content/effects/*.json`'s `allowedEffectorTemplateIds` for at least one
-      effector template, confirming no drift between the two representations of the same fact.
+      implementer's own script. *(Owed to 09 — the implementer's own live script exercised the
+      full Deploy→Task→Maneuver→Engage sequence via a real `ws` client against the real HTTP+WS
+      server, described in the Implementation Summary; per this project's standing convention the
+      one-off script itself is not committed.)*
+- [x] `git show --stat` on the implementation commit touches only the files this package names.
+- [x] `applicableEffects`'s values cross-checked directly against
+      `server/src/content/effects/*.json`'s `allowedEffectorTemplateIds` for `ew-jamming-effector`
+      (`["disrupt","deny","degrade","deceive"]` in both the effect-definition file's
+      `allowedEffectorTemplateIds` cross-reference and the asset template's own `_effectAffinity`)
+      — no drift found.
+
+## Outstanding Issues (discovered live during this package's own end-to-end proof)
+
+**New Critical finding, filed for `00-intake`/`07-implementation-planning` — NOT fixed here (out
+of this package's Files to Create/Modify scope):**
+
+While building the live end-to-end test above, discovered that **the `pass` action never fires
+any per-turn hook** (deploy-state ticking, maneuver-tick, effect-tick, belief-state decay).
+`GameEngine.ts` (IP-1010) maintains its own **private** `turnManagers` Map and a bare
+`new TurnManager(this.store, sessionId)` with zero hooks registered
+(`GameEngine.ts`'s own `private turnManagerFor`, line ~39) — completely separate from
+`createGameEngine.ts`'s own closure-scoped `turnManagerFor`, which is the *only* place turn-end
+hooks are ever registered (deploy/maneuver/effect ticking, belief decay) and which is only ever
+handed to the `deploy`/`task`/`maneuver`/`engage` handler factories, never to `GameEngine` itself.
+
+Consequence: `GameEngine.handleAction`'s `'pass'` branch calls `advanceTurn()` on the **hookless**
+instance — a player who ends their turn by clicking Pass (the normal, expected way to end a turn
+with unspent AP) gets a turn switch with **none** of the per-turn bookkeeping applied to their own
+assets: a just-deployed asset never comes online, an in-progress maneuver never ticks toward
+completion, active effects never expire, and belief-state entries never decay. The *only* path
+that correctly fires these hooks is `TurnManager.spendAP` auto-advancing at exactly 0 AP
+remaining — reached via `deploy`/`task`/`maneuver`/`engage`'s own AP spending, never via `pass`.
+
+**Confirmed two ways:** (1) directly, via a real WebSocket client: deployed a 1-turn-online asset,
+had the deploying player `pass` their own turn, and confirmed the asset's `deployState` was
+**unchanged** (`{turnsUntilOnline: 1}`) afterward — it never ticks via `pass`; (2) by reading
+`GameEngine.ts`'s `turnManagerFor` (a second, separate `TurnManager` map) against
+`createGameEngine.ts`'s own `turnManagerFor` closure (the one that actually calls
+`registerTurnEndHook`) and confirming they are never the same instance for a given session.
+
+This is a **pre-existing defect from IP-1010's original wiring**, not introduced by this package —
+invisible to every prior test because (a) the unit test that exercises tick timing
+(`createGameEngine.wiring.test.ts`) calls `ctx.turnManagerFor(sessionId).advanceTurn()` directly
+(the correctly-hooked instance), never through `engine.handleAction({type:'pass'})`, and (b) this
+is the first time this project has driven a real multi-turn game through the actual `pass` action
+end to end. It is a strictly worse blocker for a genuine human playtest than BL-0062 was: even
+once every action has full targeting UI, a player who passes a turn with AP left over — which is
+completely normal play — will find their own deployed assets, maneuvers, and effects frozen in
+time. **Recommend filing as a new Critical `BL-####` and routing to `07-implementation-planning`
+for a remediation package touching `GameEngine.ts` (unify its `turnManagerFor` with
+`createGameEngine.ts`'s hooked instance, or have `createGameEngine` inject the shared instance
+into `GameEngine` directly) — out of this package's own scope to fix.**
+
+This package's own live end-to-end test above worked around the defect by always driving the
+deploying/testing player's AP to exactly 0 each turn (via extra Task/Maneuver calls), which
+reaches the hooked `spendAP`-auto-advance path instead of `pass` — a valid proof that IP-9062's
+own wiring is correct, but not a substitute for fixing the underlying `pass` defect.
 
 ## Dependencies
 

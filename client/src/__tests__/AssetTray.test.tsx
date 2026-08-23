@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest';
-import { render, screen, act, cleanup } from '@testing-library/react';
+import { render, screen, act, cleanup, fireEvent } from '@testing-library/react';
 import { App } from '../App.js';
 import { GameClient, type SocketLike } from '../state/gameClient.js';
 import type { StateDeltaMessage, TemplateCatalogMessage } from '@owchess/shared';
@@ -97,5 +97,25 @@ describe('AssetTray (IP-8010) — populated via TemplateCatalogMessage', () => {
     act(() => socket.deliver(fixtureStateDelta()));
     expect(screen.getByTestId('deploy-cheap-sensor')).toBeDefined();
     expect(screen.getByTestId('deploy-expensive-effector')).toBeDefined();
+  });
+
+  it('IP-9062/BL-0062: clicking a template opens DeployRegimePicker; confirming sends templateId + a real targetRegime', () => {
+    const socket = new FakeSocket();
+    const client = new GameClient(socket);
+    render(<App client={client} sessionId="s1" />);
+
+    act(() => socket.deliver(fixtureTemplateCatalog()));
+    act(() => socket.deliver(fixtureStateDelta()));
+
+    fireEvent.click(screen.getByTestId('deploy-cheap-sensor'));
+    expect(screen.getByTestId('deploy-regime-picker')).toBeDefined();
+    const regimeSelect = screen.getByTestId('deploy-regime-select') as HTMLSelectElement;
+    expect(Array.from(regimeSelect.options).map((o) => o.value)).toEqual(['LEO-EQUATORIAL']);
+
+    fireEvent.click(screen.getByTestId('deploy-regime-submit'));
+    expect(socket.sent).toHaveLength(1);
+    const sent = JSON.parse(socket.sent[0]);
+    expect(sent.action).toEqual({ type: 'deploy', payload: { templateId: 'cheap-sensor', targetRegime: 'LEO-EQUATORIAL' } });
+    expect(screen.queryByTestId('deploy-regime-picker')).toBeNull();
   });
 });

@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest';
-import { render, screen, act, cleanup } from '@testing-library/react';
+import { render, screen, act, cleanup, fireEvent } from '@testing-library/react';
 import { App } from '../App.js';
 import { GameClient, type SocketLike } from '../state/gameClient.js';
 import type { StateDeltaMessage } from '@owchess/shared';
@@ -97,5 +97,119 @@ describe('App (IP-8010) — all six panels render from a StateDeltaMessage fixtu
     act(() => socket.deliver(fixtureStateDelta()));
     act(() => socket.deliver({ type: 'action-rejected', reason: 'insufficient AP' }));
     expect(screen.getByTestId('rejection-banner').textContent).toContain('insufficient AP');
+  });
+});
+
+describe('App (IP-9062, closes BL-0062) — Maneuver/Task/Engage targeting pickers', () => {
+  afterEach(() => cleanup());
+
+  function fixtureWithFullRoster(): StateDeltaMessage {
+    const base = fixtureStateDelta();
+    return {
+      ...base,
+      ownState: {
+        ...base.ownState,
+        assets: [
+          {
+            assetId: 'sensor-1', ownerId: 'alice', templateId: 'wide-area-sda-radar', basing: 'ground',
+            chainRoles: ['find', 'fix'], trueRegime: 'LEO-EQUATORIAL', maneuverState: null, deployState: null,
+            activeEffects: [], isKing: false, missionSet: null, consecutiveDenialTurns: 0,
+            totalDenialTurns: 0, destroyed: false,
+          },
+          {
+            assetId: 'jammer-1', ownerId: 'alice', templateId: 'ew-jamming-effector', basing: 'space',
+            chainRoles: ['engage'], trueRegime: 'GEO-EQUATORIAL', maneuverState: null, deployState: null,
+            activeEffects: [], isKing: false, missionSet: null, consecutiveDenialTurns: 0,
+            totalDenialTurns: 0, destroyed: false,
+          },
+        ],
+      },
+      opponentView: {
+        playerId: 'bob',
+        beliefEntries: [
+          { subject: 'bob-asset-1', precision: 'track', lastUpdatedTurn: 1, sourceAssetId: 'sensor-1', deceived: false, apparentRegime: 'MEO-EQUATORIAL' },
+        ],
+      },
+    };
+  }
+
+  it('clicking Deploy Asset in the Action Menu is a deliberate no-op (Deploy lives in the Asset Tray)', () => {
+    const socket = new FakeSocket();
+    const client = new GameClient(socket);
+    render(<App client={client} sessionId="s1" />);
+    act(() => socket.deliver(fixtureStateDelta()));
+    fireEvent.click(screen.getByTestId('action-deploy'));
+    expect(socket.sent).toEqual([]);
+  });
+
+  it('clicking Maneuver opens ManeuverPicker; submitting sends a fully-populated payload', () => {
+    const socket = new FakeSocket();
+    const client = new GameClient(socket);
+    render(<App client={client} sessionId="s1" />);
+    act(() => socket.deliver(fixtureStateDelta()));
+
+    fireEvent.click(screen.getByTestId('action-maneuver'));
+    expect(screen.getByTestId('maneuver-picker')).toBeDefined();
+    fireEvent.change(screen.getByTestId('maneuver-asset-select'), { target: { value: 'alice-king' } });
+    fireEvent.change(screen.getByTestId('maneuver-regime-select'), { target: { value: 'LEO-POLAR' } });
+    fireEvent.click(screen.getByTestId('maneuver-submit'));
+
+    expect(socket.sent).toHaveLength(1);
+    const sent = JSON.parse(socket.sent[0]);
+    expect(sent).toEqual({
+      type: 'action',
+      sessionId: 's1',
+      action: { type: 'maneuver', payload: { assetId: 'alice-king', targetRegime: 'LEO-POLAR' } },
+    });
+    expect(screen.queryByTestId('maneuver-picker')).toBeNull();
+  });
+
+  it('clicking Task Sensor opens TaskPicker; submitting sends a fully-populated payload', () => {
+    const socket = new FakeSocket();
+    const client = new GameClient(socket);
+    render(<App client={client} sessionId="s1" />);
+    act(() => socket.deliver(fixtureWithFullRoster()));
+
+    fireEvent.click(screen.getByTestId('action-task'));
+    expect(screen.getByTestId('task-picker')).toBeDefined();
+    fireEvent.change(screen.getByTestId('task-source-select'), { target: { value: 'sensor-1' } });
+    fireEvent.change(screen.getByTestId('task-regime-select'), { target: { value: 'MEO-EQUATORIAL' } });
+    fireEvent.click(screen.getByTestId('task-submit'));
+
+    expect(socket.sent).toHaveLength(1);
+    const sent = JSON.parse(socket.sent[0]);
+    expect(sent.action).toEqual({ type: 'task', payload: { sourceAssetId: 'sensor-1', targetRegime: 'MEO-EQUATORIAL' } });
+  });
+
+  it('clicking Engage opens EngagePicker; submitting sends a fully-populated payload', () => {
+    const socket = new FakeSocket();
+    const client = new GameClient(socket);
+    render(<App client={client} sessionId="s1" />);
+    act(() => socket.deliver(fixtureWithFullRoster()));
+
+    fireEvent.click(screen.getByTestId('action-engage'));
+    expect(screen.getByTestId('engage-picker')).toBeDefined();
+    fireEvent.click(screen.getByTestId('engage-submit'));
+
+    expect(socket.sent).toHaveLength(1);
+    const sent = JSON.parse(socket.sent[0]);
+    expect(sent.action.type).toBe('engage');
+    expect(sent.action.payload).toEqual({
+      effectorAssetId: 'jammer-1',
+      targetAssetId: 'bob-asset-1',
+      effect: sent.action.payload.effect,
+    });
+    expect(typeof sent.action.payload.effect).toBe('string');
+  });
+
+  it('cancelling a picker closes it without sending anything', () => {
+    const socket = new FakeSocket();
+    const client = new GameClient(socket);
+    render(<App client={client} sessionId="s1" />);
+    act(() => socket.deliver(fixtureStateDelta()));
+    fireEvent.click(screen.getByTestId('action-maneuver'));
+    fireEvent.click(screen.getByTestId('maneuver-cancel'));
+    expect(screen.queryByTestId('maneuver-picker')).toBeNull();
+    expect(socket.sent).toEqual([]);
   });
 });

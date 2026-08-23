@@ -28,6 +28,14 @@ export interface AssetTemplate {
   timeToOnline: number;
   chainRoles: ChainRole[];
   regimeAffinity: OrbitalRegimeLabel[];
+  /**
+   * IP-9062/BL-0062: which of the Five D's this template's effector role can apply, sourced
+   * server-side from the same content each effect definition's own `allowedEffectorTemplateIds`
+   * already encodes (server/src/content/effects/*.json). Undefined/empty for a non-effector
+   * template. Lets the client's Engage picker constrain its effect choices to genuinely legal
+   * ones, mirroring how `regimeAffinity` already constrains the Deploy/King-deployment pickers.
+   */
+  applicableEffects?: FiveDsEffect[];
 }
 
 export interface MissionSetTemplate {

@@ -18,7 +18,7 @@
 | [IP-8010](IP-8010-presentation-ui.md) | Presentation / UI | FS-108 | `08-code-implementation` | **VERIFIED** (VR-8010-v2, 2026-08-23) |
 | [IP-9038](IP-9038-server-bootstrap.md) | Real Server Bootstrap (Session HTTP API + WebSocket + Static Serving) | — (bug remediation: BL-0038/BL-0027) | `08-code-implementation` | **VERIFIED** (2026-08-23 — [VR-9038](../verification/VR-9038-server-bootstrap.md); surfaced BL-0056) |
 | [IP-9056](IP-9056-king-deployment-wiring.md) | King-Deployment Wire Exposure | — (bug remediation: BL-0056) | `08-code-implementation` | **VERIFIED** (2026-08-23 — [VR-9056](../verification/VR-9056-king-deployment-wiring.md); closes BL-0056) |
-| [IP-9062](IP-9062-action-targeting-ui.md) | Client Targeting UI for Deploy/Maneuver/Task/Engage | — (bug remediation: BL-0062) | `08-code-implementation` | **READY** (2026-08-23, all dependencies VERIFIED) |
+| [IP-9062](IP-9062-action-targeting-ui.md) | Client Targeting UI for Deploy/Maneuver/Task/Engage | — (bug remediation: BL-0062) | `08-code-implementation` | **COMPLETE** (2026-08-23 — live end-to-end tested; closes BL-0062; surfaced a new Critical pre-existing bug in `GameEngine`'s `pass`-path turn-hook wiring, filed separately) |
 
 The 11 MVP packages above are authorized under the current release plan's MVP-bucketing (G3 satisfied by
 release-plan coverage — see each package's own Authorization line). See

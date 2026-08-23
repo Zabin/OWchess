@@ -23,22 +23,22 @@ candidate module the requirement will land in once `05`/`06`/`07` assign real wo
 | FR-1405 | Destruction win | — | GDS-01, GDS-04 | — | GameEngine, EffectResolver | FS-101 | IP-1010 | GameEngine.winConditions.test.ts |
 | FR-1410 | Resignation | — | GDS-01 | — | GameEngine | FS-101 | IP-1010 | GameEngine.winConditions.test.ts |
 | FR-1420 | Timeout/tiebreak | — | GDS-01 | — | GameEngine | FS-101 | IP-1010 | GameEngine.winConditions.test.ts |
-| FR-2100 | Task a sensor | — | GDS-09 | — | BeliefState | FS-103 | IP-2010 | BeliefState.tasking.test.ts / taskAction.test.ts |
+| FR-2100 | Task a sensor | — | GDS-09 | — | BeliefState | FS-103 | IP-2010 (logic), IP-9062 (wire exposure) | BeliefState.tasking.test.ts / taskAction.test.ts; TaskPicker.test.tsx, App.test.tsx (real wire path, IP-9062) |
 | FR-2200 | Precision gated by asset capability | — | GDS-04, GDS-09 | — | BeliefState | FS-103 | IP-2010 | BeliefState.tasking.test.ts (ceiling cases) |
 | FR-2300 | Belief-state staleness/decay | — | GDS-07, FS-103 §W3 | — | BeliefState | FS-103 | IP-2010 | BeliefState.tasking.test.ts (decay cases) |
 | FR-2400 | Reflect precision/staleness to UI | — | GDS-08 | — | client UI | FS-103 | IP-8010 (pending) | UNASSIGNED |
 | FR-3100 | Data-driven asset templates | — | GDS-04 | — | content templates | FS-102 | IP-3010 (schema)/IP-3011 (content) | contentTemplates.test.ts |
 | FR-3200 | v1 roster support | R-203 | GDS-04 | — | content templates | FS-102 | IP-3011 | contentTemplates.test.ts |
 | FR-3300 | Ground/space cost-time asymmetry | — | GDS-04 (this doc's tuning table) | — | content templates | FS-102 | IP-3010 (mechanism) | deployAction.test.ts (ground-vs-space onlineAt case) |
-| FR-3400 | Deploy with cost deduction | — | GDS-07 | — | GameEngine | FS-102 | IP-3010 | deployAction.test.ts |
+| FR-3400 | Deploy with cost deduction | — | GDS-07 | — | GameEngine | FS-102 | IP-3010 (logic), IP-9062 (wire exposure of targetRegime) | deployAction.test.ts; AssetTray.test.tsx (real wire path, IP-9062 — closes BL-0062's blank-regime gap) |
 | FR-3500 | Block pre-online use | — | GDS-07 | — | GameEngine | FS-102 | IP-3010 | deployAction.test.ts (assertOnline case) |
-| FR-4100 | Require targeting-quality data | — | GDS-09 | — | EffectResolver | FS-105 | IP-4010 | EffectResolver.test.ts |
+| FR-4100 | Require targeting-quality data | — | GDS-09 | — | EffectResolver | FS-105 | IP-4010 (logic), IP-9062 (wire exposure) | EffectResolver.test.ts; EngagePicker.test.tsx, App.test.tsx (real wire path, IP-9062) |
 | FR-4200 | Apply the correct effect | — | GDS-04, GDS-07, GDS-09 | — | EffectResolver | FS-105 | IP-4010 | EffectResolver.test.ts |
 | FR-4300 | Cumulative Degrade | — | GDS-07 | — | EffectResolver | FS-105 | IP-4010 (mechanism)/IP-4011 (content) | EffectResolver.test.ts (stacking case) / effectDefinitions.test.ts |
 | FR-4400 | Consecutive denial-turn tracking | — | GDS-01 (this doc's tuning table) | — | EffectResolver | FS-105 | IP-4010 (mechanism)/IP-4011 (content) | EffectResolver.test.ts (denial-streak cases) / effectDefinitions.test.ts |
 | FR-5100 | Real propagation | R-203, R-201 | GDS-03 | — | Propagator | FS-104 | IP-5010 | Propagator.propagation.test.ts |
 | FR-5200 | Discrete regime presentation | R-203 | GDS-07, GDS-09 | — | Propagator | FS-104 | IP-5010 | Propagator.propagation.test.ts |
-| FR-5300 | Maneuver within budget | R-201 | GDS-09 (this doc's tuning table) | — | Propagator | FS-104 | IP-5010 | Propagator.maneuverCost.test.ts |
+| FR-5300 | Maneuver within budget | R-201 | GDS-09 (this doc's tuning table) | — | Propagator | FS-104 | IP-5010 (logic), IP-9062 (wire exposure) | Propagator.maneuverCost.test.ts; ManeuverPicker.test.tsx, App.test.tsx (real wire path, IP-9062) |
 | FR-5400 | Turn-scale maneuver completion (mover's-own-turns) | — | GDS-03 (OQ-11 resolution) | — | Propagator | FS-104 | IP-5010 | Propagator.maneuverCost.test.ts / createGameEngine.wiring.test.ts |
 | FR-5500 | `Propagator` interface isolation | — | GDS-03, GDS-09 | — | Propagator | FS-104 | IP-5010 | (Inspection — see IP-5010's Verification Checklist) |
 | FR-6100 | Server-only ground truth | — | GDS-02, GDS-08 | — | client UI (negative req.) | FS-106 | IP-6010 | BeliefState.fogOfWar.test.ts |

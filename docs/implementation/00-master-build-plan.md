@@ -20,7 +20,7 @@
 | IP-8010 | FS-108 | `08-code-implementation` | **VERIFIED** (2026-08-23, VR-8010-v2) | all 10 above (all VERIFIED) | Release plan (FEAT-8000, MVP) |
 | IP-9038 | — (bug remediation: BL-0038/BL-0027) | `08-code-implementation` | **VERIFIED** (2026-08-23 — [VR-9038](verification/VR-9038-server-bootstrap.md); own scope confirmed done and live-tested; surfaced BL-0056, a separate pre-existing blocker) | IP-1010, IP-5010, IP-6010, IP-7010, IP-8010 (all VERIFIED) | Closes disclosed deviations in already-authorized packages (IP-7010, IP-3011) + completes FS-101's already-approved W1 workflow — see TWBS §6 |
 | IP-9056 | — (bug remediation: BL-0056) | `08-code-implementation` | **VERIFIED** (2026-08-23 — [VR-9056](verification/VR-9056-king-deployment-wiring.md); closes BL-0056, independently confirmed) | IP-9038, IP-1010, IP-3011, IP-8010 (all VERIFIED) | Completes FS-101's already-approved W1/W2 workflow (secret King deployment) — see TWBS §7 |
-| IP-9062 | — (bug remediation: BL-0062) | `08-code-implementation` | **READY** (2026-08-23 — see [IP-9062](packages/IP-9062-action-targeting-ui.md)) | IP-8010, IP-3010, IP-3011, IP-2010, IP-5010, IP-4010, IP-4011, IP-9056 (all VERIFIED) | Completes FS-103/FS-105/FS-108's already-approved player-facing selection workflows (Task's "player selects a sensor and a target," Engage's/Maneuver's equivalent, FS-108's own claimed "input submission" scope) — see TWBS §8 |
+| IP-9062 | — (bug remediation: BL-0062) | `08-code-implementation` | **COMPLETE** (2026-08-23 — implemented and live end-to-end tested; closes BL-0062; surfaced a new Critical pre-existing bug, BL-####, in `GameEngine`'s `pass`-path turn-hook wiring) | IP-8010, IP-3010, IP-3011, IP-2010, IP-5010, IP-4010, IP-4011, IP-9056 (all VERIFIED) | Completes FS-103/FS-105/FS-108's already-approved player-facing selection workflows (Task's "player selects a sensor and a target," Engage's/Maneuver's equivalent, FS-108's own claimed "input submission" scope) — see TWBS §8 |
 
 **IP-9038** is the sole package not tied to an MVP Feature — it is the real server bootstrap
 (BL-0038/BL-0027) that MSTR-001 v0.4 (C10) put on the critical path to the deferred G4 gate: all
@@ -500,3 +500,18 @@ server engine/transport behavior changes. All eight named dependencies are `VERI
 player-facing selection workflows (FS-103 §W1 explicitly names "the player selects one of their
 online sensors and a target" as the Task workflow) — same release-plan-coverage basis already
 used for IP-9038/IP-9056, not a fresh scope grant.
+
+**`08-code-implementation` implemented IP-9062 and it is `COMPLETE`** (2026-08-23): added
+`AssetTemplate.applicableEffects` (additive, `shared/src/interfaces.ts` + `TemplateRegistry.ts`),
+four new picker components (`DeployRegimePicker`, `ManeuverPicker`, `TaskPicker`, `EngagePicker`),
+and rewired `App.tsx`/`AssetTray.tsx` to submit fully-populated payloads for all four action
+types instead of the previous empty/incomplete sends. Full suite green (138 tests, up from 113).
+Live end-to-end tested via a real WebSocket client: a genuinely non-blank Deploy regime, a real
+Task advancing belief-state precision to `'target'`, an accepted Maneuver, and a real Disrupt
+Engage effect — all through the exact payload shapes the new client UI constructs. **This live
+test surfaced a new, significant, pre-existing Critical bug** (disclosed in the package's own
+Outstanding Issues section): `GameEngine.ts` maintains a private, hookless `TurnManager` map
+separate from `createGameEngine.ts`'s hooked one, so the `pass` action never fires per-turn
+ticking/decay hooks — only spending AP down to exactly 0 does. Out of IP-9062's own scope
+(requires touching `GameEngine.ts`, not one of this package's named files); recorded as a new
+backlog item for `07-implementation-planning` to remediate next.

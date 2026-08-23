@@ -2,7 +2,7 @@
  * TemplateRegistry (IP-3010) — schema for the data-driven asset/mission-set templates IP-3011
  * populates. Schema only, no content (FR-3100).
  */
-import type { AssetTemplate, MissionSetId, MissionSetTemplate, TemplateId } from '@owchess/shared';
+import type { AssetTemplate, FiveDsEffect, MissionSetId, MissionSetTemplate, TemplateId } from '@owchess/shared';
 
 export type { AssetTemplate, MissionSetTemplate };
 
@@ -43,7 +43,17 @@ export class TemplateRegistry {
     if (!validateAssetTemplate(template)) {
       throw new Error(`invalid AssetTemplate: ${JSON.stringify(template)}`);
     }
-    this.assetTemplates.set(template.templateId, template);
+    // IP-9062/BL-0062: promotes the content file's existing, informal `_effectAffinity` array
+    // (already present on every effector template's JSON) to the real, client-visible
+    // `applicableEffects` field — additive only, no other field touched.
+    const rawEffectAffinity = (template as unknown as Record<string, unknown>)._effectAffinity;
+    const applicableEffects = Array.isArray(rawEffectAffinity)
+      ? (rawEffectAffinity as FiveDsEffect[])
+      : undefined;
+    const withEffects: AssetTemplate = applicableEffects
+      ? { ...template, applicableEffects }
+      : template;
+    this.assetTemplates.set(withEffects.templateId, withEffects);
   }
 
   registerMissionSetTemplate(template: unknown): void {
