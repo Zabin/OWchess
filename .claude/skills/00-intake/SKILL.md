@@ -58,6 +58,17 @@ if found, note the new report on that entry instead of duplicating it. Otherwise
 Summary (with evidence links), Sev/Pri, Entry stage, Disposition `—` (the manager decides),
 Status `NEW`. Commit as `docs(pipeline): intake BL-#### — <summary>`.
 
+**Severity floor (G6.4).** File at **Critical/High**, never lower, when the entry represents any
+of: an **unmet `Priority: Must` requirement**; a module, handler or message type with **no
+production (non-test) caller**; a **`Demonstration` acceptance criterion that was never
+demonstrated**; or a capability the owner can observably not perform in the running app. Describe
+it by what the user cannot do — "a game cannot be ended," "no action is reachable for X" — not by
+the size of the code change that would fix it. A one-line fix to an unreachable win-condition
+check is still Critical.
+> The costliest mis-filing on this project was a **Medium** entry titled "styling pass" that was
+> in fact five unmet `Must` requirements and a broken vision commitment. The framing, not the
+> severity number, is what let it sit.
+
 ## Rules
 
 - **Backlog only.** The moment this skill wants to touch any other file, the work has left

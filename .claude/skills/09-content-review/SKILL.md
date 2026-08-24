@@ -25,6 +25,25 @@ effect apply the correct state transition); it does not confirm what the board a
 or how the game actually *plays* to a player, so a code package that adds/changes board content
 or in-game behavior is not "covered" just because its VR passed.
 
+## This review is not optional (added 2026-08-23, G6)
+
+**This skill went un-invoked for the entire MVP** — 137 commits, 11 `VERIFIED` packages, two clean
+integration reviews, and an advisory release GO, with `docs/reviews/` containing no content review
+at all. The result shipped with no stylesheet, a text-list "orbital board," and a game that could
+not be ended. Nothing in the pipeline forced this check, so it never happened, and every stage
+downstream inherited the assumption that someone else had looked.
+
+Two consequences now bind:
+
+- **A `Demonstration` acceptance criterion can only be discharged here** (G6.2), by a captured
+  artifact — screenshot, recording, or driven-session transcript. `09-package-verification`
+  cannot discharge one, and must route it to this skill. If a release's scope contains an
+  undemonstrated `Demonstration` criterion, `11-release-readiness` has a **blocking** item.
+- **"There was no runnable app to review" is a finding, not an excuse.** If this skill cannot be
+  run because nothing starts, say so loudly and route it as Critical — that condition is itself
+  the most important thing the pipeline needs to hear, and it is the exact condition that went
+  unreported here for eleven packages.
+
 ## What to check (the review dimensions)
 
 1. **Visual/state fidelity** — build/start the app and drive every affected scenario (each

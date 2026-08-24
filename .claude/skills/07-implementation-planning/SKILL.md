@@ -44,11 +44,25 @@ All under `docs/implementation/` (this skill's sole write scope):
    units → owning package(s), with the rationale for every split/no-split decision. Even a
    single-package tranche gets a short TWBS section — the record of *why the cut is what it is*
    is the artifact.
-2. **`docs/implementation/packages/IP-####-<slug>.md`** — one per unit of work, the **14-field
+2. **`docs/implementation/packages/IP-####-<slug>.md`** — one per unit of work, the **15-field
    template**, every field populated: Package ID · Objective · Requirements Covered ·
    Architecture Components · Interfaces · Files to Create/Modify · Implementation Tasks · Tests
-   to Add · Documentation Updates · Definition of Done · Verification Checklist · Dependencies ·
-   Risks · Rollback Considerations. Assign to the owning stage-08 peer explicitly: a
+   to Add · **Player-Visible Result** · Documentation Updates · Definition of Done · Verification
+   Checklist · Dependencies · Risks · Rollback Considerations.
+
+   **Player-Visible Result** *(field added 2026-08-23, G6)* — answer, in one or two sentences:
+   *after this package ships, what does a player see or do differently?* Two legal answers:
+
+   - A concrete observable change ("the board shows a countdown on a deploying asset"). State how
+     it can be seen, so stage 09 knows what to demonstrate.
+   - **"Nothing — this is infrastructure."** Then the field **must name the specific later package
+     that makes it visible, and that package must exist in this plan.** An infrastructure package
+     with no named consumer is not plannable: it is dead code with a schedule.
+
+   *Why this exists:* win-condition checking, the event log and orbital propagation were each
+   built, tested, and marked `VERIFIED` while no package anywhere in the plan ever wired them to
+   something a player could perceive. Every one had a green suite. None had a consumer. This field
+   makes that gap impossible to write down without noticing it. Assign to the owning stage-08 peer explicitly: a
    logic/server/client/build package names `08-code-implementation`; a pure content package
    (mission-set/asset-type/effect-definition data templates) names `08-content-authoring`; a
    structure-only (behavior/meaning-preserving) package names `08-refactoring`.
@@ -138,9 +152,28 @@ applies, the default is **not authorized**.
 Update each planned FS's metadata to point at its package(s) (metadata only), commit as
 `docs(implementation): IP-#### — <what was planned>`.
 
+## Sequencing rules (added 2026-08-23, G6)
+
+**Walking skeleton first.** On any increment that has no runnable application yet, **package #1
+must produce one** — a real process a human can start and open, even if it does almost nothing —
+and every package after it must leave the app still runnable. Never plan a tranche whose runnable
+entry point arrives last.
+> The real server bootstrap was planned as package **#12** here. Eleven packages were built,
+> verified and integration-reviewed against something that had never executed as a process.
+
+**One vertical slice before horizontal layers.** Cut at least one thin end-to-end path — a single
+action travelling engine → wire → UI → pixels — before decomposing along module boundaries.
+Layered cuts hide integration failure until the last layer lands, and the last layer is exactly
+where schedule pressure falls.
+> Eight MVP features were cut as eight horizontal layers with UI last, so nothing was visible
+> until everything was done — and "everything" never arrived.
+
 ## Quality gate
 
 - [ ] Every planned FS/BL was confirmed approved + eligible before drafting.
+- [ ] **Every package has a populated Player-Visible Result** (G6); every "Nothing — infrastructure"
+      answer names a later package that makes it visible, and that package exists in this plan.
+- [ ] **The tranche is runnable from package #1**, and no package leaves the app un-runnable.
 - [ ] Every package has all 14 fields populated — no literal code anywhere.
 - [ ] Every Files to Create/Modify entry checked against the current tree, or honestly marked
       "to create" before any code exists.

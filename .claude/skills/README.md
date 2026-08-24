@@ -124,6 +124,39 @@ rules below are the binding governance text. Skills cite them as **G1–G5**.
   npm script names or commands ahead of that decision; each cites the recorded command once it
   exists.
 
+  **"start" is literal** *(clarified 2026-08-23 — see G6)*. It means: launch the real process,
+  connect a real client to it, and assert something real came back. A successful compile is **not**
+  a start. This gate was read as "`npm run build` exits 0" for eleven consecutive packages, during
+  which nothing had ever executed as a process a human could connect to.
+
+- **G6 — Execution beats description.** *(Added 2026-08-23, from the MVP post-mortem — MSTR-001
+  C11/A11.)*
+
+  > **An artifact is evidence about intent. Only execution is evidence about behavior.**
+  > Any gate that accepts a document as proof of behavior is miscalibrated.
+
+  Binding consequences, each enforced by the named skill:
+
+  1. **Reachability.** A module is not delivered until it is *reachable in the running
+     application*. Every exported symbol a package claims to deliver must have at least one
+     production (non-test) caller. Zero callers is a finding, never a pass
+     (`09-package-verification` step 4a, `10-integration-review` dimension 6).
+  2. **Demonstration is an artifact, not an adjective.** An acceptance criterion whose
+     Verification Method is `Demonstration` is **not** discharged by a passing unit test, a code
+     reading, or a ledger audit. It requires a captured artifact — screenshot, recording, or
+     driven-session transcript — filed with the report that claims it.
+  3. **Self-scoped bars don't count.** A package cannot be its own acceptance standard. Stage 09
+     verifies against the **owning FS's** acceptance criteria, and any criterion the package
+     silently descoped is a finding against the package.
+  4. **Unmet `Must` is never Medium.** A backlog item representing an unmet Priority: `Must`
+     requirement is Critical/High by construction (`00-intake`, `00-pipeline-manager`).
+
+  *Why this exists:* with 138/138 tests passing, all 11 MVP packages `VERIFIED`, and two clean
+  integration reviews, `checkWinConditions`, the event log and `Propagator.advance()` all had zero
+  production callers — the game could not end and no player could see what an opponent had done —
+  and no stylesheet existed anywhere in the repo. Every defect in that post-mortem was found by
+  **executing or grepping code**; not one was found by writing or reading a document.
+
 ## Artifact ID conventions (fixed, from the project's own spec)
 
 | Prefix | Artifact |

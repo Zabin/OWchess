@@ -37,6 +37,26 @@ hole.
 5. **Documentation coherence** — `CLAUDE.md`'s architecture/data-layout/Known Good Behavior
    sections, `memory.md`'s quick-refs, and the affected `INDEX.md` files reflect the integrated
    result, not per-package snapshots.
+6. **Module-reachability sweep (mandatory, G6.1)** — the dimension that distinguishes this review
+   from a sum of per-package ones. For **every module in the reviewed set**, ask: *is it called
+   from the running application?* Enumerate each module's public entry points and grep for a
+   production (non-test) caller. Then walk the composition root — whatever wires the app together
+   — and confirm every module the architecture names is actually constructed and invoked there,
+   including turn/lifecycle hooks. **A module whose only callers are tests has not been
+   integrated**, regardless of how green its own suite is or how `VERIFIED` its package is.
+
+   Report the sweep as a table — module → entry point → production call site (file:line) — with
+   "none found" stated explicitly where it is true. A clean sweep must show its work; the absence
+   of a finding is not evidence of reachability.
+
+   *Why this dimension exists (and why dimension 3 alone was not enough):* dimension 3 already
+   said "no player-visible workflow dead-ends at a seam — e.g. an effect one package computes that
+   no package ever wires to the board's rendering, **or to the win-condition check**." Two
+   integration reviews cited that dimension and passed clean while `checkWinConditions`, the event
+   log and `Propagator.advance()` all had zero production callers. The failure was one of
+   **method**: both reviews checked the seams *between the packages in scope* rather than asking
+   whether each module was reachable at all. Dimension 3 states the goal; this dimension states
+   the procedure — run the greps, walk the composition root, put the file:line in the table.
 
 ## Output
 
@@ -49,8 +69,11 @@ reviewed commit, results recorded.
 ## Quality gate
 
 - [ ] Every package in scope confirmed `VERIFIED` before the review began.
-- [ ] All five dimensions actually exercised — a clean dimension says what was checked.
-- [ ] App rebuild/start + full suite run against the reviewed commit, results recorded.
+- [ ] All six dimensions actually exercised — a clean dimension says what was checked.
+- [ ] **Reachability table produced** (dimension 6): every module → entry point → production
+      call site, with "none found" stated explicitly where true. Not inferred from dimension 3.
+- [ ] App rebuild/**start** run against the reviewed commit — the real process launched and a real
+      client connected (G5), not merely compiled — plus the full suite, results recorded.
 - [ ] Every finding has a severity and a concrete recommended owner; none fixed in-pass.
 - [ ] Nothing but the report (and tracker rows) was written.
 

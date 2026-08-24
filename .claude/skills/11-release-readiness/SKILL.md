@@ -53,10 +53,29 @@ and Content Review reports for this scope (`docs/reviews/`), the RTM.
    as `docs(release): <release> — assessment + baseline update`. On NO-GO (or GO not yet given),
    write the assessment only and touch nothing.
 
+## Blocking conditions — automatic NO-GO (added 2026-08-23, G6)
+
+These are not residual risks to weigh; they are NO-GO by construction, whatever the test counts say:
+
+- Any **`Priority: Must` requirement unmet**, including one whose only gap is an undemonstrated
+  `Demonstration` criterion.
+- Any **module in the release's scope with no production caller** (per `10-integration-review`'s
+  reachability table).
+- **No clean `09-content-review`** covering the release's player-visible surface (MSTR-001 C11/§6).
+- The app **cannot be started and played to a conclusion** by a human.
+
+*Why these are hard stops:* the MVP assessment correctly noted "'All logic verified' and 'a human
+can sit down and play a game' are not the same claim," explicitly carved visual fidelity out of the
+GO, and **still recommended GO**. Naming a risk in prose is not the same as being unable to pass
+the gate. If a gap is severe enough to need a carve-out sentence, it is severe enough to block.
+
 ## Quality gate
 
 - [ ] Every Feature the release plan put in this bucket appears in the scope audit — none quietly
       dropped.
+- [ ] **No blocking condition above is present**, each checked explicitly and the check recorded.
+- [ ] **Every `Demonstration` criterion in scope has a captured artifact** cited by path — no
+      criterion is "correctly left unchecked."
 - [ ] Every "delivered" row is backed by a named VR and integration coverage, not memory.
 - [ ] Every deviation has its authorization trail, or is flagged as unauthorized drift.
 - [ ] The GO/NO-GO reasoning is stated, and no baseline record flipped without the owner's

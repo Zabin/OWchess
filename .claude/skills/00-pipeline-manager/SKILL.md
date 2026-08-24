@@ -75,7 +75,7 @@ place, never delete rows (rejected entries stay, marked `REJECTED` with the reas
 | **Filed** | Date + source (which run/VR/report/intake produced it) |
 | **Type** | `feature` / `bug` / `finding` / `recommendation` / `design-question` / `gate` / `research-gap` / `doc-defect` / `refactor` |
 | **Summary** | One sentence; link the source artifact |
-| **Sev/Pri** | The source's severity, or the owner's stated priority for intake items |
+| **Sev/Pri** | The source's severity, or the owner's stated priority for intake items. **Severity floor (G6.4):** an entry representing an **unmet `Priority: Must` requirement**, a module with **no production caller**, or a **`Demonstration` criterion never demonstrated** is **Critical/High by construction** — it may not be filed or re-filed lower, and may not be reframed into a smaller-sounding category. *(BL-0039 was five unmet `Must` FRs plus a broken vision commitment, filed as a **Medium** "styling pass," and aged for days while every subsequent run repeated that framing back to the owner.)* |
 | **Entry stage** | The pipeline stage where the item enters when worked (e.g. a code bug → `07`, a spec gap → `06`, a research gap → `02`) |
 | **Disposition** | The manager's recorded decision on *when* it will be addressed (see lifecycle) |
 | **Status** | `NEW` → `SCHEDULED` / `DEFERRED` / `NEEDS-USER` → `IN PIPELINE` → `DONE` / `REJECTED` |
@@ -146,6 +146,19 @@ This step is **mandatory before Step 3**:
 3. **Re-check standing entries.** Any `DEFERRED` trigger now fired → back to `NEW` for a fresh
    disposition. Any `SCHEDULED` entry whose ride is this run's likely next step → tag it so Step 4
    passes it into the invoked skill's target. Any entry the tree shows resolved → `DONE`.
+
+   **Every `DEFERRED` trigger is evaluated every run, out loud.** Name each one and state whether
+   it fired. A deferral whose trigger is never checked is not a deferral, it is a silent drop.
+
+2a. **Correctness outranks new scope (G6.4).** While any **Critical or High** entry is open, the
+   next step must be that entry's remediation — not new scope at any stage. Deferring a
+   Critical/High still requires the owner's explicit agreement (never the manager's own judgement),
+   and that agreement is recorded on the entry with the date.
+
+2b. **Backlog-pressure check.** If open entries exceed ~40, run a triage sweep *before* choosing a
+   next step, and report the count to the owner. A backlog that only grows is a pipeline that is
+   deferring faster than it is delivering.
+   > This project reached **62 open entries** while its headline feature was undeliverable.
 4. **Batch the owner questions — but only within the same tier.** Collect all ripe `NEEDS-USER`
    entries, sort them by **tier precedence** (below), and surface only the entries at the
    *highest* tier present. Before batching, check each lower-tier ripe entry for **tier

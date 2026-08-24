@@ -77,6 +77,44 @@ cites, and the live source tree + the recorded toolchain.
    and the suite passes 100% green while turn-count=1 or turn-count=max both silently produce a
    belief-state leak or an over-eager expiry — no VR would catch that unless it drove the app at a
    non-default turn-count itself.)
+4a. **Reachability sweep (mandatory, G6.1).** For every exported symbol, module, message type,
+   handler, hook, content registry, or config file this package claims to deliver, **grep the tree
+   for a production caller** — excluding `__tests__`, spec files, and fixtures. A symbol whose only
+   callers are tests is **dead code, and the package that shipped it did not deliver it**: that is
+   a finding at minimum High, and a Critical one if the symbol implements a `Must` requirement.
+   Record the sweep's result explicitly, including "swept N symbols, all reachable" — silence is
+   not a positive result.
+
+   The check is literally this shape, per claimed symbol:
+   `grep -rn "<symbol>" <src roots> | grep -v __tests__` — and then reading the hits to confirm
+   they are *calls*, not merely the definition, a re-export, or a type reference.
+
+   *Why this exists:* `checkWinConditions`, the session event log, `Propagator.advance()` and
+   `EffectDefinitionRegistry` each passed verification with **zero production callers**. The game
+   could not end, no player could see what an opponent had done, and the orbital math never ran —
+   through 11 `VERIFIED` packages and two clean integration reviews. This sweep costs seconds and
+   would have caught all four.
+
+4b. **Verify against the FS, not only the package (G6.3).** A package cannot be its own acceptance
+   standard — it is authored by the same pipeline that implements it, so a package that quietly
+   narrows its own scope will always self-consistently pass. Enumerate the **owning FS's**
+   acceptance criteria and check each against the shipped result. **Any AC the package omitted,
+   deferred, or reworded into something weaker is a finding against the package**, not an accepted
+   scope note. Deferring an AC requires the owner's explicit agreement on record, not a package's
+   own say-so.
+
+   **`Demonstration` criteria are not dischargeable by this skill's normal evidence (G6.2).** A
+   passing unit test, a code reading, and a ledger audit are all evidence about *mechanism*; a
+   `Demonstration` criterion is a claim about what a human *sees*. It requires a captured artifact
+   — screenshot, recording, or driven-session transcript — filed with the VR. If this run cannot
+   produce that artifact, the criterion is **UNMET**, the package cannot be `VERIFIED` on it, and
+   the run routes it to `09-content-review`. It may never be marked "correctly left unchecked."
+
+   *Why this exists:* FR-8100–FR-8500 were all `Priority: Must` / `Verification: Demonstration`.
+   IP-8010 descoped two of FS-108's five acceptance criteria into a deviation note, verification
+   accepted the package's own narrowed bar, and the result shipped with no stylesheet and a
+   text-list board — while carrying a `VERIFIED` status.
+
 5. **Audit traceability.** Every Requirements Covered ID traces in the RTM to real files and
    real tests this package shipped.
 6. **Write the report**, update the ledgers, commit as `docs(verification): VR-#### — <result>`.
@@ -92,6 +130,15 @@ cites, and the live source tree + the recorded toolchain.
 - [ ] For any tunable/scenario-dependent parameter the DoD references, this run itself exercised
       the app at a non-default value — not just re-run the suite and trusted its existing fixture
       coverage.
+- [ ] **Reachability sweep run and its result recorded** (G6.1) — every claimed symbol has a
+      production, non-test caller, or the exception is a filed finding. "Swept N, all reachable"
+      is stated positively; silence does not count.
+- [ ] **Every acceptance criterion of the owning FS checked** (G6.3) — not only the package's own
+      DoD — and any criterion the package narrowed or omitted is filed as a finding.
+- [ ] **No `Demonstration` criterion marked satisfied without a captured artifact** (G6.2) filed
+      with this VR. Absent the artifact it is `UNMET` and routed to `09-content-review`.
+- [ ] "Builds/starts cleanly" was verified by **actually starting the process and connecting to
+      it** (G5), not by a successful compile.
 
 ## Gotchas
 
