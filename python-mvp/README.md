@@ -32,6 +32,12 @@ python3 -m uvicorn app:app --reload
 
 Open `http://127.0.0.1:8000/`. Two players, same tab, pass the laptop back and forth.
 
+![Landing page — a real browser render of a running instance](docs/screenshots/01-landing.png)
+
+**For a full step-by-step first game with a real screenshot at every stage — deploy, F2T2E
+tasking to `target` precision, Engage, and an actual win screen — see
+[`docs/FIRST-GAME.md`](docs/FIRST-GAME.md).**
+
 Run the engine smoke tests (no server needed):
 
 ```
@@ -60,7 +66,8 @@ sprint produced by driving the running app with curl)
 - **Win conditions actually fire**: destruction, resignation, and mission-denial (6 consecutive
   King-denied turns) are all checked after every accepted action (including `pass`), and flip the
   session to `ended` with a real winner shown on a game-over screen. Confirmed live for
-  destruction and resignation.
+  destruction and resignation — see `docs/screenshots/07-game-over.png`, or the full walkthrough
+  in `docs/FIRST-GAME.md`.
 - **Event log**: every accepted action appends a real entry, rendered on the board and on the
   game-over screen — not always-empty like the TS build's unwired `session.eventLog`.
 - **A real visible board**: server-rendered SVG, three regime rings (LEO/MEO/GEO) x three plane
@@ -124,3 +131,5 @@ sprint produced by driving the running app with curl)
 - `templates/` — Jinja2 templates, dark-theme inline CSS (no build step, no CDN dependency).
 - `tests/test_engine_smoke.py` — engine-level tests proving both fixed defects and the
   now-reachable win condition.
+- `docs/FIRST-GAME.md` — a full step-by-step play walkthrough with a real screenshot at every
+  stage; `docs/screenshots/` holds the images it embeds.
