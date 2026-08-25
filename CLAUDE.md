@@ -119,3 +119,16 @@ post-mortem (see the severity self-check above) and must not be cited as current
   if you are reading a stale copy of this line, check `docs/implementation/00-master-build-plan.md`
   and `docs/pipeline/pipeline-journal.md`'s Position block for the current authoritative state, and
   flag the discrepancy via `00-pipeline-manager sync` rather than trusting either blindly.
+- **`python-mvp/` (added 2026-08-25): a Sprint-0 hot-seat MVP, explicitly ahead of the pipeline**
+  (an owner-authorized spike — see `python-mvp/README.md` for the full exception statement). A
+  single FastAPI process, Python engine modules mirroring GDS-03's split, a "pass the device"
+  hot-seat turn loop, and a server-rendered SVG board. Demonstrated live, start-to-finish, over a
+  real running instance: King deployment, Deploy, Task (F2T2E climbing to `target` precision),
+  Engage (`destroy` ending a game via King destruction), Maneuver, Pass, and Resign (win via
+  resignation). Both of this file's documented TypeScript-build defects — the hookless-`TurnManager`
+  `pass` bug and Deceive corrupting the deceiver's own belief map — are fixed (not ported) in this
+  Python engine; see that README for what was actually verified vs. asserted, including a real
+  content-roster asymmetry it surfaced (only `ew-jamming-effector` can Deceive, and no mission set
+  that includes it has a `target`-capable sensor). This does not change anything above this line —
+  the TypeScript build described by the rest of this file is untouched, and this MVP is not yet
+  the subject of any pipeline package or ADR.

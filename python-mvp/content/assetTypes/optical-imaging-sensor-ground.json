@@ -1,0 +1,9 @@
+{
+  "templateId": "optical-imaging-sensor-ground",
+  "basing": "ground",
+  "apCost": 2,
+  "timeToOnline": 1,
+  "chainRoles": ["track", "target"],
+  "regimeAffinity": ["LEO-POLAR", "LEO-PROGRADE"],
+  "_costRationale": "Ground asset: FS-102's ground-faster/cheaper rule. Fine-precision ceiling ('target') reflects optical imaging's characterization strength; regime affinity favors polar/sun-synchronous passes for favorable imaging geometry (per SOR Appendix B's worked example, R-203 Operational Context). Pending R-1xx grounding (BL-0017)."
+}

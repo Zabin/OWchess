@@ -1,0 +1,7 @@
+{
+  "effectId": "disrupt",
+  "durationTurns": 3,
+  "stacking": "independent",
+  "allowedEffectorTemplateIds": ["kinetic-rpo-effector", "ew-jamming-effector"],
+  "_rationale": "3-turn duration pinned by FS-105 (its own numeric refinement, chosen to stay below the 6-turn mission-denial threshold so no single application wins outright). Both effector types can apply it, matching their asset-type templates' _effectAffinity."
+}

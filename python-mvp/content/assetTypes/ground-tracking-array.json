@@ -1,0 +1,9 @@
+{
+  "templateId": "ground-tracking-array",
+  "basing": "ground",
+  "apCost": 2,
+  "timeToOnline": 1,
+  "chainRoles": ["fix", "track"],
+  "regimeAffinity": ["LEO-EQUATORIAL", "LEO-PROGRADE", "LEO-POLAR", "MEO-EQUATORIAL"],
+  "_costRationale": "Ground asset: FS-102's ground-faster/cheaper rule (FR-3300). Precision ceiling 'track' reflects a dedicated tracking array's finer resolution than wide-area search radar. Pending R-1xx grounding (BL-0017)."
+}

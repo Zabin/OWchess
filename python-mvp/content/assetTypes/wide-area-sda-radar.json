@@ -1,0 +1,9 @@
+{
+  "templateId": "wide-area-sda-radar",
+  "basing": "ground",
+  "apCost": 2,
+  "timeToOnline": 1,
+  "chainRoles": ["find", "fix"],
+  "regimeAffinity": ["LEO-EQUATORIAL", "LEO-PROGRADE", "LEO-POLAR"],
+  "_costRationale": "Ground asset: FS-102's ground-faster/cheaper rule (FR-3300). Wide-area coverage caps precision at 'fix' (broad detection, not fine characterization) per the F2T2E ceiling FR-3003 requires — pending 02-research-domain (R-1xx) grounding, tracked as BL-0017."
+}
