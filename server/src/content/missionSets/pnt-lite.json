@@ -1,0 +1,6 @@
+{
+  "missionSetId": "pnt-lite",
+  "assetTypeIds": ["ground-tracking-array", "space-based-sda-sensor"],
+  "kingRegimeAffinity": ["MEO-EQUATORIAL"],
+  "_rationale": "PNT (positioning/navigation/timing)-lite King affinity is equatorial-MEO, the real-world analog altitude band for GPS-like constellations (R-203 §3.1's MEO band definition, ~2,000-35,786 km) — a doctrinally recognizable, non-arbitrary choice distinct from SATCOM's GEO and ISR's LEO-polar affinities."
+}

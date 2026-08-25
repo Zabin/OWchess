@@ -1,0 +1,10 @@
+{
+  "templateId": "kinetic-rpo-effector",
+  "basing": "space",
+  "apCost": 4,
+  "timeToOnline": 4,
+  "chainRoles": ["engage"],
+  "regimeAffinity": ["LEO-EQUATORIAL", "LEO-PROGRADE", "LEO-POLAR", "MEO-EQUATORIAL"],
+  "_effectAffinity": ["destroy", "disrupt", "deny"],
+  "_costRationale": "Space effector: highest cost/time in the roster, reflecting the real-world complexity of rendezvous-proximity-operations maneuvering (SOR's fictional-but-doctrinally-flavored framing). Destroy/Disrupt/Deny capability is a direct-contact/kinetic effect profile, per the Five D's taxonomy. Pending R-1xx grounding (BL-0017) and IP-4010's actual effect-application wiring."
+}

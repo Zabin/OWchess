@@ -1,0 +1,7 @@
+{
+  "effectId": "destroy",
+  "durationTurns": "terminal",
+  "stacking": "none",
+  "allowedEffectorTemplateIds": ["kinetic-rpo-effector"],
+  "_rationale": "Terminal, not a continuing state (GDS-04/07) -- flags the target destroyed rather than adding a duration-tracked EffectStateEntry. Kinetic-only, matching kinetic-rpo-effector's _effectAffinity in its own asset-type template."
+}

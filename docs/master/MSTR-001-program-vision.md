@@ -1,0 +1,274 @@
+# MSTR-001 — Program Vision: OW Chess
+
+- **Document ID:** MSTR-001 · **Version:** 0.5 · **Status:** 🟢 Gate-confirmed — the owner has
+  resolved the four items that were blocking this gate (OQ-01, OQ-01b, OQ-02, OQ-09; see §8 and the
+  [Strategic Assumptions Register](../architecture/strategic-assumptions-register.md)). Remaining
+  open items (OQ-04–OQ-08, OQ-10) were never gating this vision — they proceed to their named
+  downstream stage as originally scoped. v0.3 amended C4 (two-body-only propagation for v1,
+  J2/SGP4 deferred behind the `Propagator` seam). **v0.4 adds C10**: the operator-facing training
+  corpus is now a co-equal product with the game's code — see §8. **v0.5 supersedes C9** (visual
+  direction moves from the `ZabOW` reference to a faithful port of `ZabSpaceExercise`'s canvas
+  globe — see §4a) and **adds C11** (a release is certified on evidence the game can actually be
+  played, not only on green tests — the §6 quality bar's root-cause fix).
+- **Date:** 2026-08-21 (v0.1–v0.2); 2026-08-22 (v0.3); 2026-08-23 (v0.4, v0.5) · **Owned by:**
+  `01-vision` skill
+- **Derived from:** [`docs/seed/STATEMENT_OF_REQUIREMENTS.md`](../seed/STATEMENT_OF_REQUIREMENTS.md)
+  v0.1 (project owner, 2026-08-21), §1–§6, read in full before authoring this document, per the
+  owner's [kickoff instruction](../seed/CLAUDE_CODE_KICKOFF_PROMPT.md).
+- **Design-facing restatement:** [`docs/architecture/00-vision.md`](../architecture/00-vision.md)
+  (GDS-00)
+
+## §0 Provenance — what is harvested vs. what is new
+
+This project's **documentation-driven-development pipeline** (this skill hierarchy, the
+journal/backlog mechanism, the G1–G5 governance rules, the artifact ID conventions) is **adapted**
+from a separate, unrelated project, `ZabGBCprocgenMusic` (a Game Boy Color procedural-music ROM) —
+only the *process pattern* carries over; none of that project's content (chiptune generation,
+Game Boy hardware specifics) is relevant here and none of it has been copied.
+
+This project's **domain content** (SDA/counterspace doctrine, the six-access-channel model, the
+Five D's effect taxonomy, the `Propagator` interface pattern, server-enforced fog-of-war/
+belief-state rendering, the schema-validated asset-template library convention) is reused
+**conceptually** from a sibling project, `ZabSpaceExercise` (a PME wargaming simulator) — cited as
+source material during `02-research-*`, never as shared runtime code. `ZabSpaceExercise` is a
+Python/FastAPI, facilitator-run, training-fidelity tool; OW Chess is a from-scratch TypeScript(?)
+two-player competitive game with no shared codebase, no accounts, and a deliberately simpler fog
+model (no belief-state-divergence/AAR-replay tooling).
+
+This project's **visual/UX style reference** was `ZabOW` through v0.4; **as of v0.5 it is
+`ZabSpaceExercise`'s canvas globe viewer** (C9a, §4a) — a faithful port of that reference's
+orthographic-projection Earth, symbology and belief-uncertainty encoding. The `ZabOW` material
+below is retained as the historical record of how C9 came to be written, not as current direction.
+On `ZabOW`: see §9.1-equivalent note below: the
+branch the owner pointed to (`claude/orbital-warfare-campaign-FWLKi`) has since been merged into
+`ZabOW`'s `main` branch (PR #1, merged 2026-08-21) and the source branch deleted as normal
+post-merge cleanup. Its content — a mobile-first React game, "ORBITAL COMMAND: Operation
+Contested Orbit" — has now been read directly from `main`. See §4 below for what carries over.
+
+| Harvested pattern only | Harvested concept, rebuilt fresh | Built new for this project |
+|---|---|---|
+| The documentation-driven pipeline itself (`.claude/skills/`, staged 00→11, journal + backlog persistence, G1–G5) — adapted in file names and domain examples only, mechanics unchanged. | The `Propagator` interface boundary (two-body Keplerian internally for v1 — see C4 v0.3 — discrete regime/slot presentation externally) — concept from `ZabSpaceExercise`, reimplemented in this project's own stack. Six-access-channel model and Five D's taxonomy — reused directly per the owner's SOR. Server-enforced fog-of-war principle — reused, simplified (no belief-state-divergence tooling). | The entire two-player, strictly-alternating-turn, chess-style King-hunt game loop (find→fix→track→target→engage compressed to discrete turn-scale actions) — no equivalent exists in either reference project. `ZabSpaceExercise` is simultaneous/facilitator-paced training; `ORBITAL COMMAND` (ZabOW) is a single-player wave-defense arcade game with a 12-mission campaign, not a 2-player hidden-information contest. |
+
+## §1 What this project is
+
+**OW Chess** is a two-player, web-browser, turn-based multiplayer strategy game built on the
+find-fix-track-target-engage (F2T2E) logic of real space-domain-awareness (SDA) and counterspace
+operations, expressed as a chess-like abstract strategy game — not a simulation, and not the
+single-player arcade/campaign shape of the earlier `ORBITAL COMMAND` concept. Each player secretly
+deploys a **King satellite** — a mission-bearing asset with a mission set (e.g., SATCOM, ISR,
+PNT-lite) and an orbital regime — and wins by locating, characterizing, and denying or destroying
+the opponent's King before the reverse happens.
+
+Turns are **fixed and strictly alternating** — classic chess-style I-go-you-go, not a shared
+real-time clock and not a simultaneous "WeGo" order-writing structure. On a player's turn they
+spend a fixed action-point (AP) allotment on one or more actions (maneuver, task an asset, deploy
+a new asset, or pass) before play passes to the opponent; the server enforces turn order and
+rejects any action attempted out of turn. A WebSocket connection pushes turn-change and
+resolved-action notifications to both clients instantly, but this is a UX/latency choice
+(avoiding polling), not a live/simultaneous-action design — the underlying model has no
+concurrent-action race to resolve.
+
+The server holds ground truth for both players' assets; each client renders **only that player's
+own earned belief-state**, never the opponent's raw data — this is enforced server-side as a
+security property (a client-side leak is trivially inspectable via browser devtools), not only a
+gameplay convenience. Orbital mechanics are propagated internally with real orbital math (v1
+baseline: two-body Keplerian motion, per C4 v0.3 — J2/SGP4 are a later, deliberate call, not a
+fixed floor), but presented to players as discrete, chess-legible regimes/slots (e.g., LEO/MEO/
+GEO-analog bands) — simple for gameplay, real math underneath. *(Presentation reference updated
+v0.5: the regimes are now rendered on a `ZabSpaceExercise`-style geographic globe rather than
+ZabOW's radial bands — see C9a and §4a. The discrete-regime **game model** is unchanged; only how
+it is drawn has moved.)*
+
+## §2 Who it is for
+
+1. **The two players:** adults with an interest in wargaming/military strategy, not necessarily
+   space-domain experts. They need a rules-legible game that rewards deduction and planning, not
+   memorized doctrine trivia — the UI itself must be the rules reference for legal moves (no
+   external documentation required for basic play).
+2. **The owner, as designer/maintainer:** builds and iterates on the game via Claude Code sessions.
+   Needs traceable requirements, a data-driven asset model (new content is a JSON/YAML template
+   change, not a code change), and a spec precise enough that implementation doesn't require
+   guessing intent.
+
+## §3 Scope commitments (what must always be true)
+
+| # | Commitment | Notes |
+|---|---|---|
+| C1 | Exactly **two players**, no accounts, no matchmaking, no database for v1. A shareable session join link is the entire onboarding flow. | SOR §5.1, §5.2, §8.5, G-6. |
+| C2 | Turns are **fixed and strictly alternating** (chess-style I-go-you-go), not simultaneous "WeGo" order-writing. **Confirmed by the owner, 2026-08-21 (OQ-01b).** | SOR §1, §7.2. |
+| C3 | The server is the **sole authority** for game state; fog-of-war (per-player belief-state) is enforced server-side, never computed or inferred client-side. | SOR §7.7, NFR-2001 — a security requirement, not a design preference. |
+| C4 *(amended v0.3)* | Orbital mechanics are **hybrid-fidelity**: real orbital propagation internally, discrete named-regime/slot presentation externally, behind a `Propagator`-equivalent interface boundary that isolates the implementation so a fidelity change (higher — J2, later SGP4/TLE per R4; or shared code with `ZabSpaceExercise`) is a swap, not a rewrite. **The v1 baseline propagation model is plain two-body Keplerian motion (no J2 perturbation)** — not the "minimum Kepler+J2" floor v0.1/v0.2 stated. Whether J2 (and, later, SGP4) is added is **not decided here**: it is an explicit, deliberate follow-on call made after assessing two-body's actual gameplay impact (specifically: whether the polar/sun-synchronous plane class in the regime taxonomy — R-203 — reads as meaningfully distinct to players without the nodal-precession physics that is its only real-world justification), not a fixed commitment either way. | SOR §7.6, FR-5001–5005, NFR-5003; owner decision 2026-08-22 (see §8). |
+| C5 | The v1 starting content set is **3 mission sets**, **6 sensor/effector asset types**, and the **Five D's** effect taxonomy (Deceive/Disrupt/Deny/Degrade/Destroy) — sufficient to exercise the full F2T2E chain at least two different ways. Exact roster is data (JSON/YAML template), not code. | SOR §7.4, §7.5, §7.8, FR-2001–2006, NFR-5001. |
+| C6 | Win conditions: **King destruction**, **mission-denial-by-duration**, **resignation**, and a **timeout/tiebreak** path. Exact numeric thresholds are explicitly deferred to `04-requirements-engineering`/`06-feature-specification` — not fixed here. | SOR §7.9, §14. |
+| C7 | A **ground-vs-space cost/time asymmetry** is a required mechanic: ground-based assets are generally cheaper/faster but geometrically constrained; space-based assets are generally more capable/persistent but costlier/slower. Exact numbers are a tuning question, not fixed here. | SOR §7.5, FR-2004. |
+| C8 | The action-turn UI must expose, at all times: whose turn is active and current AP; every currently-legal action (no dead/silently-rejected menu entries); every deployable asset with cost/time-to-online shown before commit; the player's own King status and everything currently earned about the opponent. | SOR §7.10, §9.2, FR-7001–7005, NFR-4001–4002. |
+| ~~C9~~ *(superseded v0.5 — see C9a)* | ~~Visual direction follows the **ZabOW `ORBITAL COMMAND` reference** (§4 below) — a dark "ops console" aesthetic with a radial LEO/MEO/GEO band presentation, corner-anchored HUD panels, and a cyan/blue-friendly, red-hostile/alert color convention — not the SOR §9.1 placeholder description in isolation (that placeholder turns out to describe the real reference closely, but is now superseded by having actually seen it, per the owner's explicit instruction).~~ | ~~Resolves OQ-03 — see §4.~~ Retired 2026-08-23, v0.5: the owner changed the visual reference to `ZabSpaceExercise`. Kept visible rather than deleted so downstream documents citing C9 can see it moved, not vanished. |
+| C9a *(replaces C9, v0.5)* | Visual direction follows the **`ZabSpaceExercise` canvas-globe reference** (§4a below) — a **geographic globe view**: an orthographic-projection Earth with real coastlines, a graticule, a day/night terminator, propagated ground tracks, doctrinal (APP-6-adapted) symbology markers, and belief contacts rendered with an **uncertainty ring encoding confidence**, framed by dark panel chrome. This is an austere, technical ops-console look, deliberately distinct from ZabOW's vivid arcade styling. The board is a **faithful port** of that reference, not a re-derivation. | Owner decision, 2026-08-23, superseding C9. See §4a for exactly what the reference is (and is not). |
+| C11 *(added v0.5)* | **A release is certified on evidence that the game can actually be played, not only on green tests.** Every release's "done" bar (§6) requires a clean `09-content-review` pass against the built, running application — the board renders as specified, the player-facing action set is complete, and a game can be driven to a real conclusion. Corollary, binding on the pipeline: a `Verification: Demonstration` acceptance criterion is **not** discharged by a passing unit test or by a `09-package-verification` ledger audit, and a module is not "delivered" until it is demonstrably **reachable in the running application**. | Owner decision, 2026-08-23. Triggered by a review of the running app finding it unplayable despite 138/138 passing tests, all 11 MVP packages `VERIFIED`, and two clean integration reviews: three subsystems (`checkWinConditions`, the event log, `Propagator.advance()`) had zero production callers, `resign` had no UI path (violating C8), and no stylesheet existed anywhere in the repo. The bar, not the effort, was wrong. |
+| C10 *(added v0.4)* | The **operator-facing training corpus** — installation instructions, an interface walkthrough, and a first-full-game walkthrough with real screenshots, assuming zero prior TypeScript/Node.js experience — is a **co-equal product with the game's code**, not incidental documentation. It is requirements-backed (`04-requirements-engineering` to add an FR/NFR family for it), lives under `docs/training/` + `docs/manual/`, and is built/kept current by dedicated pipeline skills (a stage-08 authoring peer and a stage-09 independent-review peer, mirroring `08-code-implementation`/`09-package-verification`) rather than as an incidental README. Modeled on the sibling `ZabSpaceExercise` project's own proven pattern (its MSTR-001-equivalent §2 decision and its `docs/training/`/`docs/manual/` layout), scoped down for OW Chess's much simpler shape: one symmetric two-player game, not a multi-role (White/Blue/Red) facilitated exercise, so **one shared player-facing corpus**, not per-role manuals. | Owner decision, 2026-08-23, triggered by the owner requiring a real human playtest before any release GO — a release cannot be certified "MVP" on automated-test evidence alone if no operator-facing instructions exist to actually run and play it. |
+
+## §4 What was found on the ZabOW reference, and what carries over *(historical — superseded for visual direction by §4a, v0.5)*
+
+The owner's kickoff prompt pointed at `ZabOW` branch `claude/orbital-warfare-campaign-FWLKi` as
+the real visual-style reference, noting the SOR's author (a prior chat session) had been blocked
+from reading it and had drafted §9.1 as an unconfirmed placeholder pending this project's own
+read. That branch **no longer exists** — `git ls-remote` and the GitHub UI both show only `main`
+on `ZabOW` now, because the branch was the source of PR #1 ("ORBITAL COMMAND — USSF orbital
+warfare campaign game"), merged into `main` on 2026-08-21, with the source branch deleted as
+normal post-merge cleanup. Its content is therefore now `ZabOW`'s `main` branch, read directly.
+
+**What `ORBITAL COMMAND` actually is:** a mobile-first React + Vite + HTML5 Canvas single-player
+game — a 12-mission campaign ("Operation Contested Orbit") plus a Quick Mission mode, built around
+Detect→Track→Engage doctrine with ISR/COMM/INTC/STRK/EWAR/DEF satellite roles, three altitude
+bands (LEO/MEO/GEO), orbital decay, fuel consumption, and debris fields. This is the same prior
+concept the SOR's §5.2/§6 already named as "adjacent, not merged" (a single-player campaign, not
+this project's 2-player competitive design) — confirmed now by direct inspection, not just by the
+SOR's description of it.
+
+**What carries over to OW Chess (visual/UX only, per SOR §9.1's own instruction):**
+
+- The dark, high-contrast "ops console" palette: near-black background (`#000814`/radial
+  `#050a18`→`#000308`), glowing cyan/blue title and friendly-asset accents, a warm red/orange
+  reserved for hostile-contact and alert states, monospace/uppercase HUD labels, subtle animated
+  starfield background.
+- The **radial band layout** for orbital presentation — concentric dashed rings labeled LEO / MEO
+  / GEO around a central planet, with assets as small glowing markers on their band — is a very
+  close visual precedent for this project's own §7.6 "discrete regime/slot" requirement. This
+  should be the strong starting point for `03-architecture-design-synthesis`'s GDS-08 presentation
+  design, not re-derived from scratch.
+- Corner-anchored HUD panel layout (status/threat counters top-left and top-right, a
+  selected-asset detail panel bottom-left, a contextual message bar, a bottom action-button row)
+  maps directly onto this project's own SOR §9.2 panel inventory (orbital board, action menu,
+  asset tray, mission/King status, intel panel, event log) — a real layout precedent exists, it
+  does not need to be invented.
+- Diamond-shaped friendly-asset markers, colored underline/tag per asset role, and a distinct
+  marker style for an unresolved/uncharacterized contact ("RECON", shown dim/orange) — a useful
+  precedent for this project's own uncertain/unknown-contact rendering requirement (FR-7002).
+
+**What does not carry over:** the single-player wave/mission structure, the touch-drag maneuver
+interaction (this project has discrete per-turn actions, not continuous real-time control), the
+persistent local-storage save/progression system (SOR §5.2 excludes cross-session progression for
+v1), and the specific satellite-role taxonomy (ISR/COMM/INTC/STRK/EWAR/DEF) — this project's own
+mission-set/asset roster (SOR §7.4/§7.5) is a different, smaller, 2-player-balanced set.
+
+**This resolves OQ-03** (SOR §16): the visual direction is no longer a placeholder pending review
+— it has been reviewed, and substantially confirms the SOR's own placeholder guess, with concrete
+layout precedent now available. `03-architecture-design-synthesis` should treat GDS-08 as
+grounded in this reference, not starting from nothing.
+
+## §4a The `ZabSpaceExercise` canvas-globe reference (added v0.5 — supersedes §4 for visual direction)
+
+§4 above remains an accurate record of what was found on `ZabOW` and why C9 was written as it was.
+It is retained as history. **For visual direction it is superseded**: the owner has redirected the
+board to `ZabSpaceExercise`'s globe viewer (sibling repo, same owner, read-only reference at
+`/home/user/zabin/zabspaceexercise/spacesim/ui_web/static/`).
+
+**What that reference actually is — stated plainly, because the name oversells it.** It is **not a
+3D engine.** It is a ~136-line hand-written **orthographic azimuthal projection drawn on a plain
+HTML5 Canvas 2D context**, with **zero external libraries** (a deliberate choice so the app runs
+offline/air-gapped with no CDN). Depth is a single `front: cosc >= 0` boolean that hides far-side
+geometry; altitude is faked by scaling the projection radius by `1 + alt/6371`. There is no
+lighting model, no texture, no starfield, no mesh, and no z-buffer. Adopting it is adopting a 2D
+canvas projection that *reads* as a globe.
+
+**What it renders** (`globe.js`, `world.js`, `symbology.js`, `world.json`, and `drawTerminator()`
+in `app.js`):
+
+- A dark ocean disk Earth, with real **coastlines and country borders** from a committed ~322 KB
+  `world.json` (Basemap-derived, regenerable via that repo's own `tools/build_coastlines.py`).
+- A 30° **graticule** of meridians and parallels.
+- A **day/night terminator**, drawn as a 2D radial gradient centred on the subsolar point.
+- **Ground tracks** — server-propagated, sampled forward, lifted to altitude — not idealised circles.
+- **APP-6-adapted symbology markers**: triangle = ISR, square = SATCOM, diamond = PNT, plus = SDA,
+  star = jammer, diamond-plus-stalk = interceptor, filled square = ground station.
+- **Belief contacts with an uncertainty ring** whose radius encodes positional confidence, plus a
+  characterized/uncharacterized colour distinction — the single most valuable element for this
+  project, because it is a direct visual analogue of OW Chess's own F2T2E precision ladder, which
+  the current text-list board cannot express at all.
+
+**Palette** (its `style.css` `:root`): `--bg #0c1014`, `--panel #151c25`, `--panel2 #111721`,
+`--border #2a3646`, `--text #dde4ea`, `--muted #94a6b8`, per-side accents blue `#5a8fe0` / red
+`#e07a7a`. Canvas-internal: ocean `#163b5a`, limb `#7896b6`, coast `#7aa8d0`, borders `#5077a0`,
+orbit track `rgba(210,225,245,0.70)`, characterized track `#ffd35a`, uncharacterized `#ff8585`.
+
+**Why this is not contradicting a locked decision:** SOR §8.1's "SVG or Canvas2D (not a 3D globe)"
+sat inside a table flagged **`[ASSUMPTION — OQ-02]`** and was explicitly "a recommendation … not a
+locked decision"; and it recommended Canvas2D, which is exactly what this reference uses.
+**ADR-0001 covers language/stack only and says nothing about rendering.** So no ADR is contradicted
+— but a **new rendering ADR is now owed to `03-architecture-design-synthesis`**, since adopting a
+specific rendering approach is an architecture decision this tier must not make itself.
+
+**A consequence this vision must name, not resolve:** a globe plots positions, and the shipped
+`Propagator` deliberately exposes only a discrete regime label. GDS-03's own module table already
+names a `computePosition(asset, atTurn)` surface that the shipped interface dropped. Whether and
+how position crosses that boundary is **`03-architecture-design-synthesis`'s decision**, not this
+document's.
+
+## §5 Non-goals (at this vision's date)
+
+Not commitments against forever — explicitly *not* promised **yet**, per SOR §5.2: AI/bot
+opponent · more than 2 players / spectator mode · ranked play, matchmaking, ELO, persistent
+accounts or cross-session progression · mobile-native builds (responsive browser layout is in
+scope; a dedicated mobile UI is not) · real named/current satellites via TLE import (fictional/
+generic assets only) · merging with, or unifying the asset vocabulary of, either `ZabSpaceExercise`
+or the single-player `ORBITAL COMMAND` campaign concept.
+
+## §6 Quality bar
+
+"Done" for any change means: the app builds/starts cleanly and the full automated test suite
+passes (G5); fog-of-war non-leakage is centrally tested, not re-verified ad hoc per feature; the
+deterministic game-state-resolution core has coverage for legal-action enumeration, the F2T2E
+gating chain, and all win-condition paths (SOR §13); the behavior is traceable through the
+pipeline's artifacts (requirement → feature spec → package → verification report); and no numeric
+tuning value ships silently as if it were a deliberate design choice — untuned first-guess values
+are tagged as such in code/config, mirroring the `ZabGBCprocgenMusic` project's own placeholder-
+tagging convention (SOR Appendix B risk table).
+
+**"Done" for a release** (added v0.4, C10) additionally means: the operator-facing training
+corpus is current for everything the release ships (a stage-09-peer training review passes clean,
+the same way `09-package-verification`/`10-integration-review` must for code) — a release cannot
+be certified ready on automated-test/code-verification evidence alone while no operator-facing
+path exists to actually install, run, and play it.
+
+**"Done" for a release** (added v0.5, C11) *further* means: a **clean `09-content-review` pass
+against the built, running application** — someone has actually driven the app and confirmed the
+game can be played to a conclusion and reads correctly on screen. This closes a structural hole
+this bar itself created. Every criterion above is satisfiable by a green build and a green test
+suite, so that is what every stage optimised for; meanwhile **FR-8100–FR-8500 are all
+Priority: Must and all `Verification: Demonstration`, and no stage ever performed a Demonstration
+pass.** `09-content-review` — the stage-09 peer written precisely to drive the built app and judge
+board/UI readability — had **never been invoked once** in the project's history. A release is not
+"done" because its tests are green; it is done when the thing the tests describe can actually be
+played. Automated evidence proves a mechanism works in isolation; it cannot prove a module is
+*reachable*, that a game can *end*, or that anything is *legible*.
+
+## §7 Authority & document precedence
+
+1. This document (MSTR-001) is the top of the tree for *purpose-level* statements; the GDS ladder
+   (`docs/architecture/`) is authoritative for design as each level's merge gate closes.
+2. Until this project authors its own `docs/master/MSTR-00x` governance document, the rules
+   **G1–G5** in [`.claude/skills/README.md`](../../.claude/skills/README.md) are binding.
+3. Conflicts between documents are findings for the owning skill — never resolved by silently
+   editing the downstream copy.
+
+## §8 Change control & open items
+
+A change to §1–§5 is made only by the `01-vision` skill, dated, with rationale recorded below, and
+the downstream blast radius enumerated.
+
+**Gate status:** the four items that were genuinely blocking downstream architecture work —
+OQ-01 (standalone scope), OQ-01b (turn structure), OQ-02 (tech stack), OQ-09 (MVP-first scope) —
+were put to the owner and resolved 2026-08-21 (see v0.2 row below). OQ-03 (visual style) was
+resolved earlier in this same run by direct inspection (§4). The remaining items (OQ-04 through
+OQ-08, OQ-10) were never blocking this gate — they proceed to their originally-named downstream
+stage (`04-requirements-engineering`, `06-feature-specification`, `03-architecture-design-
+synthesis`) exactly as the seed SOR scoped them. Full detail for every item lives in the
+[Strategic Assumptions Register](../architecture/strategic-assumptions-register.md).
+
+| Date | Version | What changed | Why | Downstream blast radius |
+|---|---|---|---|---|
+| 2026-08-21 | 0.1 | Initial authoring from `STATEMENT_OF_REQUIREMENTS.md` §1–§6; ZabOW reference read directly (§4), resolving OQ-03. | Owner's kickoff instruction: bootstrap the pipeline, run `01-vision` from the SOR, and read the real ZabOW branch before any visual work. | Grounds `docs/architecture/00-vision.md` (GDS-00) and everything downstream. OQ-01/01b/02/04–10 remain open — nothing past this vision tier should treat them as decided until the owner responds. |
+| 2026-08-21 | 0.2 | Owner confirmed OQ-01 (standalone), OQ-01b (strict alternating turns), OQ-09 (MVP-first); resolved OQ-02 by explicitly delegating the tech-stack choice rather than confirming the SOR's candidate — *"I will not dictate the tech stack or language. Use the best language to solve the requirements."* C2 updated to remove its "not yet confirmed" flag. | Owner's response at the `01-vision` gate to the four surfaced open questions. | `03-architecture-design-synthesis` can now proceed on a confirmed turn-structure model and confirmed standalone scope, but must produce a real comparative ADR for the tech stack (not adopt the SOR's candidate by default) — see the Strategic Assumptions Register's OQ-02 row and its added risk-table entry. `04-requirements-engineering`/`06-feature-specification` proceed on OQ-04–08/10 exactly as originally scoped, unaffected by this amendment. |
+| 2026-08-22 | 0.3 | Amended C4: the v1 propagation baseline is now **plain two-body Keplerian motion**, not "minimum Kepler+J2." The `Propagator` interface seam (already required by C4/FR-5005) must isolate the model so J2 — and later SGP4/TLE per R4 — can be added without a rewrite, but adding J2 is now an explicit, deliberate follow-on decision gated on real gameplay impact, not a fixed commitment. Specifically: whether the polar/sun-synchronous plane class (R-203) needs J2's nodal-precession physics to read as meaningful to players, or whether it can ship as a label-only distinction for v1, is a question to answer from playtesting/implementation experience, not guessed now. | Owner, following a design discussion on `Propagator` risk: two-body motion removes nearly all of FEAT-5000's implementation risk (no perturbation formula to source/cross-verify — retires BL-0005/BL-0011's J2-specific concern entirely for the v1 baseline) at the cost of the sun-synchronous plane class's physical justification, which the owner chose to accept as a deferred, data-driven call rather than resolve either way now. | **GDS-01** (Concept of Operations — no change, propagation model is architecture-invisible at this level). **GDS-03** (Architecture — `Propagator`'s interface shape is unchanged, since it was already designed as a swappable boundary; its *internal* v1 implementation is now two-body, not Kepler+J2). **GDS-04** (Domain Model — `OrbitalRegime`'s polar/sun-synchronous plane class no longer has a physical mechanism backing it for v1; flagged as a new Open Question for `03` to record). **R-203** (research — its own §3.3 argument for the polar/sun-synchronous distinction rested entirely on J2; needs an explicit amendment note marking that distinction provisional/label-only until J2 is (if ever) added). **FR-5100** (requirements — "Kepler+J2-minimum" wording needs updating to "two-body Keplerian, v1 baseline"). **FEAT-5000** (feature catalog — Risk should be revised down from High, and its description updated to reflect the seam-first, J2-deferred plan). All six updated in this same session — see below. |
+| 2026-08-23 | 0.4 | Added **C10**: the operator-facing training corpus is a co-equal product with the code — requirements-backed, living under `docs/training/`+`docs/manual/`, built/kept current by dedicated stage-08/09 pipeline skills, and required (clean training review) as part of any release's own "done" bar (§6). All 11 MVP packages were independently `VERIFIED` and integration-reviewed clean (`docs/reviews/integration-review-mvp-tranche.md`) and a Release Assessment recommended GO (`docs/reviews/release-assessment-mvp.md`) — but at the G4 gate, the owner deferred that GO pending a real human playtest, pointing to `ZabSpaceExercise`'s own training-corpus-as-co-equal-product pattern as the model to follow rather than shipping without operator-facing instructions. | Owner, at the MVP release-readiness G4 gate: automated-test/code-verification evidence alone (98/98 tests, clean integration review) is not sufficient grounds to certify a release "MVP" if no path exists for an actual human to install, run, and play it — closing that gap (BL-0038/BL-0027, "never run end-to-end as a real process," already flagged as a residual risk in the Release Assessment) and writing the training corpus against the *real* running result, not a description of intended behavior, are now prerequisites for revisiting the G4 decision. | **GDS-00** (this document's design-facing restatement — companion edit, same session). **Strategic Assumptions Register** — new assumption recorded (see below). **`04-requirements-engineering`** — a new FR/NFR family for the training corpus, next. **New pipeline skills** — a stage-08 training-corpus-authoring peer and a stage-09 independent-review peer, to be authored (not existing skills' scope). **`07-implementation-planning`/`08-code-implementation`/`09-package-verification`** — a remediation package closing BL-0038 (real WebSocket server bootstrap) and BL-0027 (dist content-copy gap), needed before real screenshots are possible. **`11-release-readiness`** — the MVP bucket's G4 decision remains open (not NO-GO, not yet GO) until the training corpus exists and passes its own review; `docs/reviews/release-assessment-mvp.md` is not superseded, just not yet actioned. |
+| 2026-08-23 | 0.5 | **Superseded C9 with C9a** (visual direction: `ZabOW`'s radial band board → a faithful port of `ZabSpaceExercise`'s canvas globe; new §4a records exactly what that reference is, including that it is a Canvas-2D orthographic projection and *not* a 3D engine). **Added C11** and amended **§6**: a release's "done" bar now requires a clean `09-content-review` pass against the built, running application, and a `Verification: Demonstration` criterion is explicitly not discharged by a passing unit test or a `09-package-verification` ledger audit. | Owner, 2026-08-23, after reviewing the running app: not all actions reachable, no stylesheet, no map, "not playable," does not meet MVP. Investigation confirmed it and found the cause was structural, not effort: `checkWinConditions`, the event log, and `Propagator.advance()` all had **zero production callers** (a game could not end, and no player could see what an opponent did); `resign` had no UI path, violating C8; Deceive corrupted the deceiver's own belief map and wrote the target's true regime; and no `.css` file existed anywhere in the repo. None of this was caught because §6 defined "done" as build + tests, FR-8100–FR-8500 are all Must/Demonstration, and **`09-content-review` had never been invoked once**. | **GDS-00** (companion edit, same session). **Strategic Assumptions Register** — A10 added; OQ-03's resolution basis corrected. **GDS-08** → `03-architecture-design-synthesis`: board composition and palette must be rewritten against the §4a reference. **GDS-03/GDS-09** → `03`: a globe needs positions; GDS-03's module table already names `computePosition(asset, atTurn)` but the shipped interface dropped it for `currentRegime` — `03` decides whether/how position crosses that boundary, plus the new rendering ADR C9a owes. **FR-8100/FR-8200** → `04-requirements-engineering`: their acceptance criteria delegate to GDS-08 by reference, so they inherit the rewrite. **FS-108** → `06-feature-specification`. **BL-0039** → `00-pipeline-manager`: currently Medium and framed as a "styling pass" — a misclassification, since it covers the primary panel's entire rendering model plus an unmet vision commitment. **`09-content-review`** → must actually be run, for the first time. None of these edited here. |

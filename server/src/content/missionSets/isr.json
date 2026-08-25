@@ -1,0 +1,11 @@
+{
+  "missionSetId": "isr",
+  "assetTypeIds": [
+    "wide-area-sda-radar",
+    "optical-imaging-sensor-ground",
+    "optical-imaging-sensor-space",
+    "kinetic-rpo-effector"
+  ],
+  "kingRegimeAffinity": ["LEO-POLAR"],
+  "_rationale": "ISR King affinity is polar/sun-synchronous-analog LEO, matching SOR Appendix B's own worked example (an ISR King placed in a Sun-synchronous-analog polar regime for favorable imaging geometry) and R-203 §4's operational-context guidance."
+}

@@ -1,0 +1,23 @@
+{
+  "name": "@owchess/server",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "scripts": {
+    "build": "tsc -b && node ./scripts/copy-content.mjs",
+    "test": "vitest run",
+    "dev": "tsx watch src/index.ts"
+  },
+  "dependencies": {
+    "@owchess/shared": "*",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.4",
+    "vitest": "^2.0.5",
+    "tsx": "^4.16.5",
+    "@types/ws": "^8.5.12",
+    "@types/node": "^22.5.0"
+  }
+}

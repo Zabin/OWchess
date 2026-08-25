@@ -1,0 +1,7 @@
+{
+  "effectId": "deceive",
+  "durationTurns": "until-cleared",
+  "stacking": "none",
+  "allowedEffectorTemplateIds": ["ew-jamming-effector"],
+  "_rationale": "Persists until overwritten by a fresh tasking observation (FS-105/GDS-04) -- not a fixed-turn duration like Disrupt/Deny/Degrade. Non-kinetic (standoff) effect, matches ew-jamming-effector's _effectAffinity in its own asset-type template."
+}
