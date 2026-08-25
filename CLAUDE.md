@@ -45,6 +45,15 @@ automatic no-go conditions — lives in the pipeline skills as governance rule *
 `.claude/skills/README.md`. This file is the plain-language version Claude applies to its own
 wording in every session, pipeline-driven or not.
 
+## Session/agent operating preferences
+
+- **Do not schedule automatic self check-in reminders (e.g. `send_later`/Routines) to poll a PR's
+  CI or review status in this repo.** Rely on the real event subscription
+  (`subscribe_pr_activity`) to react when something actually happens, and otherwise leave it
+  there — don't manufacture hourly wake-ups just to re-check a quiet PR. This was requested
+  2026-08-25 after a background check-in loop was set up unprompted on PR #2 and the owner asked
+  for it to stop; treat it as a standing preference for this repo, not a one-off for that PR.
+
 ## Architecture — module overview
 
 Full detail: `docs/architecture/03-architecture.md` (GDS-03). One job per module; `GameEngine` is
