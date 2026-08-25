@@ -1,0 +1,14 @@
+{
+  "templateId": "ew-jamming-effector",
+  "basing": "space",
+  "apCost": 3,
+  "timeToOnline": 3,
+  "chainRoles": ["engage"],
+  "regimeAffinity": [
+    "LEO-EQUATORIAL", "LEO-PROGRADE", "LEO-POLAR",
+    "MEO-EQUATORIAL", "MEO-PROGRADE", "MEO-POLAR",
+    "GEO-EQUATORIAL", "GEO-PROGRADE", "GEO-POLAR"
+  ],
+  "_effectAffinity": ["disrupt", "deny", "degrade", "deceive"],
+  "_costRationale": "Space effector: standoff (non-kinetic) electronic-warfare profile — cheaper/faster than the kinetic effector (no physical rendezvous required) but broader regime reach, since jamming/deception doesn't require physical proximity. Disrupt/Deny/Degrade/Deceive capability, never Destroy (non-kinetic). Pending R-1xx grounding (BL-0017) and IP-4010's actual effect-application wiring."
+}

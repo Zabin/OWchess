@@ -45,6 +45,15 @@ automatic no-go conditions — lives in the pipeline skills as governance rule *
 `.claude/skills/README.md`. This file is the plain-language version Claude applies to its own
 wording in every session, pipeline-driven or not.
 
+## Session/agent operating preferences
+
+- **Do not schedule automatic self check-in reminders (e.g. `send_later`/Routines) to poll a PR's
+  CI or review status in this repo.** Rely on the real event subscription
+  (`subscribe_pr_activity`) to react when something actually happens, and otherwise leave it
+  there — don't manufacture hourly wake-ups just to re-check a quiet PR. This was requested
+  2026-08-25 after a background check-in loop was set up unprompted on PR #2 and the owner asked
+  for it to stop; treat it as a standing preference for this repo, not a one-off for that PR.
+
 ## Architecture — module overview
 
 Full detail: `docs/architecture/03-architecture.md` (GDS-03). One job per module; `GameEngine` is
@@ -119,3 +128,16 @@ post-mortem (see the severity self-check above) and must not be cited as current
   if you are reading a stale copy of this line, check `docs/implementation/00-master-build-plan.md`
   and `docs/pipeline/pipeline-journal.md`'s Position block for the current authoritative state, and
   flag the discrepancy via `00-pipeline-manager sync` rather than trusting either blindly.
+- **`python-mvp/` (added 2026-08-25): a Sprint-0 hot-seat MVP, explicitly ahead of the pipeline**
+  (an owner-authorized spike — see `python-mvp/README.md` for the full exception statement). A
+  single FastAPI process, Python engine modules mirroring GDS-03's split, a "pass the device"
+  hot-seat turn loop, and a server-rendered SVG board. Demonstrated live, start-to-finish, over a
+  real running instance: King deployment, Deploy, Task (F2T2E climbing to `target` precision),
+  Engage (`destroy` ending a game via King destruction), Maneuver, Pass, and Resign (win via
+  resignation). Both of this file's documented TypeScript-build defects — the hookless-`TurnManager`
+  `pass` bug and Deceive corrupting the deceiver's own belief map — are fixed (not ported) in this
+  Python engine; see that README for what was actually verified vs. asserted, including a real
+  content-roster asymmetry it surfaced (only `ew-jamming-effector` can Deceive, and no mission set
+  that includes it has a `target`-capable sensor). This does not change anything above this line —
+  the TypeScript build described by the rest of this file is untouched, and this MVP is not yet
+  the subject of any pipeline package or ADR.

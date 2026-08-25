@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="panel">
+  <h2>New hot-seat game</h2>
+  <p style="color:var(--muted); font-size:.85rem;">One browser, two players, taking turns at the same screen. Each player secretly picks a mission set and King regime, then the game begins.</p>
+  <form method="post" action="/start" class="inline">
+    <label class="small">Player A name</label>
+    <input type="text" name="name_a" value="Player A" maxlength="24">
+    <label class="small">Player B name</label>
+    <input type="text" name="name_b" value="Player B" maxlength="24">
+    <button type="submit">Start</button>
+  </form>
+</div>
+{% endblock %}

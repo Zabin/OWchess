@@ -1,0 +1,9 @@
+{
+  "templateId": "optical-imaging-sensor-space",
+  "basing": "space",
+  "apCost": 3,
+  "timeToOnline": 3,
+  "chainRoles": ["track", "target"],
+  "regimeAffinity": ["LEO-POLAR", "MEO-EQUATORIAL", "GEO-EQUATORIAL"],
+  "_costRationale": "Space asset: FS-102's space-slower/costlier rule. Same fine-precision ceiling as the ground variant, broader regime reach (space-based imaging is not limited to a single ground site's overhead passes). Pending R-1xx grounding (BL-0017)."
+}

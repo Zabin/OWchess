@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="panel" style="display:flex; justify-content:space-between; align-items:center;">
+  <div>
+    <strong>{{ active_player_name }}'s turn</strong> — turn {{ turn_number }}, vs {{ opponent_name }}
+  </div>
+  <div>AP remaining: <span class="ap">{{ ap_remaining }}</span> / 5</div>
+</div>
+
+<div class="grid">
+  <div>
+    <div class="board-frame">{{ board_svg | safe }}</div>
+
+    <div class="panel">
+      <h2>King</h2>
+      <p>
+        Regime: <span class="pill king">{{ king.regime }}</span>
+        {% if king.maneuvering %}<span class="pill warn">→ {{ king.maneuver_target }} ({{ king.maneuver_turns }}t)</span>{% endif %}
+        {% if king.destroyed %}<span class="pill bad">DESTROYED</span>{% endif %}
+        {% if king.denial_turns > 0 %}<span class="pill warn">denied {{ king.denial_turns }}/6 turns</span>{% endif %}
+        {% for e in king.effects %}<span class="pill bad">{{ e }}</span>{% endfor %}
+      </p>
+    </div>
+
+    <div class="panel">
+      <h2>Your assets</h2>
+      <table>
+        <tr><th>ID</th><th>Type</th><th>Regime</th><th>Status</th><th>Effects</th></tr>
+        {% for a in own_assets %}
+        <tr>
+          <td>{{ a.id }}</td>
+          <td>{{ a.template_id }}</td>
+          <td>{{ a.regime }}</td>
+          <td>
+            {% if a.destroyed %}<span class="pill bad">destroyed</span>
+            {% elif not a.online %}<span class="pill warn">online in {{ a.turns_until_online }}t</span>
+            {% elif a.maneuvering %}<span class="pill warn">→ {{ a.maneuver_target }} ({{ a.maneuver_turns }}t)</span>
+            {% else %}<span class="pill">ready</span>{% endif %}
+          </td>
+          <td>{% for e in a.effects %}<span class="pill bad">{{ e }}</span> {% endfor %}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5" style="color:var(--muted);">none deployed yet</td></tr>
+        {% endfor %}
+      </table>
+    </div>
+
+    <div class="panel">
+      <h2>Opponent — belief picture (fog of war)</h2>
+      <table>
+        <tr><th>Contact</th><th>Precision</th><th>Apparent regime</th></tr>
+        {% for e in opponent_belief %}
+        <tr>
+          <td>{{ e.label }}</td>
+          <td>{{ e.precision }}</td>
+          <td>{{ e.apparent_regime }} {% if e.deceived %}<span class="pill warn">reported false</span>{% endif %}</td>
+        </tr>
+        {% endfor %}
+        {% if unknown_count %}
+        <tr><td colspan="3" style="color:var(--muted);">+{{ unknown_count }} unresolved contact(s) (find-level only, regime unknown)</td></tr>
+        {% endif %}
+        {% if not opponent_belief and not unknown_count %}
+        <tr><td colspan="3" style="color:var(--muted);">no contacts yet — task a sensor</td></tr>
+        {% endif %}
+      </table>
+    </div>
+
+    <div class="panel">
+      <h2>Event log</h2>
+      <div class="log">
+        {% for e in event_log %}
+          <div>T{{ e.turn_number }} · {{ e.acting_player_id }} · {{ e.action_type }} — {{ e.state_delta_summary }}</div>
+        {% else %}
+          <div style="color:var(--muted);">no actions yet</div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <div class="section-actions">
+    <div class="panel">
+      <h2>Actions</h2>
+
+      <div class="action-card">
+        <h3>Deploy</h3>
+        <form method="post" action="/action/deploy" class="inline">
+          <select name="templateId" required>
+            {% for t in deploy_templates %}
+              <option value="{{ t.template_id }}">{{ t.template_id }} (AP {{ t.ap_cost }}, online {{ t.time_to_online }}t)</option>
+            {% endfor %}
+          </select>
+          <select name="targetRegime" required>
+            {% for r in regimes %}<option value="{{ r }}">{{ r }}</option>{% endfor %}
+          </select>
+          <button type="submit">Deploy</button>
+        </form>
+        <p style="color:var(--muted); font-size:.72rem;">Regime must be within the chosen template's affinity, or the action is rejected.</p>
+      </div>
+
+      <div class="action-card">
+        <h3>Maneuver (1 AP)</h3>
+        <form method="post" action="/action/maneuver" class="inline">
+          <select name="assetId" required>
+            {% for a in maneuverable %}<option value="{{ a.id }}">{{ a.label }}</option>{% endfor %}
+          </select>
+          <select name="targetRegime" required>
+            {% for r in regimes %}<option value="{{ r }}">{{ r }}</option>{% endfor %}
+          </select>
+          <button type="submit" {% if not maneuverable %}disabled{% endif %}>Maneuver</button>
+        </form>
+      </div>
+
+      <div class="action-card">
+        <h3>Task (F2T2E, 1 AP)</h3>
+        <form method="post" action="/action/task" class="inline">
+          <select name="sourceAssetId" required>
+            {% for a in taskable %}<option value="{{ a.id }}">{{ a.label }}</option>{% endfor %}
+          </select>
+          <select name="targetRegime" required>
+            {% for r in regimes %}<option value="{{ r }}">{{ r }}</option>{% endfor %}
+          </select>
+          <button type="submit" {% if not taskable %}disabled{% endif %}>Task</button>
+        </form>
+        <p style="color:var(--muted); font-size:.72rem;">Advances belief precision one F2T2E step toward 'target' for whatever's actually in that regime.</p>
+      </div>
+
+      <div class="action-card">
+        <h3>Engage (1 AP, needs 'target' precision)</h3>
+        <form method="post" action="/action/engage" class="inline">
+          <select name="effectorAssetId" required>
+            {% for a in engageable_effectors %}<option value="{{ a.id }}">{{ a.label }} [{{ a.effects | join(",") }}]</option>{% endfor %}
+          </select>
+          <select name="targetAssetId" required>
+            {% for t in engageable_targets %}<option value="{{ t.id }}">{{ t.label }}</option>{% endfor %}
+          </select>
+          <select name="effect" required>
+            <option value="destroy">destroy</option>
+            <option value="disrupt">disrupt</option>
+            <option value="deny">deny</option>
+            <option value="degrade">degrade</option>
+            <option value="deceive">deceive</option>
+          </select>
+          <select name="falseRegime">
+            <option value="">(false regime, deceive only)</option>
+            {% for r in regimes %}<option value="{{ r }}">{{ r }}</option>{% endfor %}
+          </select>
+          <button type="submit" {% if not engageable_effectors or not engageable_targets %}disabled{% endif %}>Engage</button>
+        </form>
+        <p style="color:var(--muted); font-size:.72rem;">Only effects your effector template supports actually succeed; server re-checks.</p>
+      </div>
+
+      <div class="action-card" style="display:flex; gap:10px;">
+        <form method="post" action="/action/pass"><button type="submit" class="secondary">Pass</button></form>
+        <form method="post" action="/action/resign" onsubmit="return confirm('Resign the game?');"><button type="submit" class="danger">Resign</button></form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

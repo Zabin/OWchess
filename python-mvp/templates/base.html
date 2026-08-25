@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OW Chess — hot-seat MVP</title>
+<style>
+  :root {
+    --bg: #070b14; --panel: #101827; --panel-border: #1f2c44; --text: #dbe4f5;
+    --muted: #7c8aa5; --accent: #2fb3a3; --accent2: #d1495b; --warn: #e0b03a;
+    --board-bg: #0b1220;
+  }
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg); color: var(--text); font-family: "Segoe UI", system-ui, sans-serif;
+    margin: 0; padding: 24px; line-height: 1.4;
+  }
+  h1, h2, h3 { font-weight: 600; margin-top: 0; }
+  h1 { font-size: 1.3rem; letter-spacing: .03em; color: var(--accent); }
+  a { color: var(--accent); }
+  .wrap { max-width: 1080px; margin: 0 auto; }
+  .banner { background: #0d1424; border: 1px solid var(--panel-border); border-radius: 10px; padding: 10px 16px; margin-bottom: 18px; font-size: .85rem; color: var(--muted); }
+  .grid { display: grid; grid-template-columns: 480px 1fr; gap: 20px; align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+  .panel { background: var(--panel); border: 1px solid var(--panel-border); border-radius: 12px; padding: 16px 18px; margin-bottom: 16px; }
+  .panel h2 { font-size: .95rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-bottom: 10px; }
+  table { width: 100%; border-collapse: collapse; font-size: .85rem; }
+  td, th { padding: 4px 6px; border-bottom: 1px solid var(--panel-border); text-align: left; }
+  .pill { display: inline-block; padding: 1px 8px; border-radius: 20px; font-size: .72rem; background: #182339; border: 1px solid var(--panel-border); }
+  .pill.king { background: #24321a; border-color: #3c5424; color: #b7d98a; }
+  .pill.warn { background: #332512; border-color: #5a4318; color: var(--warn); }
+  .pill.bad { background: #351417; border-color: #5a2028; color: var(--accent2); }
+  form.inline { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 8px 0; }
+  select, input[type=text] {
+    background: #0b1322; border: 1px solid var(--panel-border); color: var(--text);
+    border-radius: 6px; padding: 6px 8px; font-size: .85rem;
+  }
+  button {
+    background: var(--accent); color: #04211d; border: none; border-radius: 6px;
+    padding: 7px 14px; font-weight: 600; cursor: pointer; font-size: .85rem;
+  }
+  button.secondary { background: #1c2740; color: var(--text); border: 1px solid var(--panel-border); }
+  button.danger { background: var(--accent2); color: #2a0c11; }
+  button:hover { filter: brightness(1.1); }
+  .flash { background: #351417; border: 1px solid #5a2028; color: #f2b7bd; padding: 8px 12px; border-radius: 8px; margin-bottom: 14px; font-size: .85rem; }
+  .board-frame { background: var(--panel); border: 1px solid var(--panel-border); border-radius: 12px; padding: 12px; aspect-ratio: 1 / 1; }
+  .gate { text-align: center; padding: 80px 20px; }
+  .gate h1 { font-size: 1.8rem; margin-bottom: 8px; }
+  .log { max-height: 220px; overflow-y: auto; font-size: .78rem; color: var(--muted); }
+  .log div { padding: 3px 0; border-bottom: 1px dashed #1a2438; }
+  .ap { font-size: 1.4rem; font-weight: 700; color: var(--accent); }
+  .section-actions { display: flex; flex-direction: column; gap: 10px; }
+  .action-card { border-top: 1px solid var(--panel-border); padding-top: 10px; }
+  .action-card h3 { font-size: .82rem; color: var(--text); margin-bottom: 6px; }
+  label.small { font-size: .72rem; color: var(--muted); margin-right: 2px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>OW CHESS — hot-seat sprint MVP</h1>
+  <div class="banner">Sprint 0: an owner-authorized spike ahead of the documentation pipeline (see python-mvp/README.md). Fog-of-war here is a UI convention — pass the device, don't peek — not a network security boundary.</div>
+  {% if flash %}<div class="flash">{{ flash }}</div>{% endif %}
+  {% block content %}{% endblock %}
+</div>
+</body>
+</html>
